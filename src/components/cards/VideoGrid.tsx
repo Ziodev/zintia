@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
+import { useParams } from "next/navigation";
 import { ShieldCheck, ExternalLink } from "lucide-react";
 import { VideoCard } from "./VideoCard";
 import { NativeAdCard } from "./NativeAdCard";
@@ -55,7 +56,8 @@ interface VideoGridProps {
 }
 
 export function VideoGrid({ initialVideos }: VideoGridProps) {
-  const [activeCategory] = useQueryState("category", { defaultValue: "all", shallow: true });
+  const params = useParams();
+  const activeCategory = (params?.id as string) || "all";
   const [activeSort] = useQueryState("sort", { defaultValue: "latest", shallow: true });
   const [activeTag] = useQueryState("tag", { defaultValue: "", shallow: true });
   const [search] = useQueryState("search", { defaultValue: "", shallow: true });

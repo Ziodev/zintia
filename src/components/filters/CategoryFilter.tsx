@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryState } from "nuqs";
+import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { translations, Language } from "@/lib/translations";
 import { Flame, Heart, Target, Sparkles, Home, Globe, Video, Moon } from "lucide-react";
@@ -34,10 +35,9 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ videos }: CategoryFilterProps) {
-  const [activeCategory, setActiveCategory] = useQueryState("category", {
-    defaultValue: "all",
-    shallow: true,
-  });
+  const params = useParams();
+  const router = useRouter();
+  const activeCategory = (params?.id as string) || "all";
 
   const [activeSort, setActiveSort] = useQueryState("sort", {
     defaultValue: "latest",
@@ -92,8 +92,12 @@ export function CategoryFilter({ videos }: CategoryFilterProps) {
               key={cat.id}
               onClick={async () => {
                 const nextCategory = isActive ? "all" : cat.id;
-                await setActiveCategory(nextCategory);
                 await setActiveTag(""); // Reset tag when category changes
+                if (nextCategory === "all") {
+                  router.push(`/?lang=${activeLang}`);
+                } else {
+                  router.push(`/category/${nextCategory}?lang=${activeLang}`);
+                }
               }}
               className={cn(
                 "whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold tracking-wide border transition-all duration-200 active:scale-95 flex items-center gap-1.5",
