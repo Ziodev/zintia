@@ -29,7 +29,7 @@ async function run() {
       })
     });
 
-    const status = response.status;
+    const responseStatus = response.status;
     const text = await response.text();
     let data;
     try {
@@ -38,7 +38,7 @@ async function run() {
       data = text;
     }
 
-    console.log(`Response Status: ${status}`);
+    console.log(`Response Status: ${responseStatus}`);
     console.log("Response Body:", JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error triggering ingestion:", error);
