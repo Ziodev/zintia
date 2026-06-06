@@ -35,6 +35,16 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow: glow 3s ease-in-out infinite;
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 4px rgba(244, 63, 94, 0.25), 0 0 12px rgba(244, 63, 94, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.65), 0 0 28px rgba(244, 63, 94, 0.35);
+    }
+  }
 }
 
 /* Base Theme (Deep Dark Mode by Default) */
@@ -90,5 +100,15 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }

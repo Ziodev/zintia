@@ -28,11 +28,11 @@ export function VideoCard({
 }: VideoCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const isVisible = useIntersectionObserver(containerRef, { threshold: 0.6 });
-  
+
   const { isMuted, setMuted, activeVideoId, setActiveVideoId } = useUIStore();
 
   const [lang] = useQueryState("lang", { defaultValue: "es" });
@@ -40,6 +40,28 @@ export function VideoCard({
   const t = translations[activeLang] || translations.es;
 
   const isPlaying = isHovered || isVisible;
+
+  // Real-time watchers fluctuation based on video ID hash (Bandwagon Effect)
+  const baseWatchers = (() => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash % 1500) + 450; // between 450 and 1950
+  })();
+
+  const [watchers, setWatchers] = useState(baseWatchers);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWatchers((prev) => {
+        const delta = Math.floor(Math.random() * 9) - 4; // -4 to +4
+        return Math.max(100, prev + delta);
+      });
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -86,14 +108,17 @@ export function VideoCard({
       }}
       className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-white/5 transition-all duration-300 hover:scale-[1.02] hover:border-white/10 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
     >
-      <Link href={watchUrl} className="block relative w-full aspect-video bg-zinc-950 overflow-hidden">
+      <Link
+        href={watchUrl}
+        className="block relative w-full aspect-video bg-zinc-950 overflow-hidden"
+      >
         {/* Poster Image - Fades out only when the video actually starts playing */}
         <Image
           src={thumbnailUrl}
           alt={title}
           fill
           unoptimized
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-10 ${
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 z-10 group-hover:scale-105 ${
             isVideoPlaying ? "opacity-0" : "opacity-100"
           }`}
         />
@@ -112,7 +137,18 @@ export function VideoCard({
           />
         )}
 
-        {/* Overlays */}
+        {/* Active Viewers Overlay (FOMO Indicator) */}
+        <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[9px] font-bold text-rose-400 px-2 py-0.5 rounded-md border border-rose-500/10 flex items-center gap-1 z-20">
+          <span className="relative flex h-1.5 w-1.5 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+          </span>
+          <span>
+            {watchers.toLocaleString()} {t.watching}
+          </span>
+        </div>
+
+        {/* Duration Overlay */}
         <span className="absolute bottom-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[10px] font-semibold text-white px-2 py-0.5 rounded-md border border-white/5 z-20">
           {duration}
         </span>

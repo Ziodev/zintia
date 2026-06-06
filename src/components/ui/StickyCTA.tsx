@@ -1,10 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryState } from "nuqs";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Video, ExternalLink } from "lucide-react";
 import { translations, Language } from "@/lib/translations";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
+
+const EXPIRES_IN: Record<Language, string> = {
+  es: "La oferta expira en",
+  en: "Offer expires in",
+  fr: "L'offre expire dans",
+  ja: "限定オファーの残り時間",
+  it: "L'offerta scade in",
+  pt: "A oferta expira em",
+};
+
+const GEOLOCATION_DESCS: Record<Language, (count: number, location: string) => string> = {
+  es: (count, loc) => `${count} Modelos en Vivo cerca de ${loc}`,
+  en: (count, loc) => `${count} Live Models near ${loc}`,
+  fr: (count, loc) => `${count} Modèles en direct près de ${loc}`,
+  ja: (count, loc) => `${loc}付近のライブモデル${count}名`,
+  it: (count, loc) => `${count} Modelle in diretta vicino a ${loc}`,
+  pt: (count, loc) => `${count} Modelos ao vivo perto de ${loc}`,
+};
 
 export function StickyCTA() {
   const [isVisible, setIsVisible] = useState(true);
@@ -12,6 +31,64 @@ export function StickyCTA() {
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
+
+  // Retrieve user location
+  const geo = useGeoLocation(activeLang);
+
+  // Fluctuating models count (simulating nearby active cameras)
+  const [modelCount, setModelCount] = useState(34);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setModelCount((prev) => {
+        const delta = Math.floor(Math.random() * 3) - 1; // -1, 0, or +1
+        const next = prev + delta;
+        return Math.max(30, Math.min(42, next));
+      });
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 5-minute countdown timer (session-persisted)
+  const [timeLeft, setTimeLeft] = useState<number>(300);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedTime = sessionStorage.getItem("zintia_countdown_time");
+    let initialTime = 300;
+
+    if (storedTime) {
+      const parsed = parseInt(storedTime, 10);
+      if (!isNaN(parsed) && parsed > 0) {
+        initialTime = parsed;
+      }
+    } else {
+      sessionStorage.setItem("zintia_countdown_time", "300");
+    }
+
+    setTimeLeft(initialTime);
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          sessionStorage.setItem("zintia_countdown_time", "300");
+          return 300;
+        }
+        const next = prev - 1;
+        sessionStorage.setItem("zintia_countdown_time", next.toString());
+        return next;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   if (!isVisible) return null;
 
@@ -36,8 +113,16 @@ export function StickyCTA() {
               </span>
               {t.webcamsTitle}
             </span>
-            <span className="text-[10px] text-muted-foreground line-clamp-1">
-              {t.webcamsDesc}
+            <span className="text-[10px] text-muted-foreground line-clamp-1 font-sans">
+              {GEOLOCATION_DESCS[activeLang]
+                ? GEOLOCATION_DESCS[activeLang](modelCount, geo.city)
+                : `${modelCount} models near ${geo.city}`}
+            </span>
+            <span className="text-[9px] text-rose-400 font-semibold mt-0.5 flex items-center gap-1">
+              <span className="w-1 h-1 rounded-full bg-rose-500 animate-ping shrink-0" />
+              <span>
+                {EXPIRES_IN[activeLang] || EXPIRES_IN.es}: {formatTime(timeLeft)}
+              </span>
             </span>
           </div>
         </div>
@@ -47,7 +132,7 @@ export function StickyCTA() {
             href="https://example.com/affiliate-link"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20"
+            className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow"
           >
             <span>{t.enter}</span>
             <ExternalLink className="w-3 h-3" />

@@ -14,6 +14,7 @@ export interface Ad {
   affiliateUrl: string;
   thumbnailUrl: string;
   videoPreviewUrl: string;
+  variant?: "standard" | "private" | "interactive";
 }
 
 export const MOCK_VIDEOS: Video[] = [
@@ -93,10 +94,27 @@ export const MOCK_VIDEOS: Video[] = [
 
 export const MOCK_ADS: Ad[] = [
   {
-    title: "🔴 CHAT DE WEBCAMS GRATIS - Miles de Modelos de habla hispana en Vivo ahora",
+    title: "CHAT DE WEBCAMS GRATIS - Miles de Modelos online en Vivo ahora",
     ctaText: "VER MODELOS",
     affiliateUrl: "https://example.com/webcam-affiliate",
     thumbnailUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80",
     videoPreviewUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    variant: "standard",
+  },
+  {
+    title: "VIDEO PRIVADO FILTRADO - Toca para desbloquear gratis",
+    ctaText: "DESBLOQUEAR",
+    affiliateUrl: "https://example.com/private-video-affiliate",
+    thumbnailUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
+    videoPreviewUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    variant: "private",
+  },
+  {
+    title: "Sofía te ha enviado una invitación para chat privado",
+    ctaText: "CHATEAR",
+    affiliateUrl: "https://example.com/dating-swipe-affiliate",
+    thumbnailUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80",
+    videoPreviewUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    variant: "interactive",
   },
 ];
