@@ -214,13 +214,20 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
         <div className="lg:col-span-2 flex flex-col gap-4">
           <div className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
             {video.embedUrl ? (
-              <iframe
-                src={video.embedUrl}
-                allowFullScreen
-                allow="autoplay; fullscreen"
-                sandbox="allow-scripts allow-same-origin allow-presentation"
-                className="w-full h-full border-0"
-              />
+              <>
+                {/* Native Loading Spinner behind the iframe */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-10 h-10 border-4 border-rose-500/20 border-t-rose-500 rounded-full animate-spin" />
+                </div>
+                <iframe
+                  src={video.embedUrl}
+                  allowFullScreen
+                  allow="autoplay; fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
+                  className="relative w-full h-full border-0 z-10 bg-transparent"
+                  loading="lazy"
+                />
+              </>
             ) : (
               <video
                 src={video.videoPreviewUrl}

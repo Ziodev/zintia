@@ -114,10 +114,15 @@ export function VideoGrid({ initialVideos }: VideoGridProps) {
 
   // Infinite scroll trigger when sentinel becomes visible
   useEffect(() => {
-    if (isSentinelVisible && hasMore && (limit < 16 || isRoadblockBypassed)) {
-      setLimit((prev) => prev + 4);
+    if (isSentinelVisible && hasMore) {
+      setLimit((prev) => {
+        if (prev < 16 || isRoadblockBypassed) {
+          return prev + 4;
+        }
+        return prev;
+      });
     }
-  }, [isSentinelVisible, hasMore, limit, isRoadblockBypassed, setLimit]);
+  }, [isSentinelVisible, hasMore, isRoadblockBypassed, setLimit]);
 
   // Track Roadblock Impression
   const isRoadblockActive = limit >= 16 && !isRoadblockBypassed;
