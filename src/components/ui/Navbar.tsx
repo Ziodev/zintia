@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { Search, Flame, Award, Globe, Check, X } from "lucide-react";
+import { Search, Flame, Award, Globe, Check, X, Menu } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { translations, Language } from "@/lib/translations";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 const LANG_DETAILS = [
   { id: "es", label: "Español" },
@@ -50,6 +51,7 @@ export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeLang = (lang as Language) || "es";
@@ -82,7 +84,16 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full glassmorphism px-4 md:px-8 py-3 flex flex-col justify-center transition-all duration-300">
       <div className="w-full flex items-center justify-between">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6">
+          {/* Hamburger Menu Icon for Mobile */}
+          <button
+            onClick={() => setIsMenuOpen(true)}
+            className="p-1.5 md:hidden text-muted-foreground hover:text-white rounded-full hover:bg-white/5 transition-all cursor-pointer shrink-0"
+            aria-label="Abrir menú"
+          >
+            <Menu className="w-5 h-5 text-rose-500" />
+          </button>
+
           <Link href={`/?lang=${activeLang}`}>
             <Logo className="h-8" />
           </Link>
@@ -248,6 +259,93 @@ export function Navbar() {
           </div>
         </div>
       )}
+      {/* Mobile Drawer Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+            />
+
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[80vw] bg-zinc-950/95 border-r border-white/5 p-6 flex flex-col gap-6 shadow-2xl md:hidden font-sans"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/5">
+                <Link href={`/?lang=${activeLang}`} onClick={() => setIsMenuOpen(false)}>
+                  <Logo className="h-7" />
+                </Link>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-1 text-muted-foreground hover:text-white rounded-lg hover:bg-white/5 transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="flex flex-col gap-4 font-heading text-sm">
+                <Link
+                  href={`/?lang=${activeLang}&sort=trending`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 py-2 px-3 rounded-xl border border-transparent transition-all",
+                    pathname === "/" && activeSort === "trending"
+                      ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <Flame className={cn("w-4.5 h-4.5", pathname === "/" && activeSort === "trending" ? "text-rose-400" : "text-rose-500")} />
+                  <span>{t.trending}</span>
+                </Link>
+                
+                <Link
+                  href={`/?lang=${activeLang}&sort=popular`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 py-2 px-3 rounded-xl border border-transparent transition-all",
+                    pathname === "/" && activeSort === "popular"
+                      ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20 font-bold"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <Award className={cn("w-4.5 h-4.5", pathname === "/" && activeSort === "popular" ? "text-yellow-400" : "text-yellow-500")} />
+                  <span>{t.popular}</span>
+                </Link>
+
+                <Link
+                  href={`/?lang=${activeLang}#categories`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 py-2 px-3 rounded-xl text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+                >
+                  <span className="w-4.5 text-center text-xs font-bold text-rose-500">#</span>
+                  <span>{t.categories}</span>
+                </Link>
+              </div>
+
+              {/* Go Live CTA */}
+              <div className="mt-auto">
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 transition-all font-heading"
+                >
+                  <span>{t.goLive}</span>
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
