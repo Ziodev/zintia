@@ -102,7 +102,7 @@ export function VideoPlayerWrapper({
             src={embedUrl}
             allowFullScreen
             allow="autoplay; fullscreen"
-            sandbox="allow-scripts allow-same-origin allow-presentation"
+            sandbox="allow-scripts allow-presentation"
             className="relative w-full h-full border-0 z-10 bg-transparent"
             loading="lazy"
           />
