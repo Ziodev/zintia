@@ -8,6 +8,8 @@ import { NativeAdCard } from "./NativeAdCard";
 import { MOCK_VIDEOS, MOCK_ADS } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import posthog from "posthog-js";
+import { AFFILIATE_LINKS } from "@/lib/config";
 
 const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: string; bypass: string }> = {
   es: {
@@ -30,7 +32,7 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
   },
   ja: {
     title: "人間確認のお知らせ",
-    desc: "無料コンテンツの視聴を続けるには、人間であることを確認するか、お住まいの地域のライブモデルをご覧ください。",
+    desc: "無料コンテンツ의 視聴を続けるには、人間であることを確認するか、お住まいの地域のライブモデルをご覧ください。",
     button: "ライブモデルを見て続ける",
     bypass: "無料でブラウジングを続ける",
   },
@@ -102,10 +104,21 @@ export function VideoGrid() {
 
   // Infinite scroll trigger when sentinel becomes visible
   useEffect(() => {
-    if (isSentinelVisible && hasMore && (!hasMore || limit < 16 || isRoadblockBypassed)) {
+    if (isSentinelVisible && hasMore && (limit < 16 || isRoadblockBypassed)) {
       setLimit((prev) => prev + 4);
     }
   }, [isSentinelVisible, hasMore, limit, isRoadblockBypassed, setLimit]);
+
+  // Track Roadblock Impression
+  const isRoadblockActive = limit >= 16 && !isRoadblockBypassed;
+  useEffect(() => {
+    if (isRoadblockActive) {
+      posthog.capture("roadblock_impression", {
+        language: activeLang,
+        limit,
+      });
+    }
+  }, [isRoadblockActive, activeLang, limit]);
 
   if (filtered.length === 0) {
     return (
@@ -134,6 +147,20 @@ export function VideoGrid() {
       }
     }
   }
+
+  const handleBypass = () => {
+    posthog.capture("roadblock_bypassed", {
+      language: activeLang,
+    });
+    setIsRoadblockBypassed(true);
+  };
+
+  const handleRoadblockCTAClick = () => {
+    posthog.capture("roadblock_cta_click", {
+      language: activeLang,
+      target_url: AFFILIATE_LINKS.webcams,
+    });
+  };
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 py-2">
@@ -179,7 +206,8 @@ export function VideoGrid() {
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
             <a
-              href="https://example.com/affiliate-link"
+              href={AFFILIATE_LINKS.webcams}
+              onClick={handleRoadblockCTAClick}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading"
@@ -188,7 +216,7 @@ export function VideoGrid() {
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <button
-              onClick={() => setIsRoadblockBypassed(true)}
+              onClick={handleBypass}
               className="w-full sm:w-auto text-xs text-muted-foreground hover:text-white transition-colors cursor-pointer font-sans font-semibold py-3 px-4 hover:underline"
             >
               {ROADBLOCK_COPIES[activeLang].bypass}

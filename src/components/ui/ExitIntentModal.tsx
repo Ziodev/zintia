@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useQueryState } from "nuqs";
 import { Gift, X, ExternalLink } from "lucide-react";
 import { Language } from "@/lib/translations";
+import posthog from "posthog-js";
+import { AFFILIATE_LINKS } from "@/lib/config";
 
 const EXIT_COPIES: Record<Language, { title: string; desc: string; button: string; close: string }> = {
   es: {
@@ -53,13 +55,16 @@ export function ExitIntentModal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Limit triggers to once per session
     const isModalShown = sessionStorage.getItem("zintia_exit_modal_shown");
     if (isModalShown === "true") return;
 
     const triggerModal = () => {
       setIsOpen(true);
       sessionStorage.setItem("zintia_exit_modal_shown", "true");
+      posthog.capture("exit_intent_impression", {
+        language: activeLang,
+        page_url: window.location.href,
+      });
     };
 
     // 1. Desktop Trigger: Cursor exits top border
@@ -74,7 +79,6 @@ export function ExitIntentModal() {
 
     const handlePopState = () => {
       triggerModal();
-      // Re-push state so user doesn't get locked out or loops
       window.history.pushState({ exitIntent: true }, "", window.location.href);
     };
 
@@ -85,12 +89,23 @@ export function ExitIntentModal() {
       document.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [activeLang]);
 
   if (!isOpen) return null;
 
   const handleClaim = () => {
-    window.open("https://example.com/affiliate-link", "_blank");
+    posthog.capture("exit_intent_claimed", {
+      language: activeLang,
+      target_url: AFFILIATE_LINKS.default,
+    });
+    window.open(AFFILIATE_LINKS.default, "_blank");
+    setIsOpen(false);
+  };
+
+  const handleClose = () => {
+    posthog.capture("exit_intent_dismissed", {
+      language: activeLang,
+    });
     setIsOpen(false);
   };
 
@@ -101,7 +116,7 @@ export function ExitIntentModal() {
         
         {/* Close Button X */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="absolute top-4.5 right-4.5 text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
           aria-label="Cerrar"
         >
@@ -114,7 +129,7 @@ export function ExitIntentModal() {
         </div>
 
         {/* Headers */}
-        <h2 className="text-lg font-bold text-white mb-2 font-heading tracking-tight">
+        <h2 className="text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-fuchsia-500 mb-2 font-heading tracking-tight leading-normal">
           {copy.title}
         </h2>
         <p className="text-xs text-muted-foreground mb-6.5 leading-relaxed font-sans px-2">
@@ -132,7 +147,7 @@ export function ExitIntentModal() {
 
         {/* Cancel Text */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="mt-4 text-xs text-muted-foreground hover:text-white transition-colors cursor-pointer font-sans font-medium hover:underline"
         >
           {copy.close}

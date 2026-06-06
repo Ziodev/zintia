@@ -42,6 +42,10 @@ export default function RootLayout({
       className={`${outfit.variable} ${inter.variable} ${geistMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="dns-prefetch" href="https://example.com" />
+        <link rel="preconnect" href="https://example.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
         <NuqsAdapter>
           <PostHogProvider>

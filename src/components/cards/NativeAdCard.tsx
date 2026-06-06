@@ -6,6 +6,8 @@ import { useQueryState } from "nuqs";
 import { ExternalLink, Play, Eye, Lock } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { translations, Language } from "@/lib/translations";
+import posthog from "posthog-js";
+import { AFFILIATE_LINKS } from "@/lib/config";
 
 interface NativeAdCardProps {
   title: string;
@@ -31,13 +33,12 @@ const INTERACTIVE_LABELS: Record<Language, { question: string; like: string; pas
   fr: { question: "Chatter en privé maintenant?", like: "❤️ Connecter", pass: "❌ Passer" },
   ja: { question: "今すぐプライベートチャット？", like: "❤️ 接続する", pass: "❌ スキップ" },
   it: { question: "Chattare in privato ora?", like: "❤️ Connetti", pass: "❌ Passa" },
-  pt: { question: "Chat privado agora?", like: "❤️ Conectar", pass: "❌ Passar" },
+  pt: { question: "Chat privado agora?", like: "❤️ Conectar", pass: "❌ Pasar" },
 };
 
 export function NativeAdCard({
   title,
   ctaText,
-  affiliateUrl,
   thumbnailUrl,
   videoPreviewUrl,
   variant = "standard",
@@ -87,12 +88,55 @@ export function NativeAdCard({
     }
   }, [isPlaying]);
 
+  // Resolve affiliate link from central config
+  const getAffiliateUrl = () => {
+    switch (variant) {
+      case "private":
+        return AFFILIATE_LINKS.private;
+      case "interactive":
+        return AFFILIATE_LINKS.dating;
+      case "standard":
+      default:
+        return AFFILIATE_LINKS.webcams;
+    }
+  };
+
+  const activeUrl = getAffiliateUrl();
+
+  const handleCardClick = () => {
+    posthog.capture("ad_card_click", {
+      variant,
+      language: activeLang,
+      target_url: activeUrl,
+      element: "card_body",
+    });
+  };
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    posthog.capture("ad_card_click", {
+      variant: "interactive",
+      language: activeLang,
+      target_url: activeUrl,
+      element: "like_button",
+    });
+  };
+
+  const handlePassClick = (e: React.MouseEvent) => {
+    posthog.capture("ad_card_click", {
+      variant: "interactive",
+      language: activeLang,
+      target_url: activeUrl,
+      element: "pass_button",
+    });
+  };
+
   return (
     <a
       ref={containerRef}
-      href={affiliateUrl}
+      href={activeUrl}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -101,7 +145,7 @@ export function NativeAdCard({
       className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-rose-500/10 transition-all duration-300 hover:scale-[1.02] hover:border-rose-500/30 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
     >
       <div className="relative w-full aspect-video bg-zinc-950 overflow-hidden">
-        {/* Poster Image - Fades out only when the video actually starts playing */}
+        {/* Poster Image */}
         <Image
           src={thumbnailUrl}
           alt={title}
@@ -146,9 +190,9 @@ export function NativeAdCard({
           {t.sponsored}
         </span>
 
-        {/* Call to Action Badge */}
+        {/* Call to Action Badge (Hidden on Mobile to avoid overlay occlusion) */}
         {variant !== "interactive" && variant !== "private" && (
-          <span className="absolute bottom-2.5 right-2.5 bg-zinc-900/90 text-[10px] font-bold text-rose-400 px-2.5 py-1 rounded-lg border border-rose-500/20 flex items-center gap-1 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-500 transition-all font-heading z-20 animate-glow">
+          <span className="absolute bottom-2.5 right-2.5 bg-zinc-900/90 text-[10px] font-bold text-rose-400 px-2.5 py-1 rounded-lg border border-rose-500/20 hidden sm:flex items-center gap-1 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-500 transition-all font-heading z-20 animate-glow">
             <span>{activeLang === "es" ? ctaText : t.viewModels}</span>
             <ExternalLink className="w-2.5 h-2.5" />
           </span>
@@ -166,7 +210,7 @@ export function NativeAdCard({
 
       {/* Details */}
       <div className="p-3 flex flex-col gap-1 justify-between flex-grow">
-        <h3 className="text-xs font-semibold text-white line-clamp-2 leading-relaxed group-hover:text-rose-400 transition-colors">
+        <h3 className="text-[11px] sm:text-xs font-semibold text-white line-clamp-2 leading-tight sm:leading-relaxed group-hover:text-rose-400 transition-colors">
           {variant === "private"
             ? `${PRIVATE_LABELS[activeLang].title} [${activeLang === "es" ? "EXCLUSIVO" : "EXCLUSIVE"}]`
             : variant === "interactive"
@@ -192,17 +236,25 @@ export function NativeAdCard({
               ) : (
                 <>
                   <Eye className="w-3.5 h-3.5 text-muted-foreground/75 shrink-0" />
-                  <span>{viewersCount.toLocaleString()} {t.watching}</span>
+                  <span>{viewersCount.toLocaleString()} <span className="hidden sm:inline">{t.watching}</span></span>
                 </>
               )}
+              {/* Subtle interactive arrow on mobile */}
+              <span className="sm:hidden text-rose-500 ml-1 font-bold">→</span>
             </span>
           </div>
         ) : (
           <div className="flex items-center gap-2 mt-2 w-full">
-            <div className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold text-[10px] py-2 rounded-xl text-center shadow-md shadow-rose-500/10 transition-all active:scale-95 cursor-pointer">
+            <div
+              onClick={handleLikeClick}
+              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold text-[10px] py-2 rounded-xl text-center shadow-md shadow-rose-500/10 transition-all active:scale-95 cursor-pointer"
+            >
               {INTERACTIVE_LABELS[activeLang].like}
             </div>
-            <div className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-muted-foreground hover:text-white font-semibold text-[10px] py-2 rounded-xl text-center transition-all active:scale-95 cursor-pointer">
+            <div
+              onClick={handlePassClick}
+              className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-muted-foreground hover:text-white font-semibold text-[10px] py-2 rounded-xl text-center transition-all active:scale-95 cursor-pointer"
+            >
               {INTERACTIVE_LABELS[activeLang].pass}
             </div>
           </div>

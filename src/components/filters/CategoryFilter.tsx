@@ -48,7 +48,7 @@ export function CategoryFilter() {
   return (
     <div className="w-full flex flex-col gap-4 py-4 border-b border-white/5">
       {/* Categories Horizontal Scroll */}
-      <div className="w-full overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-2 pb-1">
+      <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar whitespace-nowrap scroll-smooth flex-nowrap items-center">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat.id;
           const label = t[cat.translationKey as keyof typeof t] || cat.id;

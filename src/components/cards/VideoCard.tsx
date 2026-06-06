@@ -138,13 +138,13 @@ export function VideoCard({
         )}
 
         {/* Active Viewers Overlay (FOMO Indicator) */}
-        <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[9px] font-bold text-rose-400 px-2 py-0.5 rounded-md border border-rose-500/10 flex items-center gap-1 z-20">
+        <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[9px] font-bold text-rose-400 px-1.5 py-0.5 rounded border border-rose-500/10 flex items-center gap-1 z-20">
           <span className="relative flex h-1.5 w-1.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
           </span>
           <span>
-            {watchers.toLocaleString()} {t.watching}
+            {watchers.toLocaleString()} <span className="hidden sm:inline">{t.watching}</span>
           </span>
         </div>
 
@@ -173,7 +173,7 @@ export function VideoCard({
       {/* Video Details */}
       <div className="p-3 flex flex-col gap-1">
         <Link href={watchUrl}>
-          <h3 className="text-xs font-semibold text-white line-clamp-2 leading-relaxed group-hover:text-rose-500 transition-colors">
+          <h3 className="text-[11px] sm:text-xs font-semibold text-white line-clamp-2 leading-tight sm:leading-relaxed group-hover:text-rose-500 transition-colors">
             {title}
           </h3>
         </Link>

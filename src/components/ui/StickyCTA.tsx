@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Video, ExternalLink } from "lucide-react";
 import { translations, Language } from "@/lib/translations";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
+import posthog from "posthog-js";
+import { AFFILIATE_LINKS } from "@/lib/config";
 
 const EXPIRES_IN: Record<Language, string> = {
   es: "La oferta expira en",
@@ -20,7 +22,7 @@ const GEOLOCATION_DESCS: Record<Language, (count: number, location: string) => s
   es: (count, loc) => `${count} Modelos en Vivo cerca de ${loc}`,
   en: (count, loc) => `${count} Live Models near ${loc}`,
   fr: (count, loc) => `${count} Modèles en direct près de ${loc}`,
-  ja: (count, loc) => `${loc}付近のライブモデル${count}名`,
+  ja: (count, loc) => `${loc}付近 de ライブモデル ${count} 名`,
   it: (count, loc) => `${count} Modelle in diretta vicino a ${loc}`,
   pt: (count, loc) => `${count} Modelos ao vivo perto de ${loc}`,
 };
@@ -90,6 +92,21 @@ export function StickyCTA() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleCTAClick = () => {
+    posthog.capture("sticky_cta_click", {
+      language: activeLang,
+      location_city: geo.city,
+      target_url: AFFILIATE_LINKS.default,
+    });
+  };
+
+  const handleClose = () => {
+    posthog.capture("sticky_cta_dismissed", {
+      language: activeLang,
+    });
+    setIsVisible(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -129,7 +146,8 @@ export function StickyCTA() {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href="https://example.com/affiliate-link"
+            href={AFFILIATE_LINKS.default}
+            onClick={handleCTAClick}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow"
@@ -138,8 +156,8 @@ export function StickyCTA() {
             <ExternalLink className="w-3 h-3" />
           </a>
           <button
-            onClick={() => setIsVisible(false)}
-            className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
+            onClick={handleClose}
+            className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
             aria-label="Cerrar banner"
           >
             <X className="w-4 h-4" />
