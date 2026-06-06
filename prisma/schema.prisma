@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VideoStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Video {
+  id              String      @id
+  title           String
+  duration        String
+  views           String
+  category        String
+  tags            String[]
+  thumbnailUrl    String
+  videoPreviewUrl String
+  embedUrl        String?
+  status          VideoStatus @default(DRAFT)
+  published_at    DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([status, published_at])
+  @@index([category])
+}

@@ -6,7 +6,7 @@ import { MOCK_ADS } from "@/lib/data";
 import { VideoCard } from "@/components/cards/VideoCard";
 import { NativeAdCard } from "@/components/cards/NativeAdCard";
 import { translations, Language } from "@/lib/translations";
-import { getVideos } from "@/lib/feed";
+import { getVideos, getVideoById } from "@/lib/feed";
 import { TAG_LABELS } from "@/components/filters/TagCloud";
 import { LiveCamsWidget } from "@/components/widgets/LiveCamsWidget";
 import { VideoDetailsPanel } from "@/components/widgets/VideoDetailsPanel";
@@ -21,8 +21,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const { id } = await params;
   const resolvedSearchParams = await searchParams;
   const activeLang = (resolvedSearchParams.lang as Language) || "es";
-  const videos = await getVideos();
-  const video = videos.find((v) => v.id === id);
+  const video = await getVideoById(id);
   
   if (!video) {
     return {
@@ -98,13 +97,13 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
   const activeLang = (resolvedSearchParams.lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
   
-  const videos = await getVideos();
-  const video = videos.find((v) => v.id === id);
+  const video = await getVideoById(id);
 
   if (!video) {
     notFound();
   }
 
+  const videos = await getVideos();
   const recommendations = videos.filter((v) => v.id !== id).slice(0, 4);
 
   const rightRecIds = new Set(recommendations.map((v) => v.id));
