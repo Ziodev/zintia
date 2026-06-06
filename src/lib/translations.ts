@@ -25,6 +25,7 @@ export const translations = {
     webcamsTitle: "Webcams Premium en Vivo",
     webcamsDesc: "+500 modelos online ahora mismo. Sin registro.",
     enter: "Entrar",
+    loadMore: "Cargar más videos",
   },
   en: {
     trending: "Trending",
@@ -50,6 +51,7 @@ export const translations = {
     webcamsTitle: "Premium Live Webcams",
     webcamsDesc: "+500 models online right now. No registration.",
     enter: "Enter",
+    loadMore: "Load more videos",
   },
   fr: {
     trending: "Tendances",
@@ -75,6 +77,7 @@ export const translations = {
     webcamsTitle: "Webcams Premium En Direct",
     webcamsDesc: "+500 modèles en ligne en ce moment. Sans inscription.",
     enter: "Entrer",
+    loadMore: "Charger plus de vidéos",
   },
   ja: {
     trending: "急上昇",
@@ -100,6 +103,7 @@ export const translations = {
     webcamsTitle: "プレミアムライブチャット",
     webcamsDesc: "今すぐ500人以上のモデルが待機中！登録不要。",
     enter: "入室",
+    loadMore: "さらに動画を読み込む",
   },
   it: {
     trending: "Tendenze",
@@ -109,7 +113,7 @@ export const translations = {
     goLive: "Vai in Live",
     featuredContent: "Contenuti in Evidenza",
     live: "Dal Vivo",
-    exploreText: "Esplora la collezione di video con autoplay intelligente e navigazione senza intoppi.",
+    exploreText: "Esplora la collezione di video con autoplay inteligente e navigazione senza intoppi.",
     sortBy: "Ordina per:",
     recent: "Recenti",
     mostViewed: "Più visti",
@@ -125,6 +129,7 @@ export const translations = {
     webcamsTitle: "Webcam Premium in Diretta",
     webcamsDesc: "Più di 500 modelle online ora. Senza registrazione.",
     enter: "Entra",
+    loadMore: "Carica altri video",
   },
   pt: {
     trending: "Tendências",
@@ -150,5 +155,6 @@ export const translations = {
     webcamsTitle: "Webcams Premium Ao Vivo",
     webcamsDesc: "Mais de 500 modelos online agora. Sem registro.",
     enter: "Entrar",
+    loadMore: "Carregar mais vídeos",
   },
 };

@@ -1,14 +1,31 @@
 "use client";
 
-import { useQueryState } from "nuqs";
+import { useEffect } from "react";
+import { useQueryState, parseAsInteger } from "nuqs";
 import { VideoCard } from "./VideoCard";
 import { NativeAdCard } from "./NativeAdCard";
 import { MOCK_VIDEOS, MOCK_ADS } from "@/lib/data";
+import { translations, Language } from "@/lib/translations";
 
 export function VideoGrid() {
   const [activeCategory] = useQueryState("category", { defaultValue: "all" });
   const [activeSort] = useQueryState("sort", { defaultValue: "latest" });
   const [search] = useQueryState("search", { defaultValue: "" });
+  const [lang] = useQueryState("lang", { defaultValue: "es" });
+
+  const activeLang = (lang as Language) || "es";
+  const t = translations[activeLang] || translations.es;
+
+  // URL-bound pagination limit (defaults to 4 items)
+  const [limit, setLimit] = useQueryState(
+    "limit",
+    parseAsInteger.withDefault(4)
+  );
+
+  // Reset pagination limit to 4 whenever filters, sorting, or search keywords mutate
+  useEffect(() => {
+    setLimit(4);
+  }, [activeCategory, activeSort, search, setLimit]);
 
   // 1. Filter by Category
   let filtered = MOCK_VIDEOS;
@@ -35,17 +52,23 @@ export function VideoGrid() {
   if (filtered.length === 0) {
     return (
       <div className="w-full text-center py-16 text-muted-foreground text-sm font-medium">
-        No se encontraron videos para tu búsqueda.
+        No se encontraron videos.
       </div>
     );
   }
 
+  // Slice list up to current pagination limit
+  const slicedVideos = filtered.slice(0, limit);
+  const hasMore = filtered.length > limit;
+
+  // Inject Ads
   const gridItems = [];
   let adCounter = 0;
 
-  for (let i = 0; i < filtered.length; i++) {
-    gridItems.push({ type: "video" as const, data: filtered[i] });
+  for (let i = 0; i < slicedVideos.length; i++) {
+    gridItems.push({ type: "video" as const, data: slicedVideos[i] });
     
+    // Inject native ad card at index 2 (3rd card)
     if (i === 1 && MOCK_ADS[adCounter]) {
       gridItems.push({ type: "ad" as const, data: MOCK_ADS[adCounter] });
       adCounter++;
@@ -80,6 +103,17 @@ export function VideoGrid() {
           );
         }
       })}
+
+      {hasMore && (
+        <div className="col-span-full flex justify-center py-6 mt-4">
+          <button
+            onClick={() => setLimit((prev) => prev + 4)}
+            className="bg-secondary hover:bg-zinc-800 border border-white/5 hover:border-white/10 text-white font-heading text-xs font-bold px-6 py-3 rounded-full transition-all active:scale-95 shadow-md hover:shadow-rose-500/5 cursor-pointer"
+          >
+            {t.loadMore}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
