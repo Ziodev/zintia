@@ -5,8 +5,8 @@ import { Eye, Clock, Tag, ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
 import { Video } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { translateTitle } from "@/lib/auto-tagger";
-
 import { Language } from "@/lib/translations";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface VideoDetailsPanelProps {
   video: Video;
@@ -14,9 +14,17 @@ interface VideoDetailsPanelProps {
   t: Record<string, string>;
 }
 
+interface HeartParticle {
+  id: number;
+  xStart: number;
+  xOffset: number[];
+  scale: number;
+  rotate: number;
+}
+
 export function VideoDetailsPanel({ video, activeLang, t }: VideoDetailsPanelProps) {
   const [userVote, setUserVote] = useState<"none" | "like" | "dislike">("none");
-  const [hearts, setHearts] = useState<{ id: number; left: number }[]>([]);
+  const [hearts, setHearts] = useState<HeartParticle[]>([]);
 
   const hash = video.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const baseLikesPercent = 85 + (hash % 13);
@@ -29,14 +37,20 @@ export function VideoDetailsPanel({ video, activeLang, t }: VideoDetailsPanelPro
       setUserVote("none");
     } else {
       setUserVote("like");
-      const newHearts = Array.from({ length: 6 }).map((_, i) => ({
-        id: Date.now() + i,
-        left: Math.random() * 80 + 10,
+      
+      // Emit floating hearts with random coordinates and sways
+      const newHearts = Array.from({ length: 8 }).map((_, i) => ({
+        id: Date.now() + i + Math.random(),
+        xStart: Math.random() * 60 + 20, // 20% to 80%
+        xOffset: [0, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40], // drift pattern
+        scale: Math.random() * 0.6 + 0.6, // scale between 0.6 and 1.2
+        rotate: (Math.random() - 0.5) * 40, // rotation swing
       }));
+
       setHearts((prev) => [...prev, ...newHearts]);
       setTimeout(() => {
         setHearts((prev) => prev.filter((h) => !newHearts.some((nh) => nh.id === h.id)));
-      }, 1800);
+      }, 1500);
     }
   };
 
@@ -58,25 +72,6 @@ export function VideoDetailsPanel({ video, activeLang, t }: VideoDetailsPanelPro
 
   return (
     <div className="flex flex-col gap-3.5 p-1 relative font-sans">
-      <style>{`
-        @keyframes floatUp {
-          0% {
-            transform: translateY(0) scale(0.6);
-            opacity: 0;
-          }
-          15% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-140px) scale(1.3);
-            opacity: 0;
-          }
-        }
-        .animate-float-up {
-          animation: floatUp 1.8s ease-out forwards;
-        }
-      `}</style>
-
       <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-snug">
         {translatedTitle}
       </h1>
@@ -107,52 +102,80 @@ export function VideoDetailsPanel({ video, activeLang, t }: VideoDetailsPanelPro
         </div>
 
         <div className="flex items-center gap-2">
-          <button 
+          {/* Like Button */}
+          <motion.button 
             onClick={handleLike}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 450, damping: 15 }}
             className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold border px-4.5 py-2 rounded-full transition-colors active:scale-95 relative overflow-visible cursor-pointer",
+              "flex items-center gap-1.5 text-xs font-semibold border px-4.5 py-2 rounded-full transition-colors relative overflow-visible cursor-pointer",
               userVote === "like"
                 ? "bg-rose-500 border-rose-500 text-white"
                 : "bg-secondary/80 border-white/5 hover:bg-zinc-800 text-white"
             )}
           >
-            <ThumbsUp className="w-3.5 h-3.5 animate-in" /> <span>{t.like}</span>
+            <ThumbsUp className={cn("w-3.5 h-3.5 transition-transform", userVote === "like" && "scale-115 fill-white")} /> 
+            <span>{t.like}</span>
+            
             {/* Floating hearts container */}
             <div className="absolute inset-0 pointer-events-none overflow-visible">
-              {hearts.map((h) => (
-                <span
-                  key={h.id}
-                  className="absolute text-base pointer-events-none animate-float-up text-rose-500"
-                  style={{
-                    left: `${h.left}%`,
-                    bottom: "100%",
-                  }}
-                >
-                  ❤️
-                </span>
-              ))}
+              <AnimatePresence>
+                {hearts.map((h) => (
+                  <motion.span
+                    key={h.id}
+                    initial={{ y: 0, x: 0, opacity: 0, scale: 0.4, rotate: 0 }}
+                    animate={{
+                      y: -140,
+                      x: h.xOffset,
+                      opacity: [0, 1, 1, 0],
+                      scale: [0.4, h.scale, h.scale, 0.3],
+                      rotate: h.rotate,
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      ease: "easeOut",
+                    }}
+                    className="absolute pointer-events-none text-base text-rose-500 z-50 select-none"
+                    style={{
+                      left: `${h.xStart}%`,
+                      bottom: "100%",
+                    }}
+                  >
+                    ❤️
+                  </motion.span>
+                ))}
+              </AnimatePresence>
             </div>
-          </button>
+          </motion.button>
           
-          <button 
+          {/* Dislike Button */}
+          <motion.button 
             onClick={handleDislike}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 450, damping: 15 }}
             className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold border px-3 py-2 rounded-full transition-colors active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 text-xs font-semibold border px-3 py-2 rounded-full transition-colors cursor-pointer",
               userVote === "dislike"
                 ? "bg-zinc-700 border-zinc-700 text-white"
                 : "bg-secondary/80 border-white/5 hover:bg-zinc-800 text-white"
             )}
             aria-label="No me gusta"
           >
-            <ThumbsDown className="w-3.5 h-3.5" />
-          </button>
+            <ThumbsDown className={cn("w-3.5 h-3.5", userVote === "dislike" && "fill-white")} />
+          </motion.button>
 
-          <button 
+          {/* Share Button */}
+          <motion.button 
             onClick={handleShare}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-secondary/80 border border-white/5 px-4.5 py-2 rounded-full hover:bg-zinc-800 transition-colors text-white active:scale-95 cursor-pointer"
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 450, damping: 15 }}
+            className="flex items-center gap-1.5 text-xs font-semibold bg-secondary/80 border border-white/5 px-4.5 py-2 rounded-full hover:bg-zinc-800 transition-colors text-white cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5" /> <span>{t.share}</span>
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

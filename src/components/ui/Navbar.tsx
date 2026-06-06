@@ -60,10 +60,22 @@ export function Navbar() {
   const [hoveredSearchVideoId, setHoveredSearchVideoId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const videoSuggestions = DRTUBER_FALLBACK_VIDEOS.slice(0, 3);
-
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
+
+  // Real-time autocomplete suggestions based on the user's typed input
+  const videoSuggestions = localSearch.trim().length > 0
+    ? DRTUBER_FALLBACK_VIDEOS.filter((v) => {
+        const title = translateTitle(v.title, activeLang).toLowerCase();
+        const categoryLabel = (t[`cat_${v.category}` as keyof typeof t] || v.category).toLowerCase();
+        const query = localSearch.toLowerCase();
+        return title.includes(query) || categoryLabel.includes(query) || v.tags?.some((t) => t.toLowerCase().includes(query));
+      }).slice(0, 3)
+    : DRTUBER_FALLBACK_VIDEOS.slice(0, 3);
+
+  const suggestionsHeader = localSearch.trim().length > 0
+    ? (activeLang === "es" ? "Videos encontrados" : activeLang === "ja" ? "見つかった動画" : "Videos Found")
+    : (activeLang === "es" ? "Tendencias de hoy" : activeLang === "ja" ? "今日のトレンド" : "Trending Today");
 
   // Sync local input with URL parameter during render phase to avoid cascading effects
   const [prevSearch, setPrevSearch] = useState(search);
@@ -177,53 +189,59 @@ export function Navbar() {
                   ))}
                 </div>
 
-                <div className="mt-4 border-t border-white/5 pt-3">
+                 <div className="mt-4 border-t border-white/5 pt-3">
                   <span className="text-[10px] uppercase font-extrabold tracking-wider text-muted-foreground block mb-2.5">
-                    {activeLang === "es" ? "Tendencias de hoy" : activeLang === "ja" ? "今日のトレンド" : "Trending Today"}
+                    {suggestionsHeader}
                   </span>
                   <div className="flex flex-col gap-2">
-                    {videoSuggestions.map((video) => {
-                      const isRowHovered = hoveredSearchVideoId === video.id;
-                      const videoTitle = translateTitle(video.title, activeLang);
-                      return (
-                        <Link
-                          key={video.id}
-                          href={`/video/${video.id}?lang=${activeLang}`}
-                          onMouseDown={() => {
-                            window.location.href = `/video/${video.id}?lang=${activeLang}`;
-                          }}
-                          onMouseEnter={() => setHoveredSearchVideoId(video.id)}
-                          onMouseLeave={() => setHoveredSearchVideoId(null)}
-                          className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-white/5 transition-all group/row"
-                        >
-                          <div className="relative w-12 h-7 rounded bg-zinc-900 overflow-hidden shrink-0 border border-white/5">
-                            <Image
-                              src={video.thumbnailUrl}
-                              alt={videoTitle}
-                              fill
-                              unoptimized
-                              className={cn(
-                                "object-cover transition-opacity duration-300",
-                                isRowHovered ? "opacity-0" : "opacity-100"
-                              )}
-                            />
-                            {isRowHovered && (
-                              <video
-                                src={video.videoPreviewUrl}
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover"
+                    {videoSuggestions.length === 0 ? (
+                      <span className="text-[10px] text-muted-foreground italic py-1 block">
+                        {activeLang === "es" ? "No se encontraron videos" : activeLang === "ja" ? "動画が見つかりませんでした" : "No videos found"}
+                      </span>
+                    ) : (
+                      videoSuggestions.map((video) => {
+                        const isRowHovered = hoveredSearchVideoId === video.id;
+                        const videoTitle = translateTitle(video.title, activeLang);
+                        return (
+                          <Link
+                            key={video.id}
+                            href={`/video/${video.id}?lang=${activeLang}`}
+                            onMouseDown={() => {
+                              window.location.href = `/video/${video.id}?lang=${activeLang}`;
+                            }}
+                            onMouseEnter={() => setHoveredSearchVideoId(video.id)}
+                            onMouseLeave={() => setHoveredSearchVideoId(null)}
+                            className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-white/5 transition-all group/row"
+                          >
+                            <div className="relative w-12 h-7 rounded bg-zinc-900 overflow-hidden shrink-0 border border-white/5">
+                              <Image
+                                src={video.thumbnailUrl}
+                                alt={videoTitle}
+                                fill
+                                unoptimized
+                                className={cn(
+                                  "object-cover transition-opacity duration-300",
+                                  isRowHovered ? "opacity-0" : "opacity-100"
+                                )}
                               />
-                            )}
-                          </div>
-                          <span className="text-[10px] font-semibold text-muted-foreground group-hover/row:text-white line-clamp-1 truncate flex-1 transition-colors">
-                            {videoTitle}
-                          </span>
-                        </Link>
-                      );
-                    })}
+                              {isRowHovered && (
+                                <video
+                                  src={video.videoPreviewUrl}
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                />
+                              )}
+                            </div>
+                            <span className="text-[10px] font-semibold text-muted-foreground group-hover/row:text-white line-clamp-1 truncate flex-1 transition-colors">
+                              {videoTitle}
+                            </span>
+                          </Link>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>

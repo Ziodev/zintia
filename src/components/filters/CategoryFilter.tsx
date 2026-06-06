@@ -44,7 +44,7 @@ export function CategoryFilter({ videos }: CategoryFilterProps) {
     shallow: true,
   });
 
-  const [activeTag, setActiveTag] = useQueryState("tag", {
+  const [, setActiveTag] = useQueryState("tag", {
     defaultValue: "",
     shallow: true,
   });
@@ -79,11 +79,20 @@ export function CategoryFilter({ videos }: CategoryFilterProps) {
     return videos.some((v) => v.category === cat.id);
   });
 
+  const orderedCategories = [...visibleCategories];
+  if (activeCategory !== "all") {
+    const activeIndex = orderedCategories.findIndex((cat) => cat.id === activeCategory);
+    if (activeIndex !== -1) {
+      const [activeCat] = orderedCategories.splice(activeIndex, 1);
+      orderedCategories.unshift(activeCat);
+    }
+  }
+
   return (
     <div id="categories" className="w-full flex flex-col gap-4 py-4 border-b border-white/5 scroll-mt-20">
       {/* Categories Horizontal Scroll */}
       <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar whitespace-nowrap scroll-smooth flex-nowrap items-center">
-        {visibleCategories.map((cat) => {
+        {orderedCategories.map((cat) => {
           const isActive = activeCategory === cat.id;
           const label = t[cat.translationKey as keyof typeof t] || cat.id;
           const Icon = CATEGORY_ICONS[cat.id];
