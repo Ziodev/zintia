@@ -5,7 +5,7 @@ import { useQueryState, parseAsInteger } from "nuqs";
 import { ShieldCheck, ExternalLink } from "lucide-react";
 import { VideoCard } from "./VideoCard";
 import { NativeAdCard } from "./NativeAdCard";
-import { MOCK_VIDEOS, MOCK_ADS } from "@/lib/data";
+import { MOCK_ADS, Video } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import posthog from "posthog-js";
@@ -50,11 +50,16 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
   },
 };
 
-export function VideoGrid() {
-  const [activeCategory] = useQueryState("category", { defaultValue: "all" });
-  const [activeSort] = useQueryState("sort", { defaultValue: "latest" });
-  const [search] = useQueryState("search", { defaultValue: "" });
-  const [lang] = useQueryState("lang", { defaultValue: "es" });
+interface VideoGridProps {
+  initialVideos: Video[];
+}
+
+export function VideoGrid({ initialVideos }: VideoGridProps) {
+  const [activeCategory] = useQueryState("category", { defaultValue: "all", shallow: true });
+  const [activeSort] = useQueryState("sort", { defaultValue: "latest", shallow: true });
+  const [activeTag] = useQueryState("tag", { defaultValue: "", shallow: true });
+  const [search] = useQueryState("search", { defaultValue: "", shallow: true });
+  const [lang] = useQueryState("lang", { defaultValue: "es", shallow: true });
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
@@ -76,12 +81,17 @@ export function VideoGrid() {
   useEffect(() => {
     setLimit(4);
     setIsRoadblockBypassed(false);
-  }, [activeCategory, activeSort, search, setLimit]);
+  }, [activeCategory, activeSort, search, activeTag, setLimit]);
 
   // 1. Filter by Category
-  let filtered = MOCK_VIDEOS;
+  let filtered = initialVideos;
   if (activeCategory !== "all") {
-    filtered = MOCK_VIDEOS.filter((v) => v.category === activeCategory);
+    filtered = initialVideos.filter((v) => v.category === activeCategory);
+  }
+
+  // 1.5 Filter by Tag
+  if (activeTag) {
+    filtered = filtered.filter((v) => v.tags && v.tags.includes(activeTag));
   }
 
   // 2. Filter by Search Query
@@ -142,7 +152,17 @@ export function VideoGrid() {
     if (i % 3 === 1) {
       const adIndex = adCounter % MOCK_ADS.length;
       if (MOCK_ADS[adIndex]) {
-        gridItems.push({ type: "ad" as const, data: MOCK_ADS[adIndex] });
+        // Dynamically assign unique assets from the end of the loaded video list to prevent repetition
+        const sourceVideo = filtered[filtered.length - 1 - adCounter] || filtered[0] || { thumbnailUrl: "", videoPreviewUrl: "" };
+        gridItems.push({ 
+          type: "ad" as const, 
+          data: {
+            ...MOCK_ADS[adIndex],
+            thumbnailUrl: sourceVideo.thumbnailUrl,
+            videoPreviewUrl: sourceVideo.videoPreviewUrl,
+            variant: MOCK_ADS[adIndex].variant,
+          }
+        });
         adCounter++;
       }
     }
@@ -187,6 +207,7 @@ export function VideoGrid() {
               views={item.data.views}
               thumbnailUrl={item.data.thumbnailUrl}
               videoPreviewUrl={item.data.videoPreviewUrl}
+              tags={item.data.tags}
             />
           );
         }

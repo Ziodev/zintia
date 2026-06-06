@@ -8,6 +8,8 @@ import { Play, Volume2, VolumeX } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useUIStore } from "@/lib/store";
 import { translations, Language } from "@/lib/translations";
+import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { translateTitle } from "@/lib/auto-tagger";
 
 interface VideoCardProps {
   id: string;
@@ -16,6 +18,7 @@ interface VideoCardProps {
   views: string;
   thumbnailUrl: string;
   videoPreviewUrl: string;
+  tags?: string[];
 }
 
 export function VideoCard({
@@ -25,6 +28,7 @@ export function VideoCard({
   views,
   thumbnailUrl,
   videoPreviewUrl,
+  tags,
 }: VideoCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,7 +43,28 @@ export function VideoCard({
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
 
-  const isPlaying = isHovered || isVisible;
+  const translatedTitle = translateTitle(title, activeLang);
+
+  // Single-stream coordinated autoplay: only play if hovered, or if visible and no other active video
+  const isPlaying = isHovered || (isVisible && activeVideoId === id);
+
+  // Scroll visibility activation
+  useEffect(() => {
+    if (isVisible && !isHovered) {
+      if (activeVideoId === null) {
+        setActiveVideoId(id);
+      }
+    } else if (!isVisible && activeVideoId === id && !isHovered) {
+      setActiveVideoId(null);
+    }
+  }, [isVisible, isHovered, id, activeVideoId, setActiveVideoId]);
+
+  // Hover activation
+  useEffect(() => {
+    if (isHovered && activeVideoId !== id) {
+      setActiveVideoId(id);
+    }
+  }, [isHovered, id, activeVideoId, setActiveVideoId]);
 
   // Real-time watchers fluctuation based on video ID hash (Bandwagon Effect)
   const baseWatchers = (() => {
@@ -55,7 +80,7 @@ export function VideoCard({
   useEffect(() => {
     const interval = setInterval(() => {
       setWatchers((prev) => {
-        const delta = Math.floor(Math.random() * 9) - 4; // -4 to +4
+         const delta = Math.floor(Math.random() * 9) - 4; // -4 to +4
         return Math.max(100, prev + delta);
       });
     }, 4500);
@@ -68,20 +93,13 @@ export function VideoCard({
     if (!video) return;
 
     if (isPlaying) {
-      if (activeVideoId !== id && isHovered) {
-        setActiveVideoId(id);
-      }
-
       video.play().catch((err) => {
-        console.warn("Autoplay block:", err);
+        // Silent catch for browser autoplay blocks
       });
     } else {
       video.pause();
-      if (activeVideoId === id) {
-        setActiveVideoId(null);
-      }
     }
-  }, [isPlaying, id, activeVideoId, setActiveVideoId, isHovered]);
+  }, [isPlaying]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -96,6 +114,12 @@ export function VideoCard({
     setMuted(!isMuted);
   };
 
+  const getTagLabel = (tag: string) => {
+    const labels = TAG_LABELS[tag];
+    if (labels) return labels[activeLang] || labels.en || tag;
+    return tag.charAt(0).toUpperCase() + tag.slice(1);
+  };
+
   const watchUrl = `/video/${id}?lang=${activeLang}`;
 
   return (
@@ -106,7 +130,7 @@ export function VideoCard({
         setIsHovered(false);
         setIsVideoPlaying(false);
       }}
-      className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-white/5 transition-all duration-300 hover:scale-[1.02] hover:border-white/10 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
+      className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-white/5 transition-all duration-300 hover:scale-[1.02] hover:border-white/10 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer font-sans"
     >
       <Link
         href={watchUrl}
@@ -115,7 +139,7 @@ export function VideoCard({
         {/* Poster Image - Fades out only when the video actually starts playing */}
         <Image
           src={thumbnailUrl}
-          alt={title}
+          alt={translatedTitle}
           fill
           unoptimized
           className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 z-10 group-hover:scale-105 ${
@@ -144,7 +168,7 @@ export function VideoCard({
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
           </span>
           <span>
-            {watchers.toLocaleString()} <span className="hidden sm:inline">{t.watching}</span>
+            {watchers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <span className="hidden sm:inline">{t.watching}</span>
           </span>
         </div>
 
@@ -171,12 +195,30 @@ export function VideoCard({
       </Link>
 
       {/* Video Details */}
-      <div className="p-3 flex flex-col gap-1">
+      <div className="p-3 flex flex-col gap-1.5">
         <Link href={watchUrl}>
           <h3 className="text-[11px] sm:text-xs font-semibold text-white line-clamp-2 leading-tight sm:leading-relaxed group-hover:text-rose-500 transition-colors">
-            {title}
+            {translatedTitle}
           </h3>
         </Link>
+
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-0.5 z-25 relative">
+            {tags.slice(0, 3).map((tag) => (
+              <Link
+                key={tag}
+                href={`/?tag=${tag}&lang=${activeLang}`}
+                className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-zinc-800/80 hover:bg-rose-500/20 hover:text-rose-400 text-muted-foreground border border-white/5 transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                #{getTagLabel(tag)}
+              </Link>
+            ))}
+          </div>
+        )}
+
         <span className="text-[10px] text-muted-foreground font-medium">
           {views} {t.views}
         </span>

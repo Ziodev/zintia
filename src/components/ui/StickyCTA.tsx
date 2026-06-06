@@ -69,7 +69,9 @@ export function StickyCTA() {
       sessionStorage.setItem("zintia_countdown_time", "300");
     }
 
-    setTimeLeft(initialTime);
+    const initTimer = setTimeout(() => {
+      setTimeLeft(initialTime);
+    }, 0);
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -83,7 +85,10 @@ export function StickyCTA() {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(initTimer);
+      clearInterval(timer);
+    };
   }, []);
 
   const formatTime = (seconds: number) => {

@@ -3,7 +3,9 @@
 import { useQueryState } from "nuqs";
 import { cn } from "@/lib/utils";
 import { translations, Language } from "@/lib/translations";
-import { Flame, Heart, Target, Sparkles, Home, Globe, Video } from "lucide-react";
+import { Flame, Heart, Target, Sparkles, Home, Globe, Video, Moon } from "lucide-react";
+import { TagCloud } from "./TagCloud";
+import { Video as VideoType } from "@/lib/data";
 
 const CATEGORIES = [
   { id: "all", translationKey: "cat_all" },
@@ -12,6 +14,7 @@ const CATEGORIES = [
   { id: "milf", translationKey: "cat_milf" },
   { id: "caseros", translationKey: "cat_caseros" },
   { id: "latinas", translationKey: "cat_latinas" },
+  { id: "ebony", translationKey: "cat_ebony" },
   { id: "webcams", translationKey: "cat_webcams" },
 ] as const;
 
@@ -22,10 +25,15 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   milf: Sparkles,
   caseros: Home,
   latinas: Globe,
+  ebony: Moon,
   webcams: Video,
 };
 
-export function CategoryFilter() {
+interface CategoryFilterProps {
+  videos: VideoType[];
+}
+
+export function CategoryFilter({ videos }: CategoryFilterProps) {
   const [activeCategory, setActiveCategory] = useQueryState("category", {
     defaultValue: "all",
     shallow: true,
@@ -33,6 +41,16 @@ export function CategoryFilter() {
 
   const [activeSort, setActiveSort] = useQueryState("sort", {
     defaultValue: "latest",
+    shallow: true,
+  });
+
+  const [activeTag, setActiveTag] = useQueryState("tag", {
+    defaultValue: "",
+    shallow: true,
+  });
+
+  const [search] = useQueryState("search", {
+    defaultValue: "",
     shallow: true,
   });
 
@@ -45,8 +63,19 @@ export function CategoryFilter() {
     { id: "views", label: t.mostViewed },
   ];
 
+  // Filter videos dynamically for the TagCloud based on active category and search
+  let filteredVideosForTags = videos;
+  if (activeCategory !== "all") {
+    filteredVideosForTags = filteredVideosForTags.filter((v) => v.category === activeCategory);
+  }
+  if (search) {
+    filteredVideosForTags = filteredVideosForTags.filter((v) =>
+      v.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
   return (
-    <div className="w-full flex flex-col gap-4 py-4 border-b border-white/5">
+    <div id="categories" className="w-full flex flex-col gap-4 py-4 border-b border-white/5 scroll-mt-20">
       {/* Categories Horizontal Scroll */}
       <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar whitespace-nowrap scroll-smooth flex-nowrap items-center">
         {CATEGORIES.map((cat) => {
@@ -56,7 +85,11 @@ export function CategoryFilter() {
           return (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
+              onClick={async () => {
+                const nextCategory = isActive ? "all" : cat.id;
+                await setActiveCategory(nextCategory);
+                await setActiveTag(""); // Reset tag when category changes
+              }}
               className={cn(
                 "whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold tracking-wide border transition-all duration-200 active:scale-95 flex items-center gap-1.5",
                 isActive
@@ -101,6 +134,9 @@ export function CategoryFilter() {
           })}
         </div>
       </div>
+
+      {/* TagCloud */}
+      <TagCloud videos={filteredVideosForTags} />
     </div>
   );
 }

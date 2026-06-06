@@ -236,7 +236,7 @@ export function NativeAdCard({
               ) : (
                 <>
                   <Eye className="w-3.5 h-3.5 text-muted-foreground/75 shrink-0" />
-                  <span>{viewersCount.toLocaleString()} <span className="hidden sm:inline">{t.watching}</span></span>
+                  <span>{viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} <span className="hidden sm:inline">{t.watching}</span></span>
                 </>
               )}
               {/* Subtle interactive arrow on mobile */}

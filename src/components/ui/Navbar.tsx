@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Search, Flame, Award, Globe, Check, X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
@@ -17,10 +18,26 @@ const LANG_DETAILS = [
   { id: "pt", label: "Português" },
 ] as const;
 
+const SUGGESTED_TAGS = [
+  { id: "amateur", labelKey: "cat_amateur" },
+  { id: "milf", labelKey: "cat_milf" },
+  { id: "latinas", labelKey: "cat_latinas" },
+  { id: "ebony", labelKey: "cat_ebony" },
+  { id: "anal", labelKey: "cat_anal" },
+  { id: "caseros", labelKey: "cat_caseros" },
+  { id: "webcams", labelKey: "cat_webcams" },
+] as const;
+
 export function Navbar() {
+  const pathname = usePathname();
+  
   const [lang, setLang] = useQueryState("lang", {
     defaultValue: "es",
     shallow: false,
+  });
+
+  const [activeSort] = useQueryState("sort", {
+    defaultValue: "latest",
   });
 
   const [search, setSearch] = useQueryState("search", {
@@ -32,15 +49,18 @@ export function Navbar() {
   const [localSearch, setLocalSearch] = useState(search);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
 
-  // Sync local input with URL parameter
-  useEffect(() => {
+  // Sync local input with URL parameter during render phase to avoid cascading effects
+  const [prevSearch, setPrevSearch] = useState(search);
+  if (search !== prevSearch) {
+    setPrevSearch(search);
     setLocalSearch(search);
-  }, [search]);
+  }
 
   // Handle Search Input Change
   const handleSearchChange = (val: string) => {
@@ -69,13 +89,34 @@ export function Navbar() {
           
           {/* Navigation shortcuts */}
           <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-muted-foreground font-heading">
-            <Link href={`/?lang=${activeLang}&sort=trending`} className="flex items-center gap-1 hover:text-white transition-colors">
-              <Flame className="w-4 h-4 text-rose-500" /> {t.trending}
+            <Link 
+              href={`/?lang=${activeLang}&sort=trending`} 
+              className={cn(
+                "flex items-center gap-1.5 transition-colors py-1 px-3.5 rounded-full border border-transparent hover:text-white",
+                pathname === "/" && activeSort === "trending"
+                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                  : "hover:bg-white/5"
+              )}
+            >
+              <Flame className={cn("w-4 h-4", pathname === "/" && activeSort === "trending" ? "text-rose-400" : "text-rose-500")} /> 
+              <span>{t.trending}</span>
             </Link>
-            <Link href={`/?lang=${activeLang}&sort=popular`} className="flex items-center gap-1 hover:text-white transition-colors">
-              <Award className="w-4 h-4 text-yellow-500" /> {t.popular}
+            <Link 
+              href={`/?lang=${activeLang}&sort=popular`} 
+              className={cn(
+                "flex items-center gap-1.5 transition-colors py-1 px-3.5 rounded-full border border-transparent hover:text-white",
+                pathname === "/" && activeSort === "popular"
+                  ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20 font-bold"
+                  : "hover:bg-white/5"
+              )}
+            >
+              <Award className={cn("w-4 h-4", pathname === "/" && activeSort === "popular" ? "text-yellow-400" : "text-yellow-500")} /> 
+              <span>{t.popular}</span>
             </Link>
-            <Link href={`/categories?lang=${activeLang}`} className="hover:text-white transition-colors">
+            <Link 
+              href={`/?lang=${activeLang}#categories`} 
+              className="py-1 px-3.5 rounded-full border border-transparent hover:text-white hover:bg-white/5 transition-colors"
+            >
               {t.categories}
             </Link>
           </nav>
@@ -88,10 +129,31 @@ export function Navbar() {
               type="text"
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
               placeholder={t.searchPlaceholder}
               className="w-36 md:w-56 bg-secondary border border-white/5 rounded-full px-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 transition-all font-sans"
             />
             <Search className="absolute right-3.5 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+            
+            {isFocused && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 font-sans">
+                <span className="text-[10px] uppercase font-extrabold tracking-wider text-muted-foreground block mb-2.5">
+                  {activeLang === "es" ? "Búsquedas sugeridas" : activeLang === "ja" ? "推奨される検索" : "Suggested Searches"}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {SUGGESTED_TAGS.map((tag) => (
+                    <button
+                      key={tag.id}
+                      onClick={() => handleSearchChange(t[tag.labelKey] || tag.id)}
+                      className="text-[10px] font-semibold px-2.5 py-1 rounded bg-zinc-900 border border-white/5 text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all duration-200 cursor-pointer"
+                    >
+                      {t[tag.labelKey] || tag.id}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Mobile Search Toggle Icon */}
@@ -161,16 +223,28 @@ export function Navbar() {
 
       {/* Slide-down Mobile Search Input Panel */}
       {isMobileSearchOpen && (
-        <div className="w-full pt-3 pb-1 sm:hidden animate-in slide-in-from-top duration-200">
+        <div className="w-full pt-3 pb-1 sm:hidden animate-in slide-in-from-top duration-200 font-sans">
           <div className="relative w-full">
             <input
               type="text"
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full bg-secondary border border-white/10 rounded-full pl-4 pr-10 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 font-sans"
+              className="w-full bg-secondary border border-white/10 rounded-full pl-4 pr-10 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500"
             />
             <Search className="absolute right-3.5 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+          </div>
+          
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {SUGGESTED_TAGS.map((tag) => (
+              <button
+                key={tag.id}
+                onClick={() => handleSearchChange(t[tag.labelKey] || tag.id)}
+                className="text-[10px] font-semibold px-2 py-1 rounded bg-zinc-900 border border-white/5 text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/20 transition-all cursor-pointer"
+              >
+                {t[tag.labelKey] || tag.id}
+              </button>
+            ))}
           </div>
         </div>
       )}

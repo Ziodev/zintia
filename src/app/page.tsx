@@ -1,17 +1,74 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { CategoryFilter } from "@/components/filters/CategoryFilter";
 import { VideoGrid } from "@/components/cards/VideoGrid";
 import { Skeleton } from "@/components/ui/SkeletonLoader";
 import { translations, Language } from "@/lib/translations";
+import { getVideos } from "@/lib/feed";
 
 interface PageProps {
   searchParams: Promise<{ lang?: string }>;
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const activeLang = (resolvedParams.lang as Language) || "es";
+
+  const titles: Record<Language, string> = {
+    es: "Zintia Vids - Video Gratis Online HD y Webcams en Vivo",
+    en: "Zintia Vids - Free HD Video Online & Live Webcams",
+    fr: "Zintia Vids - Vidéo Gratuite en HD & Webcams en Direct",
+    ja: "Zintia Vids - 無料高画質動画オンライン＆ライブチャット",
+    it: "Zintia Vids - Video Gratis Online HD e Webcam dal Vivo",
+    pt: "Zintia Vids - Vídeo Grátis Online HD e Webcams ao Vivo"
+  };
+
+  const descriptions: Record<Language, string> = {
+    es: "Disfruta de la mejor experiencia de streaming de video premium en alta definición sin interrupciones y con rendimiento optimizado.",
+    en: "Enjoy the best premium video streaming experience in high definition, with zero buffering and optimized performance.",
+    fr: "Profitez de la meilleure expérience de streaming vidéo premium en haute définition, sans mise en mémoire tampon et avec des performances optimisées.",
+    ja: "バッファリングなしで最適化されたパフォーマンス、高解像度の最高のプレミアム動画ストリーミング体験をお楽しみください。",
+    it: "Goditi la migliore esperienza di streaming video premium in alta definizione, con caricamenti istantanei e prestazioni optimizadas.",
+    pt: "Desfrute da melhor experiência de streaming de vídeo premium em alta definição, com buffering zero e desempenho otimizado."
+  };
+
+  const title = titles[activeLang] || titles.es;
+  const description = descriptions[activeLang] || descriptions.es;
+
+  return {
+    title,
+    description,
+    keywords: ["streaming", "video premium", "alta definición", "entretenimiento de adultos"],
+    robots: "index, follow",
+    alternates: {
+      canonical: activeLang === "es" ? "/" : `/?lang=${activeLang}`,
+      languages: {
+        es: "/?lang=es",
+        en: "/?lang=en",
+        fr: "/?lang=fr",
+        ja: "/?lang=ja",
+        it: "/?lang=it",
+        pt: "/?lang=pt",
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    }
+  };
 }
 
 export default async function Home({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const activeLang = (resolvedParams.lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
+  const videos = await getVideos();
 
   return (
     <div className="flex flex-col gap-6 py-6 animate-fade-in">
@@ -28,8 +85,8 @@ export default async function Home({ searchParams }: PageProps) {
       </div>
 
       <Suspense fallback={<GridSkeleton />}>
-        <CategoryFilter />
-        <VideoGrid />
+        <CategoryFilter videos={videos} />
+        <VideoGrid initialVideos={videos} />
       </Suspense>
     </div>
   );
