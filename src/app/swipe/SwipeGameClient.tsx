@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Video } from "@/lib/data";
 import { Language } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 
 interface SwipeGameClientProps {
   initialVideos: Video[];
@@ -149,7 +149,7 @@ export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {
     const base = window.location.origin;
     const playlistIds = hotList.map((v) => v.id).join(",");
     const firstVideoId = hotList[0].id;
-    const shareUrl = `${base}/video/${firstVideoId}?lang=${activeLang}&playlist=${playlistIds}`;
+    const shareUrl = `${base}/video/${slugify(translateTitle(hotList[0].title, activeLang))}-${firstVideoId}?lang=${activeLang}&playlist=${playlistIds}`;
 
     navigator.clipboard.writeText(shareUrl).then(() => {
       setShowToast(true);
@@ -259,7 +259,7 @@ export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {
 
                   <div className="flex flex-col gap-2.5 w-full">
                     <Link
-                      href={`/video/${hotList[0].id}?lang=${activeLang}&playlist=${hotList.map((v) => v.id).join(",")}`}
+                      href={`/video/${slugify(translateTitle(hotList[0].title, activeLang))}-${hotList[0].id}?lang=${activeLang}&playlist=${hotList.map((v) => v.id).join(",")}`}
                       className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 text-center font-heading animate-glow"
                     >
                       <Play className="w-3.5 h-3.5 fill-white" />

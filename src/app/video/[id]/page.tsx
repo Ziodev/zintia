@@ -12,6 +12,7 @@ import { LiveCamsWidget } from "@/components/widgets/LiveCamsWidget";
 import { VideoPlayerWrapper } from "@/components/widgets/VideoPlayerWrapper";
 import { VideoDetailsPanel } from "@/components/widgets/VideoDetailsPanel";
 import { translateTitle } from "@/lib/auto-tagger";
+import { slugify } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,7 +20,9 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const lastDashIndex = rawId.lastIndexOf("-");
+  const id = lastDashIndex !== -1 ? rawId.slice(lastDashIndex + 1) : rawId;
   const resolvedSearchParams = await searchParams;
   const activeLang = (resolvedSearchParams.lang as Language) || "es";
   const video = await getVideoById(id);
@@ -50,14 +53,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     description,
     robots: "index, follow",
     alternates: {
-      canonical: activeLang === "es" ? `/video/${id}` : `/video/${id}?lang=${activeLang}`,
+      canonical: activeLang === "es" ? `/video/${slugify(translatedTitle)}-${id}` : `/video/${slugify(translatedTitle)}-${id}?lang=${activeLang}`,
       languages: {
-        es: `/video/${id}?lang=es`,
-        en: `/video/${id}?lang=en`,
-        fr: `/video/${id}?lang=fr`,
-        ja: `/video/${id}?lang=ja`,
-        it: `/video/${id}?lang=it`,
-        pt: `/video/${id}?lang=pt`,
+        es: `/video/${slugify(translateTitle(video.title, "es"))}-${id}?lang=es`,
+        en: `/video/${slugify(translateTitle(video.title, "en"))}-${id}?lang=en`,
+        fr: `/video/${slugify(translateTitle(video.title, "fr"))}-${id}?lang=fr`,
+        ja: `/video/${slugify(translateTitle(video.title, "ja"))}-${id}?lang=ja`,
+        it: `/video/${slugify(translateTitle(video.title, "it"))}-${id}?lang=it`,
+        pt: `/video/${slugify(translateTitle(video.title, "pt"))}-${id}?lang=pt`,
       },
     },
     openGraph: {
@@ -93,7 +96,10 @@ function formatDurationISO(durationStr: string): string {
 }
 
 export default async function VideoPage({ params, searchParams }: PageProps) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const lastDashIndex = rawId.lastIndexOf("-");
+  const id = lastDashIndex !== -1 ? rawId.slice(lastDashIndex + 1) : rawId;
+
   const resolvedSearchParams = await searchParams;
   const activeLang = (resolvedSearchParams.lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
@@ -109,7 +115,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
 
   const playlistParam = resolvedSearchParams.playlist || "";
   let nextVideo = recommendations[0] || video;
-  let nextVideoUrl = `/video/${nextVideo.id}?lang=${activeLang}`;
+  let nextVideoUrl = `/video/${slugify(translateTitle(nextVideo.title, activeLang))}-${nextVideo.id}?lang=${activeLang}`;
 
   if (playlistParam) {
     const playlistIds = playlistParam.split(",").filter((pid: string) => pid && pid !== id);
@@ -119,7 +125,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
       const resolvedNext = await getVideoById(nextId);
       if (resolvedNext) {
         nextVideo = resolvedNext;
-        nextVideoUrl = `/video/${nextId}?lang=${activeLang}` + (remainingIds ? `&playlist=${remainingIds}` : "");
+        nextVideoUrl = `/video/${slugify(translateTitle(resolvedNext.title, activeLang))}-${nextId}?lang=${activeLang}` + (remainingIds ? `&playlist=${remainingIds}` : "");
       }
     }
   }
@@ -255,7 +261,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
                   {video.tags.map((tag) => (
                     <Link
                       key={tag}
-                      href={`/?tag=${tag}&lang=${activeLang}`}
+                      href={`/tag/${tag}?lang=${activeLang}`}
                       className="text-[10px] font-semibold px-2.5 py-1 rounded bg-zinc-800/80 hover:bg-rose-500/20 hover:text-rose-400 text-muted-foreground border border-white/5 transition-all cursor-pointer"
                     >
                       #{getTagLabel(tag)}

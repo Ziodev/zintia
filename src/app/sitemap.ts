@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getVideos } from "@/lib/feed";
+import { translateTitle } from "@/lib/auto-tagger";
+import { slugify } from "@/lib/utils";
+import { TAG_LABELS } from "@/components/filters/TagCloud";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://zintiavids.com";
 const LANGUAGES = ["es", "en", "fr", "ja", "it", "pt"] as const;
@@ -46,28 +49,53 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // Video page entries for each video × each language
-  const videoEntries: MetadataRoute.Sitemap = videos.flatMap((video) =>
+  const TAGS = Object.keys(TAG_LABELS);
+  
+  // Tag page entries for each tag × each language
+  const tagEntries: MetadataRoute.Sitemap = TAGS.flatMap((tag) =>
     LANGUAGES.map((lang) => ({
       url:
         lang === "es"
-          ? `${SITE_URL}/video/${video.id}`
-          : `${SITE_URL}/video/${video.id}?lang=${lang}`,
+          ? `${SITE_URL}/tag/${tag}`
+          : `${SITE_URL}/tag/${tag}?lang=${lang}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
-      priority: 0.8,
+      priority: 0.75,
       alternates: {
         languages: Object.fromEntries(
           LANGUAGES.map((l) => [
             l,
             l === "es"
-              ? `${SITE_URL}/video/${video.id}`
-              : `${SITE_URL}/video/${video.id}?lang=${l}`,
+              ? `${SITE_URL}/tag/${tag}`
+              : `${SITE_URL}/tag/${tag}?lang=${l}`,
           ])
         ),
       },
     }))
   );
 
-  return [...homeEntries, ...categoryEntries, ...videoEntries];
+  // Video page entries for each video × each language
+  const videoEntries: MetadataRoute.Sitemap = videos.flatMap((video) =>
+    LANGUAGES.map((lang) => {
+      const slug = slugify(translateTitle(video.title, lang));
+      const watchPath = `/video/${slug}-${video.id}`;
+      return {
+        url: lang === "es" ? `${SITE_URL}${watchPath}` : `${SITE_URL}${watchPath}?lang=${lang}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+        alternates: {
+          languages: Object.fromEntries(
+            LANGUAGES.map((l) => {
+              const localSlug = slugify(translateTitle(video.title, l));
+              const localPath = `/video/${localSlug}-${video.id}`;
+              return [l, l === "es" ? `${SITE_URL}${localPath}` : `${SITE_URL}${localPath}?lang=${l}`];
+            })
+          ),
+        },
+      };
+    })
+  );
+
+  return [...homeEntries, ...categoryEntries, ...tagEntries, ...videoEntries];
 }

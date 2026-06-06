@@ -10,6 +10,7 @@ import { useUIStore } from "@/lib/store";
 import { translations, Language } from "@/lib/translations";
 import { TAG_LABELS } from "@/components/filters/TagCloud";
 import { translateTitle } from "@/lib/auto-tagger";
+import { slugify } from "@/lib/utils";
 
 interface VideoCardProps {
   id: string;
@@ -120,7 +121,7 @@ export function VideoCard({
     return tag.charAt(0).toUpperCase() + tag.slice(1);
   };
 
-  const watchUrl = `/video/${id}?lang=${activeLang}`;
+  const watchUrl = `/video/${slugify(translatedTitle)}-${id}?lang=${activeLang}`;
 
   return (
     <div
@@ -207,7 +208,7 @@ export function VideoCard({
             {tags.slice(0, 3).map((tag) => (
               <Link
                 key={tag}
-                href={`/?tag=${tag}&lang=${activeLang}`}
+                href={`/tag/${tag}?lang=${activeLang}`}
                 className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-zinc-800/80 hover:bg-rose-500/20 hover:text-rose-400 text-muted-foreground border border-white/5 transition-colors cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();

@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Hash, X } from "lucide-react";
 import { Video } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 // Bilingual display names for normalized tags
 export const TAG_LABELS: Record<string, Record<string, string>> = {
@@ -53,16 +55,32 @@ export const TAG_LABELS: Record<string, Record<string, string>> = {
 
 interface TagCloudProps {
   videos: Video[];
+  activeTag?: string;
 }
 
-export function TagCloud({ videos }: TagCloudProps) {
-  const [activeTag, setActiveTag] = useQueryState("tag", {
+export function TagCloud({ videos, activeTag: propActiveTag }: TagCloudProps) {
+  const [queryActiveTag] = useQueryState("tag", {
     defaultValue: "",
     shallow: true,
   });
 
+  const activeTag = propActiveTag !== undefined ? propActiveTag : queryActiveTag;
+
   const [lang] = useQueryState("lang", { defaultValue: "es" });
   const activeLang = (lang as Language) || "es";
+
+  const params = useParams();
+  const categoryId = params?.id as string;
+  const isCategoryPage = categoryId && ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"].includes(categoryId);
+
+  const getTagHref = (tag: string, isActive: boolean) => {
+    if (isActive) {
+      return isCategoryPage 
+        ? `/category/${categoryId}?lang=${activeLang}` 
+        : `/?lang=${activeLang}`;
+    }
+    return `/tag/${tag}?lang=${activeLang}`;
+  };
 
   // Calculate tag frequencies from all videos
   const tagCounts = new Map<string, number>();
@@ -93,22 +111,22 @@ export function TagCloud({ videos }: TagCloudProps) {
         <Hash className="w-3.5 h-3.5 text-rose-500 shrink-0" />
         <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tags</span>
         {activeTag && (
-          <button
-            onClick={() => setActiveTag("")}
+          <Link
+            href={isCategoryPage ? `/category/${categoryId}?lang=${activeLang}` : `/?lang=${activeLang}`}
             className="ml-auto flex items-center gap-1 text-[10px] font-medium text-rose-400 hover:text-rose-300 transition-colors"
           >
             <X className="w-3 h-3" />
             <span>Limpiar</span>
-          </button>
+          </Link>
         )}
       </div>
       <div className="flex w-full overflow-x-auto gap-1.5 pb-1 no-scrollbar whitespace-nowrap scroll-smooth flex-nowrap items-center">
         {sortedTags.map(([tag, count]) => {
           const isActive = activeTag === tag;
           return (
-            <button
+            <Link
               key={tag}
-              onClick={() => setActiveTag(isActive ? "" : tag)}
+              href={getTagHref(tag, isActive)}
               className={cn(
                 "whitespace-nowrap px-2.5 py-1 rounded-lg text-[10px] font-medium border transition-all duration-200 active:scale-95 flex items-center gap-1",
                 isActive
@@ -123,7 +141,7 @@ export function TagCloud({ videos }: TagCloudProps) {
               )}>
                 {count}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>

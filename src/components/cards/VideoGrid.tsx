@@ -53,15 +53,17 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
 
 interface VideoGridProps {
   initialVideos: Video[];
+  forcedTag?: string;
 }
 
-export function VideoGrid({ initialVideos }: VideoGridProps) {
+export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
   const params = useParams();
   const activeCategory = (params?.id as string) || "all";
   const [activeSort] = useQueryState("sort", { defaultValue: "latest", shallow: true });
   const [activeTag] = useQueryState("tag", { defaultValue: "", shallow: true });
   const [search] = useQueryState("search", { defaultValue: "", shallow: true });
   const [lang] = useQueryState("lang", { defaultValue: "es", shallow: true });
+  const currentTag = forcedTag || activeTag;
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
@@ -83,7 +85,7 @@ export function VideoGrid({ initialVideos }: VideoGridProps) {
   useEffect(() => {
     setLimit(4);
     setIsRoadblockBypassed(false);
-  }, [activeCategory, activeSort, search, activeTag, setLimit]);
+  }, [activeCategory, activeSort, search, currentTag, setLimit]);
 
   // 1. Filter by Category
   let filtered = initialVideos;
@@ -92,8 +94,8 @@ export function VideoGrid({ initialVideos }: VideoGridProps) {
   }
 
   // 1.5 Filter by Tag
-  if (activeTag) {
-    filtered = filtered.filter((v) => v.tags && v.tags.includes(activeTag));
+  if (currentTag) {
+    filtered = filtered.filter((v) => v.tags && v.tags.includes(currentTag));
   }
 
   // 2. Filter by Search Query

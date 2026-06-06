@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { slugify } from "@/lib/utils";
+import { translateTitle } from "@/lib/auto-tagger";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://zintiavids.com";
 
@@ -50,7 +51,8 @@ export async function GET() {
       const title = video.title;
       const description = `Mira el video ${title} gratis en alta definicion en la categoria ${video.category}. Disfruta de la mejor calidad.`;
       
-      const loc = `${SITE_URL}/video/${video.id}`;
+      const slug = slugify(translateTitle(title, "es"));
+      const loc = `${SITE_URL}/video/${slug}-${video.id}`;
       const thumbnailLoc = video.thumbnailUrl;
       const playerLoc = video.embedUrl || video.videoPreviewUrl || "";
       const duration = durationToSeconds(video.duration);
@@ -88,7 +90,7 @@ ${xmlItems}</urlset>`;
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to generate Video XML Sitemap:", error);
     
     // Return an empty valid sitemap on failure to prevent breaking crawler requests

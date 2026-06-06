@@ -32,9 +32,10 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
 
 interface CategoryFilterProps {
   videos: VideoType[];
+  forcedTag?: string;
 }
 
-export function CategoryFilter({ videos }: CategoryFilterProps) {
+export function CategoryFilter({ videos, forcedTag }: CategoryFilterProps) {
   const params = useParams();
   const router = useRouter();
   const activeCategory = (params?.id as string) || "all";
@@ -154,7 +155,7 @@ export function CategoryFilter({ videos }: CategoryFilterProps) {
       </div>
 
       {/* TagCloud */}
-      <TagCloud videos={filteredVideosForTags} />
+      <TagCloud videos={filteredVideosForTags} activeTag={forcedTag} />
     </div>
   );
 }

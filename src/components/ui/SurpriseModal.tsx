@@ -8,6 +8,7 @@ import { translations, Language } from "@/lib/translations";
 import { Video } from "@/lib/data";
 import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
 import { translateTitle } from "@/lib/auto-tagger";
+import { slugify } from "@/lib/utils";
 
 interface SurpriseModalProps {
   isOpen: boolean;
@@ -100,7 +101,7 @@ export function SurpriseModal({ isOpen, onClose, lang }: SurpriseModalProps) {
       }, 1000);
     } else if (countdown === 0 && selectedVideo) {
       // Redirect
-      window.location.href = `/video/${selectedVideo.id}?lang=${lang}`;
+      window.location.href = `/video/${slugify(translateTitle(selectedVideo.title, lang))}-${selectedVideo.id}?lang=${lang}`;
     }
 
     return () => {
@@ -172,7 +173,7 @@ export function SurpriseModal({ isOpen, onClose, lang }: SurpriseModalProps) {
             {!spinning && selectedVideo && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
                 <Link
-                  href={`/video/${selectedVideo.id}?lang=${lang}`}
+                  href={`/video/${slugify(translateTitle(selectedVideo.title, lang))}-${selectedVideo.id}?lang=${lang}`}
                   className="bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-full shadow-lg shadow-rose-500/30 hover:scale-110 active:scale-95 transition-all duration-300"
                 >
                   <Play className="w-6 h-6 fill-white" />
@@ -212,7 +213,7 @@ export function SurpriseModal({ isOpen, onClose, lang }: SurpriseModalProps) {
 
             {!spinning && selectedVideo && (
               <Link
-                href={`/video/${selectedVideo.id}?lang=${lang}`}
+                href={`/video/${slugify(translateTitle(selectedVideo.title, lang))}-${selectedVideo.id}?lang=${lang}`}
                 className="w-full bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 transition-all hover:scale-[1.01] active:scale-95 text-center font-heading"
               >
                 <span>{lang === "es" ? "VER AHORA" : "今すぐ見る"}</span>

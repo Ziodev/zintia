@@ -8,7 +8,7 @@ import { useQueryState } from "nuqs";
 import { Search, Flame, Award, Globe, Check, X, Menu } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { translations, Language } from "@/lib/translations";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { SurpriseModal } from "@/components/ui/SurpriseModal";
 import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
@@ -216,9 +216,9 @@ export function Navbar() {
                         return (
                           <Link
                             key={video.id}
-                            href={`/video/${video.id}?lang=${activeLang}`}
+                            href={`/video/${slugify(videoTitle)}-${video.id}?lang=${activeLang}`}
                             onMouseDown={() => {
-                              window.location.href = `/video/${video.id}?lang=${activeLang}`;
+                              window.location.href = `/video/${slugify(videoTitle)}-${video.id}?lang=${activeLang}`;
                             }}
                             onMouseEnter={() => setHoveredSearchVideoId(video.id)}
                             onMouseLeave={() => setHoveredSearchVideoId(null)}
