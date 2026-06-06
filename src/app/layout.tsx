@@ -10,6 +10,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ExitIntentModal } from "@/components/ui/ExitIntentModal";
 import { FakeChatBubble } from "@/components/ui/FakeChatBubble";
 import { AgeGate } from "@/components/ui/AgeGate";
+import { FloatingPlaylist } from "@/components/ui/FloatingPlaylist";
+import Link from "next/link";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -123,39 +125,39 @@ export default function RootLayout({
                   <nav aria-label="Categorías">
                     <h3 className="font-bold text-white text-sm mb-3">Categorías</h3>
                     <ul className="space-y-1.5">
-                      <li><a href="/?category=amateur" className="hover:text-white transition-colors">Amateur</a></li>
-                      <li><a href="/?category=milf" className="hover:text-white transition-colors">MILF</a></li>
-                      <li><a href="/?category=latinas" className="hover:text-white transition-colors">Latinas</a></li>
-                      <li><a href="/?category=ebony" className="hover:text-white transition-colors">Ebony</a></li>
-                      <li><a href="/?category=anal" className="hover:text-white transition-colors">Anal</a></li>
-                      <li><a href="/?category=webcams" className="hover:text-white transition-colors">Webcams</a></li>
-                      <li><a href="/?category=caseros" className="hover:text-white transition-colors">Caseros</a></li>
+                      <li><Link href="/category/amateur" className="hover:text-white transition-colors">Amateur</Link></li>
+                      <li><Link href="/category/milf" className="hover:text-white transition-colors">MILF</Link></li>
+                      <li><Link href="/category/latinas" className="hover:text-white transition-colors">Latinas</Link></li>
+                      <li><Link href="/category/ebony" className="hover:text-white transition-colors">Ebony</Link></li>
+                      <li><Link href="/category/anal" className="hover:text-white transition-colors">Anal</Link></li>
+                      <li><Link href="/category/webcams" className="hover:text-white transition-colors">Webcams</Link></li>
+                      <li><Link href="/category/caseros" className="hover:text-white transition-colors">Caseros</Link></li>
                     </ul>
                   </nav>
                   <nav aria-label="Idiomas">
                     <h3 className="font-bold text-white text-sm mb-3">Idiomas</h3>
                     <ul className="space-y-1.5">
-                      <li><a href="/?lang=es" className="hover:text-white transition-colors">Español</a></li>
-                      <li><a href="/?lang=en" className="hover:text-white transition-colors">English</a></li>
-                      <li><a href="/?lang=fr" className="hover:text-white transition-colors">Français</a></li>
-                      <li><a href="/?lang=pt" className="hover:text-white transition-colors">Português</a></li>
-                      <li><a href="/?lang=it" className="hover:text-white transition-colors">Italiano</a></li>
-                      <li><a href="/?lang=ja" className="hover:text-white transition-colors">日本語</a></li>
+                      <li><Link href="/?lang=es" className="hover:text-white transition-colors">Español</Link></li>
+                      <li><Link href="/?lang=en" className="hover:text-white transition-colors">English</Link></li>
+                      <li><Link href="/?lang=fr" className="hover:text-white transition-colors">Français</Link></li>
+                      <li><Link href="/?lang=pt" className="hover:text-white transition-colors">Português</Link></li>
+                      <li><Link href="/?lang=it" className="hover:text-white transition-colors">Italiano</Link></li>
+                      <li><Link href="/?lang=ja" className="hover:text-white transition-colors">日本語</Link></li>
                     </ul>
                   </nav>
                   <div>
                     <h3 className="font-bold text-white text-sm mb-3">Legal</h3>
                     <ul className="space-y-1.5">
-                      <li><a href="/privacy" className="hover:text-white transition-colors">Privacidad</a></li>
-                      <li><a href="/terms" className="hover:text-white transition-colors">Términos</a></li>
-                      <li><a href="/dmca" className="hover:text-white transition-colors">DMCA</a></li>
-                      <li><a href="/2257" className="hover:text-white transition-colors">18 U.S.C. 2257</a></li>
+                      <li><Link href="/privacy" className="hover:text-white transition-colors">Privacidad</Link></li>
+                      <li><Link href="/terms" className="hover:text-white transition-colors">Términos</Link></li>
+                      <li><Link href="/dmca" className="hover:text-white transition-colors">DMCA</Link></li>
+                      <li><Link href="/2257" className="hover:text-white transition-colors">18 U.S.C. 2257</Link></li>
                     </ul>
                   </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground">
                   <p>© {new Date().getFullYear()} Zintia Vids. Todos los derechos reservados. Todos los modelos tenían 18+ años al momento de la filmación.</p>
-                  <p>Contenido proporcionado por terceros. <a href="/dmca" className="text-rose-400 hover:text-rose-300 transition-colors">DMCA / Reporte de abuso</a></p>
+                  <p>Contenido proporcionado por terceros. <Link href="/dmca" className="text-rose-400 hover:text-rose-300 transition-colors">DMCA / Reporte de abuso</Link></p>
                 </div>
               </div>
             </footer>
@@ -168,6 +170,9 @@ export default function RootLayout({
             <FakeChatBubble />
             <Suspense fallback={null}>
               <AgeGate />
+            </Suspense>
+            <Suspense fallback={null}>
+              <FloatingPlaylist />
             </Suspense>
           </PostHogProvider>
         </NuqsAdapter>

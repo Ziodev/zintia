@@ -81,6 +81,38 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const isSentinelVisible = useIntersectionObserver(sentinelRef, { threshold: 0.1 });
 
+  // Session-based preferences state for personalized recommendations
+  const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
+  const [preferredTags, setPreferredTags] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const storedCats = localStorage.getItem("zintia_preferred_categories");
+    const storedTags = localStorage.getItem("zintia_preferred_tags");
+    if (storedCats) {
+      try {
+        setPreferredCategories(JSON.parse(storedCats));
+      } catch {}
+    }
+    if (storedTags) {
+      try {
+        setPreferredTags(JSON.parse(storedTags));
+      } catch {}
+    }
+
+    const handleUpdate = () => {
+      const updatedCats = localStorage.getItem("zintia_preferred_categories");
+      const updatedTags = localStorage.getItem("zintia_preferred_tags");
+      setPreferredCategories(updatedCats ? JSON.parse(updatedCats) : []);
+      setPreferredTags(updatedTags ? JSON.parse(updatedTags) : []);
+    };
+    window.addEventListener("zintia_playlist_updated", handleUpdate);
+    return () => {
+      window.removeEventListener("zintia_playlist_updated", handleUpdate);
+    };
+  }, []);
+
   // Reset pagination limit and roadblock status whenever filters change
   useEffect(() => {
     setLimit(4);
@@ -111,6 +143,33 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
       const aVal = parseFloat(a.views.replace("M", "").replace("K", "")) * (a.views.includes("M") ? 1000000 : 1000);
       const bVal = parseFloat(b.views.replace("M", "").replace("K", "")) * (b.views.includes("M") ? 1000000 : 1000);
       return bVal - aVal;
+    });
+  } else if (isClient && (preferredCategories.length > 0 || preferredTags.length > 0)) {
+    // Personalize default feed on client using preferred categories and tags
+    filtered = [...filtered].sort((a, b) => {
+      let scoreA = 0;
+      let scoreB = 0;
+
+      // Category matches
+      if (preferredCategories.includes(a.category)) scoreA += 15;
+      if (preferredCategories.includes(b.category)) scoreB += 15;
+
+      // Tag matches
+      if (a.tags) {
+        a.tags.forEach((tag) => {
+          if (preferredTags.includes(tag)) scoreA += 3;
+        });
+      }
+      if (b.tags) {
+        b.tags.forEach((tag) => {
+          if (preferredTags.includes(tag)) scoreB += 3;
+        });
+      }
+
+      if (scoreB !== scoreA) {
+        return scoreB - scoreA;
+      }
+      return 0; // retain original order
     });
   }
 

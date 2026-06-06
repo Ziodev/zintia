@@ -121,8 +121,60 @@ export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {
 
   const handleSwipe = (direction: "left" | "right") => {
     const swipedVideo = deck[currentIndex];
-    if (direction === "right") {
+    if (direction === "right" && swipedVideo) {
       setHotList((prev) => [...prev, swipedVideo]);
+
+      // Save to localStorage for global persistence & personalization
+      if (typeof window !== "undefined") {
+        // 1. Playlist
+        const storedPlaylist = localStorage.getItem("zintia_hot_playlist");
+        let playlistData: Video[] = [];
+        if (storedPlaylist) {
+          try {
+            playlistData = JSON.parse(storedPlaylist);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        if (!playlistData.some((v) => v.id === swipedVideo.id)) {
+          playlistData.push(swipedVideo);
+          localStorage.setItem("zintia_hot_playlist", JSON.stringify(playlistData));
+          localStorage.setItem("zintia_hot_playlist_ids", JSON.stringify(playlistData.map((v) => v.id)));
+        }
+
+        // 2. Preferred Categories
+        const storedCats = localStorage.getItem("zintia_preferred_categories");
+        let catsData: string[] = [];
+        if (storedCats) {
+          try {
+            catsData = JSON.parse(storedCats);
+          } catch {}
+        }
+        if (!catsData.includes(swipedVideo.category)) {
+          catsData.push(swipedVideo.category);
+          localStorage.setItem("zintia_preferred_categories", JSON.stringify(catsData));
+        }
+
+        // 3. Preferred Tags
+        const storedTags = localStorage.getItem("zintia_preferred_tags");
+        let tagsData: string[] = [];
+        if (storedTags) {
+          try {
+            tagsData = JSON.parse(storedTags);
+          } catch {}
+        }
+        if (swipedVideo.tags) {
+          swipedVideo.tags.forEach((tag) => {
+            if (!tagsData.includes(tag)) {
+              tagsData.push(tag);
+            }
+          });
+        }
+        localStorage.setItem("zintia_preferred_tags", JSON.stringify(tagsData));
+
+        // Dispatch update event
+        window.dispatchEvent(new Event("zintia_playlist_updated"));
+      }
     }
     setExitDirection(null);
     setCurrentIndex((prev) => prev + 1);
