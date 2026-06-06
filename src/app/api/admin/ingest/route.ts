@@ -82,6 +82,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const csvUrl = body.csvUrl;
     const provider = body.provider; // e.g. "drtuber"
+    const defaultStatus = body.status === "PUBLISHED" ? ("PUBLISHED" as const) : ("DRAFT" as const);
     
     if (!csvUrl) {
       return NextResponse.json({ error: "Missing 'csvUrl' in request body." }, { status: 400 });
@@ -181,7 +182,7 @@ export async function POST(req: Request) {
       const rawThumbnail = parts[colIdx.thumbnail];
       const rawPreview = colIdx.preview !== -1 ? parts[colIdx.preview] : "";
 
-      if (!rawId || !title || !rawThumbnail) {
+      if (!rawId || !title || !rawThumbnail || rawId.startsWith("#")) {
         skippedCount++;
         continue;
       }
@@ -214,7 +215,8 @@ export async function POST(req: Request) {
         thumbnailUrl,
         videoPreviewUrl,
         embedUrl: embedUrl || null,
-        status: "DRAFT" as const,
+        status: defaultStatus,
+        published_at: defaultStatus === "PUBLISHED" ? new Date() : null,
       });
     }
 
