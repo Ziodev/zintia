@@ -30,6 +30,7 @@ export function VideoCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   
   const [isHovered, setIsHovered] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const isVisible = useIntersectionObserver(containerRef, { threshold: 0.6 });
   
   const { isMuted, setMuted, activeVideoId, setActiveVideoId } = useUIStore();
@@ -79,18 +80,21 @@ export function VideoCard({
     <div
       ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsVideoPlaying(false);
+      }}
       className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-white/5 transition-all duration-300 hover:scale-[1.02] hover:border-white/10 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
     >
       <Link href={watchUrl} className="block relative w-full aspect-video bg-zinc-950 overflow-hidden">
-        {/* Poster Image */}
+        {/* Poster Image - Fades out only when the video actually starts playing */}
         <Image
           src={thumbnailUrl}
           alt={title}
           fill
           unoptimized
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            isPlaying ? "opacity-0" : "opacity-100"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-10 ${
+            isVideoPlaying ? "opacity-0" : "opacity-100"
           }`}
         />
 
@@ -102,26 +106,28 @@ export function VideoCard({
             loop
             playsInline
             muted={isMuted}
+            onPlaying={() => setIsVideoPlaying(true)}
+            onPause={() => setIsVideoPlaying(false)}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
 
         {/* Overlays */}
-        <span className="absolute bottom-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[10px] font-semibold text-white px-2 py-0.5 rounded-md border border-white/5">
+        <span className="absolute bottom-2.5 right-2.5 bg-black/75 backdrop-blur-sm text-[10px] font-semibold text-white px-2 py-0.5 rounded-md border border-white/5 z-20">
           {duration}
         </span>
 
         {isPlaying && (
           <button
             onClick={toggleMute}
-            className="absolute bottom-2.5 left-2.5 bg-black/70 hover:bg-black/90 text-white p-1.5 rounded-lg border border-white/10 transition-all hover:scale-105 active:scale-95"
+            className="absolute bottom-2.5 left-2.5 bg-black/70 hover:bg-black/90 text-white p-1.5 rounded-lg border border-white/10 transition-all hover:scale-105 active:scale-95 z-20"
             aria-label={isMuted ? "Activar sonido" : "Silenciar"}
           >
             {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>
         )}
 
-        <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
           <div className="bg-rose-500 text-white p-3.5 rounded-full scale-75 group-hover:scale-100 transition-transform duration-300 shadow-lg shadow-rose-500/30">
             <Play className="w-5 h-5 fill-white" />
           </div>

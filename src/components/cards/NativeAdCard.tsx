@@ -26,6 +26,7 @@ export function NativeAdCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   
   const [isHovered, setIsHovered] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const isVisible = useIntersectionObserver(containerRef, { threshold: 0.6 });
 
   const [lang] = useQueryState("lang", { defaultValue: "es" });
@@ -54,18 +55,21 @@ export function NativeAdCard({
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsVideoPlaying(false);
+      }}
       className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-rose-500/10 transition-all duration-300 hover:scale-[1.02] hover:border-rose-500/30 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
     >
       <div className="relative w-full aspect-video bg-zinc-950 overflow-hidden">
-        {/* Poster Image */}
+        {/* Poster Image - Fades out only when the video actually starts playing */}
         <Image
           src={thumbnailUrl}
           alt={title}
           fill
           unoptimized
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            isPlaying ? "opacity-0" : "opacity-100"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-10 ${
+            isVideoPlaying ? "opacity-0" : "opacity-100"
           }`}
         />
 
@@ -77,23 +81,25 @@ export function NativeAdCard({
             loop
             playsInline
             muted
+            onPlaying={() => setIsVideoPlaying(true)}
+            onPause={() => setIsVideoPlaying(false)}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
 
         {/* Sponsor Tag */}
-        <span className="absolute top-2.5 left-2.5 bg-rose-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
+        <span className="absolute top-2.5 left-2.5 bg-rose-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider z-20">
           {t.sponsored}
         </span>
 
         {/* Call to Action Badge */}
-        <span className="absolute bottom-2.5 right-2.5 bg-zinc-900/90 text-[10px] font-bold text-rose-400 px-2.5 py-1 rounded-lg border border-rose-500/20 flex items-center gap-1 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-500 transition-all font-heading">
+        <span className="absolute bottom-2.5 right-2.5 bg-zinc-900/90 text-[10px] font-bold text-rose-400 px-2.5 py-1 rounded-lg border border-rose-500/20 flex items-center gap-1 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-500 transition-all font-heading z-20">
           <span>{activeLang === "es" ? ctaText : t.viewModels}</span>
           <ExternalLink className="w-2.5 h-2.5" />
         </span>
 
         {/* Play Icon Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
           <div className="bg-rose-500 text-white p-3.5 rounded-full scale-75 group-hover:scale-100 transition-transform duration-300 shadow-lg shadow-rose-500/30">
             <Play className="w-5 h-5 fill-white" />
           </div>

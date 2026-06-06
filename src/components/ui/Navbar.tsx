@@ -20,14 +20,32 @@ const LANG_DETAILS = [
 export function Navbar() {
   const [lang, setLang] = useQueryState("lang", {
     defaultValue: "es",
-    shallow: false, // CRITICAL: Updates the server-rendered components (RSC) on language switch!
+    shallow: false,
   });
 
+  const [search, setSearch] = useQueryState("search", {
+    defaultValue: "",
+    shallow: false,
+    throttleMs: 400,
+  });
+
+  const [localSearch, setLocalSearch] = useState(search);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
+
+  // Sync local input with URL parameter
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
+  // Handle Search Input Change
+  const handleSearchChange = (val: string) => {
+    setLocalSearch(val);
+    setSearch(val || null); // Setting to null cleans up URL instead of leaving empty ?search=
+  };
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -66,6 +84,8 @@ export function Navbar() {
         <div className="relative hidden sm:block">
           <input
             type="text"
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder={t.searchPlaceholder}
             className="w-36 md:w-56 bg-secondary border border-white/5 rounded-full px-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 transition-all font-sans"
           />
@@ -76,7 +96,7 @@ export function Navbar() {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-1.5 bg-secondary hover:bg-zinc-855 border border-white/5 hover:border-white/10 rounded-full px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 cursor-pointer font-heading shadow-md"
+            className="flex items-center gap-1.5 bg-secondary hover:bg-zinc-800 border border-white/5 hover:border-white/10 rounded-full px-3.5 py-1.5 text-xs font-bold text-white transition-all active:scale-95 cursor-pointer font-heading shadow-md"
           >
             <Globe className="w-3.5 h-3.5 text-rose-500" />
             <span className="uppercase">{activeLang}</span>

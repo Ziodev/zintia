@@ -8,12 +8,22 @@ import { MOCK_VIDEOS, MOCK_ADS } from "@/lib/data";
 export function VideoGrid() {
   const [activeCategory] = useQueryState("category", { defaultValue: "all" });
   const [activeSort] = useQueryState("sort", { defaultValue: "latest" });
+  const [search] = useQueryState("search", { defaultValue: "" });
 
+  // 1. Filter by Category
   let filtered = MOCK_VIDEOS;
   if (activeCategory !== "all") {
     filtered = MOCK_VIDEOS.filter((v) => v.category === activeCategory);
   }
 
+  // 2. Filter by Search Query
+  if (search) {
+    filtered = filtered.filter((v) =>
+      v.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  // 3. Sort Results
   if (activeSort === "views") {
     filtered = [...filtered].sort((a, b) => {
       const aVal = parseFloat(a.views.replace("M", "").replace("K", "")) * (a.views.includes("M") ? 1000000 : 1000);
@@ -25,7 +35,7 @@ export function VideoGrid() {
   if (filtered.length === 0) {
     return (
       <div className="w-full text-center py-16 text-muted-foreground text-sm font-medium">
-        No se encontraron videos en esta categoría.
+        No se encontraron videos para tu búsqueda.
       </div>
     );
   }
