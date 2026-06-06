@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, X, ExternalLink } from "lucide-react";
+import { Play, X, ExternalLink, Maximize, Minimize } from "lucide-react";
 import { Video } from "@/lib/data";
 import { Language, translations } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
@@ -28,8 +28,34 @@ export function VideoPlayerWrapper({
   const [showAutoplayOverlay, setShowAutoplayOverlay] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const t = translations[lang] || translations.es;
   const nextUrl = nextVideoUrl || `/video/${nextVideo.id}?lang=${lang}`;
+
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch((err) => {
+        console.error("Error enabling fullscreen:", err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   // Handle native video ended event
   const handleVideoEnded = () => {
@@ -62,7 +88,10 @@ export function VideoPlayerWrapper({
   const nextTitle = translateTitle(nextVideo.title, lang);
 
   return (
-    <div className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl group/player">
+    <div 
+      ref={containerRef}
+      className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl group/player fullscreen:rounded-none fullscreen:aspect-auto"
+    >
       {embedUrl ? (
         <>
           {/* Native Loading Spinner behind the iframe */}
@@ -77,6 +106,25 @@ export function VideoPlayerWrapper({
             className="relative w-full h-full border-0 z-10 bg-transparent"
             loading="lazy"
           />
+
+          {/* Custom Fullscreen Button (Always visible on mobile, visible on hover on desktop) */}
+          <button
+            onClick={toggleFullscreen}
+            className="absolute top-4 left-4 z-25 p-2 bg-black/60 hover:bg-black/80 backdrop-blur border border-white/10 rounded-full text-white transition-all cursor-pointer md:opacity-0 md:group-hover/player:opacity-100 flex items-center gap-1.5 text-xs font-bold font-sans"
+            title="Pantalla Completa"
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize className="w-4 h-4 text-rose-500" />
+                <span className="pr-1">{lang === "es" ? "Salir" : "Exit"}</span>
+              </>
+            ) : (
+              <>
+                <Maximize className="w-4 h-4 text-rose-500" />
+                <span className="pr-1">{lang === "es" ? "Pantalla Completa" : "Fullscreen"}</span>
+              </>
+            )}
+          </button>
 
           {/* Floating Next Video Recommendation for Iframe (Since ended event is blocked) */}
           <div className="hidden sm:block absolute bottom-4 right-4 z-20 max-w-[200px] sm:max-w-[240px] bg-zinc-950/90 backdrop-blur-md border border-white/10 rounded-xl p-2.5 shadow-2xl opacity-0 translate-y-2 group-hover/player:opacity-100 group-hover/player:translate-y-0 transition-all duration-300 pointer-events-none group-hover/player:pointer-events-auto">
