@@ -74,11 +74,16 @@ export function CategoryFilter({ videos }: CategoryFilterProps) {
     );
   }
 
+  const visibleCategories = CATEGORIES.filter((cat) => {
+    if (cat.id === "all" || cat.id === "webcams") return true;
+    return videos.some((v) => v.category === cat.id);
+  });
+
   return (
     <div id="categories" className="w-full flex flex-col gap-4 py-4 border-b border-white/5 scroll-mt-20">
       {/* Categories Horizontal Scroll */}
       <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar whitespace-nowrap scroll-smooth flex-nowrap items-center">
-        {CATEGORIES.map((cat) => {
+        {visibleCategories.map((cat) => {
           const isActive = activeCategory === cat.id;
           const label = t[cat.translationKey as keyof typeof t] || cat.id;
           const Icon = CATEGORY_ICONS[cat.id];
