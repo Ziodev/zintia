@@ -5,6 +5,7 @@ import { VideoGrid } from "@/components/cards/VideoGrid";
 import { Skeleton } from "@/components/ui/SkeletonLoader";
 import { translations, Language } from "@/lib/translations";
 import { getVideos } from "@/lib/feed";
+import { HomeHeader } from "@/components/ui/HomeHeader";
 
 interface PageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -72,17 +73,12 @@ export default async function Home({ searchParams }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6 py-6 animate-fade-in">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          {t.featuredContent}
-          <span className="bg-rose-500/10 text-rose-400 text-xs px-2.5 py-1 rounded-full font-semibold border border-rose-500/20">
-            {t.live}
-          </span>
-        </h1>
-        <p className="text-xs md:text-sm text-muted-foreground font-sans">
-          {t.exploreText}
-        </p>
-      </div>
+      <HomeHeader
+        activeLang={activeLang}
+        titleText={t.featuredContent}
+        liveLabel={t.live}
+        exploreText={t.exploreText}
+      />
 
       <Suspense fallback={<GridSkeleton />}>
         <CategoryFilter videos={videos} />

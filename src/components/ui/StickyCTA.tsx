@@ -35,7 +35,7 @@ export function StickyCTA() {
   const t = translations[activeLang] || translations.es;
 
   // Retrieve user location
-  const geo = useGeoLocation(activeLang);
+  const geo = useGeoLocation();
 
   // Fluctuating models count (simulating nearby active cameras)
   const [modelCount, setModelCount] = useState(34);

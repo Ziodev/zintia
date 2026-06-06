@@ -1,50 +1,66 @@
+"use client";
 import { useState, useEffect } from "react";
-import { Language } from "@/lib/translations";
 
-export interface GeoData {
+export interface GeoLocation {
   city: string;
   country: string;
+  region: string;
+  loaded: boolean;
 }
 
-const FALLBACKS: Record<Language, GeoData> = {
-  es: { city: "Madrid", country: "España" },
-  en: { city: "New York", country: "United States" },
-  fr: { city: "Paris", country: "France" },
-  ja: { city: "東京", country: "日本" },
-  it: { city: "Roma", country: "Italia" },
-  pt: { city: "Lisboa", country: "Portugal" },
-};
+const FALLBACK_SPANISH_CITIES = [
+  "Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Murcia", "Palma", "Las Palmas", "Bilbao"
+];
 
-export function useGeoLocation(lang: Language) {
-  const [geo, setGeo] = useState<GeoData>(FALLBACKS[lang] || FALLBACKS.es);
+export function useGeoLocation() {
+  const [location, setLocation] = useState<GeoLocation>({
+    city: "",
+    country: "",
+    region: "",
+    loaded: false,
+  });
 
   useEffect(() => {
     let active = true;
 
-    fetch("https://ipapi.co/json/")
-      .then((res) => {
+    async function fetchLocation() {
+      try {
+        // Fetch location data from ipapi.co
+        const res = await fetch("https://ipapi.co/json/");
         if (!res.ok) throw new Error("Failed to fetch location");
-        return res.json();
-      })
-      .then((data) => {
-        if (active && data && data.city && data.country_name) {
-          setGeo({
-            city: data.city,
-            country: data.country_name,
+        const data = await res.json();
+        if (active) {
+          setLocation({
+            city: data.city || "Madrid",
+            country: data.country_name || "España",
+            region: data.region || "Madrid",
+            loaded: true,
           });
         }
-      })
-      .catch((err) => {
-        console.warn("Geolocation API unavailable, using localized fallback:", err.message);
+      } catch (err) {
+        console.warn("GeoIP lookup failed, using simulated fallback:", err);
         if (active) {
-          setGeo(FALLBACKS[lang] || FALLBACKS.es);
+          let saved = localStorage.getItem("zintia_simulated_city");
+          if (!saved) {
+            const randomCity = FALLBACK_SPANISH_CITIES[Math.floor(Math.random() * FALLBACK_SPANISH_CITIES.length)];
+            saved = randomCity;
+            localStorage.setItem("zintia_simulated_city", randomCity);
+          }
+          setLocation({
+            city: saved,
+            country: "España",
+            region: saved,
+            loaded: true,
+          });
         }
-      });
+      }
+    }
 
+    fetchLocation();
     return () => {
       active = false;
     };
-  }, [lang]);
+  }, []);
 
-  return geo;
+  return location;
 }

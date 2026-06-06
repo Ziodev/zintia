@@ -15,7 +15,7 @@ import { translateTitle } from "@/lib/auto-tagger";
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; playlist?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
@@ -106,6 +106,23 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
 
   const videos = await getVideos();
   const recommendations = videos.filter((v) => v.id !== id).slice(0, 4);
+
+  const playlistParam = resolvedSearchParams.playlist || "";
+  let nextVideo = recommendations[0] || video;
+  let nextVideoUrl = `/video/${nextVideo.id}?lang=${activeLang}`;
+
+  if (playlistParam) {
+    const playlistIds = playlistParam.split(",").filter((pid: string) => pid && pid !== id);
+    if (playlistIds.length > 0) {
+      const nextId = playlistIds[0];
+      const remainingIds = playlistIds.slice(1).join(",");
+      const resolvedNext = await getVideoById(nextId);
+      if (resolvedNext) {
+        nextVideo = resolvedNext;
+        nextVideoUrl = `/video/${nextId}?lang=${activeLang}` + (remainingIds ? `&playlist=${remainingIds}` : "");
+      }
+    }
+  }
 
   const rightRecIds = new Set(recommendations.map((v) => v.id));
   let categoryRelated = videos.filter(
@@ -222,7 +239,8 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
             embedUrl={video.embedUrl || null}
             videoPreviewUrl={video.videoPreviewUrl}
             thumbnailUrl={video.thumbnailUrl}
-            nextVideo={recommendations[0] || video}
+            nextVideo={nextVideo}
+            nextVideoUrl={nextVideoUrl}
             lang={activeLang}
           />
 

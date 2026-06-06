@@ -13,6 +13,7 @@ interface VideoPlayerWrapperProps {
   videoPreviewUrl: string;
   thumbnailUrl: string;
   nextVideo: Video;
+  nextVideoUrl?: string;
   lang: Language;
 }
 
@@ -21,12 +22,14 @@ export function VideoPlayerWrapper({
   videoPreviewUrl,
   thumbnailUrl,
   nextVideo,
+  nextVideoUrl,
   lang,
 }: VideoPlayerWrapperProps) {
   const [showAutoplayOverlay, setShowAutoplayOverlay] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const t = translations[lang] || translations.es;
+  const nextUrl = nextVideoUrl || `/video/${nextVideo.id}?lang=${lang}`;
 
   // Handle native video ended event
   const handleVideoEnded = () => {
@@ -43,13 +46,13 @@ export function VideoPlayerWrapper({
       }, 1000);
     } else if (countdown === 0) {
       // Redirect to next video
-      window.location.href = `/video/${nextVideo.id}?lang=${lang}`;
+      window.location.href = nextUrl;
     }
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [showAutoplayOverlay, countdown, nextVideo.id, lang]);
+  }, [showAutoplayOverlay, countdown, nextUrl]);
 
   const cancelAutoplay = () => {
     setShowAutoplayOverlay(false);
@@ -81,7 +84,7 @@ export function VideoPlayerWrapper({
               {lang === "es" ? "Siguiente Video" : lang === "ja" ? "次の動画" : "Next Video"}
             </span>
             <Link 
-              href={`/video/${nextVideo.id}?lang=${lang}`}
+              href={nextUrl}
               className="flex items-start gap-2 group/next"
             >
               <div className="relative w-14 sm:w-16 aspect-video bg-zinc-900 rounded overflow-hidden shrink-0 border border-white/5">
@@ -188,7 +191,7 @@ export function VideoPlayerWrapper({
               {lang === "es" ? "CANCELAR" : "キャンセル"}
             </button>
             <Link
-              href={`/video/${nextVideo.id}?lang=${lang}`}
+              href={nextUrl}
               className="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-3.5 rounded-xl flex items-center justify-center gap-1.5 shadow-lg shadow-rose-500/20 transition-all hover:scale-[1.01] active:scale-95 text-center font-heading"
             >
               <Play className="w-3.5 h-3.5 fill-white" />

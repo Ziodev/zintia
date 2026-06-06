@@ -155,6 +155,17 @@ export function Navbar() {
             >
               {t.categories}
             </Link>
+            <Link 
+              href={`/swipe?lang=${activeLang}`} 
+              className={cn(
+                "py-1 px-3.5 rounded-full border border-transparent hover:text-white transition-colors flex items-center gap-1",
+                pathname === "/swipe"
+                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                  : "hover:bg-white/5"
+              )}
+            >
+              <span>{t.swipeGame}</span>
+            </Link>
           </nav>
         </div>
 
@@ -424,6 +435,20 @@ export function Navbar() {
                 >
                   <span className="w-4.5 text-center text-xs font-bold text-rose-500">#</span>
                   <span>{t.categories}</span>
+                </Link>
+
+                <Link
+                  href={`/swipe?lang=${activeLang}`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 py-2 px-3 rounded-xl border border-transparent transition-all",
+                    pathname === "/swipe"
+                      ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <Flame className={cn("w-4.5 h-4.5", pathname === "/swipe" ? "text-rose-400" : "text-rose-550")} />
+                  <span>{t.swipeGame}</span>
                 </Link>
               </div>
 
