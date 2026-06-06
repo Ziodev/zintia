@@ -125,8 +125,13 @@ export function Navbar() {
               <span>{t.popular}</span>
             </Link>
             <Link 
-              href={`/?lang=${activeLang}#categories`} 
-              className="py-1 px-3.5 rounded-full border border-transparent hover:text-white hover:bg-white/5 transition-colors"
+              href={`/categories?lang=${activeLang}`} 
+              className={cn(
+                "py-1 px-3.5 rounded-full border border-transparent hover:text-white transition-colors",
+                pathname === "/categories"
+                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                  : "hover:bg-white/5"
+              )}
             >
               {t.categories}
             </Link>
@@ -324,9 +329,14 @@ export function Navbar() {
                 </Link>
 
                 <Link
-                  href={`/?lang=${activeLang}#categories`}
+                  href={`/categories?lang=${activeLang}`}
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 py-2 px-3 rounded-xl text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+                  className={cn(
+                    "flex items-center gap-3 py-2 px-3 rounded-xl border border-transparent transition-all",
+                    pathname === "/categories"
+                      ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  )}
                 >
                   <span className="w-4.5 text-center text-xs font-bold text-rose-500">#</span>
                   <span>{t.categories}</span>

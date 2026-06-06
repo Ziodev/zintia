@@ -1,0 +1,232 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { CategoryCard } from "@/components/cards/CategoryCard";
+import { prisma } from "@/lib/prisma";
+import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
+import { translations, Language } from "@/lib/translations";
+
+const VALID_CATEGORIES = ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"];
+
+const CATEGORY_NAMES: Record<string, Record<Language, string>> = {
+  amateur: { es: "Amateur", en: "Amateur", fr: "Amateur", ja: "アマチュア", it: "Amatoriale", pt: "Amador" },
+  anal: { es: "Anal", en: "Anal", fr: "Anal", ja: "アナル", it: "Anale", pt: "Anal" },
+  milf: { es: "Maduras / MILF", en: "MILF / Mature", fr: "Matures", ja: "熟女", it: "Mature", pt: "Maduras" },
+  caseros: { es: "Caseros / Homemade", en: "Homemade", fr: "Fait Maison", ja: "自家製", it: "Amatoriali", pt: "Caseiros" },
+  latinas: { es: "Latinas", en: "Latinas", fr: "Latines", ja: "ラテン", it: "Latine", pt: "Latinas" },
+  ebony: { es: "Negras / Ebony", en: "Ebony", fr: "Ébène", ja: "黒人", it: "Ebano", pt: "Negras" },
+  webcams: { es: "Webcams en Vivo", en: "Live Webcams", fr: "Webcams en Direct", ja: "ライブチャット", it: "Webcam dal Vivo", pt: "Webcams ao Vivo" }
+};
+
+const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
+  amateur: {
+    es: "Los mejores videos amateur gratis de parejas reales en alta definición.",
+    en: "The best free amateur videos from real couples in high definition.",
+    fr: "Les meilleures vidéos amateurs gratuites de vrais couples en haute définition.",
+    ja: "高画質のリアルなカップルの最高の無料アマチュア動画。",
+    it: "I migliori video amatoriali gratuiti di coppie reali in alta definizione.",
+    pt: "Os melhores vídeos amadores gratuitos de casais reais em alta definição."
+  },
+  anal: {
+    es: "La mejor colección de sexo anal en calidad HD sin interrupciones.",
+    en: "The best collection of anal sex in HD quality without buffering.",
+    fr: "La meilleure collection de sodomie en qualité HD sans interruption.",
+    ja: "バッファリングなしの高画質アナル動画のベストコレクション。",
+    it: "La migliore collezione di sesso anale in qualità HD senza buffering.",
+    pt: "A melhor coleção de sexo anal em qualidade HD sem interrupções."
+  },
+  milf: {
+    es: "Maduras ardientes, señoras y MILFs calientes en alta definición.",
+    en: "Hot MILFs and mature women in high definition.",
+    fr: "Vidéos de MILFs et femmes matures en haute définition.",
+    ja: "高画質のホットな熟女や人妻の動画。",
+    it: "MILF calde e donne mature in alta definizione.",
+    pt: "Coroas gostosas e mulheres maduras em alta definição."
+  },
+  caseros: {
+    es: "Acción casera real sin cortes grabada en la intimidad de parejas aficionadas.",
+    en: "Real uncut homemade action recorded in intimacy by amateur couples.",
+    fr: "Action maison réelle non coupée enregistrée par des couples amateurs.",
+    ja: "素人カップルの親密な空間で録画されたリアルなノーカット自家製アクション。",
+    it: "Vera azione casalinga non tagliata registrata da coppie amatoriali.",
+    pt: "Ação caseira real sem cortes gravada na intimidade de casais amadores."
+  },
+  latinas: {
+    es: "Ardientes videos de modelos latinas de Colombia, Brasil, México y más en HD.",
+    en: "Hot videos of Latina models from Colombia, Brazil, Mexico and more in HD.",
+    fr: "Vidéos chaudes de modèles latines de Colombie, Brésil, Mexique et plus en HD.",
+    ja: "コロンビア、ブラジル、メキシコなどのラテン系モデルのホットなHD動画。",
+    it: "Video caldi di modelle latine provenienti da Colombia, Brasile, Messico e altro in HD.",
+    pt: "Vídeos quentes de modelos latinas da Colômbia, Brasil, México e mais em HD."
+  },
+  ebony: {
+    es: "Espectacular colección de videos de negras y ebony gratis en alta definición.",
+    en: "Spectacular collection of free black and ebony videos in high definition.",
+    fr: "Spectaculaire collection de vidéos de femmes noires et ébène gratuites en HD.",
+    ja: "高画質の黒人とエボニーの無料動画の素晴らしいコレクション。",
+    it: "Spettacolare collezione di video di nere ed ebano gratis in alta definizione.",
+    pt: "Espetacular coleção de vídeos de negras e ebony gratuitos em alta definição."
+  },
+  webcams: {
+    es: "Salas de webcams en vivo premium. Chat en directo con miles de modelos online.",
+    en: "Premium live webcam rooms. Live chat with thousands of models online.",
+    fr: "Salons de webcams en direct premium. Chat en direct avec des modèles.",
+    ja: "プレミアムライブチャットルーム。何千人ものモデルとのライブチャット。",
+    it: "Stanze di webcam dal vivo premium. Chat dal vivo con modelle online.",
+    pt: "Salas de webcams ao vivo premium. Chat ao vivo com modelos online."
+  }
+};
+
+interface PageProps {
+  searchParams: Promise<{ lang?: string }>;
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const activeLang = (resolvedParams.lang as Language) || "es";
+
+  const titles: Record<Language, string> = {
+    es: "Categorías de Videos Gratis HD - Explorar Colección | Zintia Vids",
+    en: "Free HD Video Categories - Explore Collection | Zintia Vids",
+    fr: "Catégories de Vidéos Gratuites HD - Explorer | Zintia Vids",
+    ja: "無料高画質動画カテゴリー - コレクションを探索 | Zintia Vids",
+    it: "Categorie di Video Gratis HD - Esplora Collezione | Zintia Vids",
+    pt: "Categorias de Vídeos Grátis HD - Explorar Coleção | Zintia Vids"
+  };
+
+  const descriptions: Record<Language, string> = {
+    es: "Explora todas las categorías de videos premium gratis. Videos amateur, milfs, latinas, webcam y más en alta definición.",
+    en: "Explore all free premium video categories. Amateur, milfs, latinas, webcam videos and more in high definition.",
+    fr: "Explorez toutes les catégories de vidéos gratuites. Vidéos amateur, milfs, latines, webcam et plus en HD.",
+    ja: "すべての無料プレミアム動画カテゴリーをご覧ください。アマチュア、熟女、ラテン系、ライブチャット動画など高画質で配信中。",
+    it: "Esplora tutte le categorie di video premium gratuiti. Video amatoriali, milf, latine, webcam e altro in HD.",
+    pt: "Explore todas as categorias de vídeos premium gratuitos. Vídeos amadores, coroas, latinas, webcam e mais em HD."
+  };
+
+  const title = titles[activeLang] || titles.es;
+  const description = descriptions[activeLang] || descriptions.es;
+
+  return {
+    title,
+    description,
+    robots: "index, follow",
+    alternates: {
+      canonical: activeLang === "es" ? "/categories" : `/categories?lang=${activeLang}`,
+      languages: {
+        es: "/categories?lang=es",
+        en: "/categories?lang=en",
+        fr: "/categories?lang=fr",
+        ja: "/categories?lang=ja",
+        it: "/categories?lang=it",
+        pt: "/categories?lang=pt",
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    }
+  };
+}
+
+export default async function CategoriesPage({ searchParams }: PageProps) {
+  const resolvedParams = await searchParams;
+  const activeLang = (resolvedParams.lang as Language) || "es";
+  const t = translations[activeLang] || translations.es;
+
+  // Retrieve one video preview for each category in parallel
+  const categoriesData = await Promise.all(
+    VALID_CATEGORIES.map(async (catId) => {
+      // Query the latest published video in this category
+      let video = await prisma.video.findFirst({
+        where: { category: catId, status: "PUBLISHED" },
+        orderBy: { published_at: "desc" },
+      });
+
+      // Fallback if no video in DB
+      if (!video) {
+        const fallback = DRTUBER_FALLBACK_VIDEOS.find((v) => v.category === catId);
+        if (fallback) {
+          video = {
+            id: fallback.id,
+            title: fallback.title,
+            duration: fallback.duration,
+            views: fallback.views,
+            category: fallback.category,
+            tags: fallback.tags,
+            thumbnailUrl: fallback.thumbnailUrl,
+            videoPreviewUrl: fallback.videoPreviewUrl,
+            embedUrl: fallback.embedUrl || null,
+            status: "PUBLISHED",
+            published_at: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+        }
+      }
+
+      return {
+        id: catId,
+        name: CATEGORY_NAMES[catId]?.[activeLang] || catId,
+        description: CATEGORY_DESCRIPTIONS[catId]?.[activeLang] || "",
+        thumbnailUrl: video?.thumbnailUrl || "https://pics.drtuber.com/media/videos/tmb/10091385/preview/12.jpg",
+        videoPreviewUrl: video?.videoPreviewUrl || null,
+      };
+    })
+  );
+
+  return (
+    <div className="flex flex-col gap-6 py-6 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          {t.categories}
+          <span className="bg-rose-500/10 text-rose-400 text-xs px-2.5 py-1 rounded-full font-semibold border border-rose-500/20">
+            {activeLang === "es" ? "Explorar" : activeLang === "ja" ? "探索" : "Explore"}
+          </span>
+        </h1>
+        <p className="text-xs md:text-sm text-muted-foreground font-sans">
+          {activeLang === "es"
+            ? "Pasa el cursor sobre una categoría para ver una vista previa interactiva del contenido."
+            : activeLang === "ja"
+            ? "カテゴリーの上にカーソルを置くと、コンテンツのインタラクティブなプレビューが表示されます。"
+            : "Hover over a category to see an interactive preview of the content."}
+        </p>
+      </div>
+
+      {/* Grid of Categories */}
+      <Suspense fallback={<GridSkeleton />}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {categoriesData.map((cat) => (
+            <CategoryCard
+              key={cat.id}
+              id={cat.id}
+              name={cat.name}
+              description={cat.description}
+              thumbnailUrl={cat.thumbnailUrl}
+              videoPreviewUrl={cat.videoPreviewUrl}
+              lang={activeLang}
+            />
+          ))}
+        </div>
+      </Suspense>
+    </div>
+  );
+}
+
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div key={i} className="aspect-[16/10] w-full rounded-2xl bg-zinc-900 animate-pulse flex flex-col justify-end p-4 gap-2">
+          <div className="h-4 w-1/3 rounded bg-zinc-800" />
+          <div className="h-3 w-3/4 rounded bg-zinc-800" />
+        </div>
+      ))}
+    </div>
+  );
+}
