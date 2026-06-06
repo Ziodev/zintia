@@ -79,7 +79,7 @@ export function VideoPlayerWrapper({
           />
 
           {/* Floating Next Video Recommendation for Iframe (Since ended event is blocked) */}
-          <div className="absolute bottom-4 right-4 z-20 max-w-[200px] sm:max-w-[240px] bg-zinc-950/90 backdrop-blur-md border border-white/10 rounded-xl p-2.5 shadow-2xl opacity-0 translate-y-2 group-hover/player:opacity-100 group-hover/player:translate-y-0 transition-all duration-300 pointer-events-auto">
+          <div className="hidden sm:block absolute bottom-4 right-4 z-20 max-w-[200px] sm:max-w-[240px] bg-zinc-950/90 backdrop-blur-md border border-white/10 rounded-xl p-2.5 shadow-2xl opacity-0 translate-y-2 group-hover/player:opacity-100 group-hover/player:translate-y-0 transition-all duration-300 pointer-events-none group-hover/player:pointer-events-auto">
             <span className="text-[8px] sm:text-[9px] font-bold text-rose-500 uppercase tracking-widest block mb-1">
               {lang === "es" ? "Siguiente Video" : lang === "ja" ? "次の動画" : "Next Video"}
             </span>
