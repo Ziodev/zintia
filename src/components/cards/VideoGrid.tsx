@@ -1,12 +1,52 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
+import { ShieldCheck, ExternalLink } from "lucide-react";
 import { VideoCard } from "./VideoCard";
 import { NativeAdCard } from "./NativeAdCard";
 import { MOCK_VIDEOS, MOCK_ADS } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+
+const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: string; bypass: string }> = {
+  es: {
+    title: "Verificación de Navegación",
+    desc: "Para seguir viendo más contenido gratuito, verifica que eres humano o descubre las modelos en vivo de tu zona.",
+    button: "Ver Modelos en Vivo y Continuar",
+    bypass: "Continuar Navegación Gratuita",
+  },
+  en: {
+    title: "Navigation Verification",
+    desc: "To continue watching free content, please verify you are human or discover the live models in your area.",
+    button: "View Live Models & Continue",
+    bypass: "Continue Free Browsing",
+  },
+  fr: {
+    title: "Vérification de Navigation",
+    desc: "Pour continuer à regarder du contenu gratuit, veuillez vérifier que vous êtes humain ou découvrez les modèles en direct de votre région.",
+    button: "Voir les Modèles en Direct",
+    bypass: "Continuer la Navigation Gratuite",
+  },
+  ja: {
+    title: "人間確認のお知らせ",
+    desc: "無料コンテンツの視聴を続けるには、人間であることを確認するか、お住まいの地域のライブモデルをご覧ください。",
+    button: "ライブモデルを見て続ける",
+    bypass: "無料でブラウジングを続ける",
+  },
+  it: {
+    title: "Verifica di Navigazione",
+    desc: "Per continuare a guardare contenuti gratuiti, verifica di essere umano o scopri le modelle dal vivo nella tua zona.",
+    button: "Vedi Modelle dal Vivo",
+    bypass: "Continua la Navigazione Gratuita",
+  },
+  pt: {
+    title: "Verificação de Navegação",
+    desc: "Para continuar a ver conteúdo gratuito, verifique se é humano ou descubra os modelos ao vivo na sua área.",
+    button: "Ver Modelos ao Vivo",
+    bypass: "Continuar Navegação Gratuita",
+  },
+};
 
 export function VideoGrid() {
   const [activeCategory] = useQueryState("category", { defaultValue: "all" });
@@ -23,13 +63,17 @@ export function VideoGrid() {
     parseAsInteger.withDefault(4)
   );
 
+  // Roadblock bypass state
+  const [isRoadblockBypassed, setIsRoadblockBypassed] = useState(false);
+
   // Sentinel element for triggering Infinite Scroll
   const sentinelRef = useRef<HTMLDivElement>(null);
   const isSentinelVisible = useIntersectionObserver(sentinelRef, { threshold: 0.1 });
 
-  // Reset pagination limit to 4 whenever filters, sorting, or search keywords mutate
+  // Reset pagination limit and roadblock status whenever filters change
   useEffect(() => {
     setLimit(4);
+    setIsRoadblockBypassed(false);
   }, [activeCategory, activeSort, search, setLimit]);
 
   // 1. Filter by Category
@@ -58,10 +102,10 @@ export function VideoGrid() {
 
   // Infinite scroll trigger when sentinel becomes visible
   useEffect(() => {
-    if (isSentinelVisible && hasMore) {
+    if (isSentinelVisible && hasMore && (!hasMore || limit < 16 || isRoadblockBypassed)) {
       setLimit((prev) => prev + 4);
     }
-  }, [isSentinelVisible, hasMore, setLimit]);
+  }, [isSentinelVisible, hasMore, limit, isRoadblockBypassed, setLimit]);
 
   if (filtered.length === 0) {
     return (
@@ -121,14 +165,46 @@ export function VideoGrid() {
         }
       })}
 
-      {hasMore && (
-        <div ref={sentinelRef} className="col-span-full flex justify-center py-8 mt-4">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+      {/* Roadblock Scroll Depth Interceptor (At 16 videos, before further loads) */}
+      {limit >= 16 && !isRoadblockBypassed ? (
+        <div className="col-span-full bg-zinc-900/40 backdrop-blur-lg border border-rose-500/20 rounded-3xl p-6 md:p-8 flex flex-col items-center text-center max-w-xl mx-auto my-6 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-rose-500/10 text-rose-500 p-3.5 rounded-full mb-4 animate-pulse">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+          <h2 className="text-base font-bold text-white mb-2 font-heading uppercase tracking-wide">
+            {ROADBLOCK_COPIES[activeLang].title}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed font-sans mb-6">
+            {ROADBLOCK_COPIES[activeLang].desc}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+            <a
+              href="https://example.com/affiliate-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading"
+            >
+              <span>{ROADBLOCK_COPIES[activeLang].button}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <button
+              onClick={() => setIsRoadblockBypassed(true)}
+              className="w-full sm:w-auto text-xs text-muted-foreground hover:text-white transition-colors cursor-pointer font-sans font-semibold py-3 px-4 hover:underline"
+            >
+              {ROADBLOCK_COPIES[activeLang].bypass}
+            </button>
           </div>
         </div>
+      ) : (
+        hasMore && (
+          <div ref={sentinelRef} className="col-span-full flex justify-center py-8 mt-4">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </div>
+        )
       )}
     </div>
   );

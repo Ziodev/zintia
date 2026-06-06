@@ -6,6 +6,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { StickyCTA } from "@/components/ui/StickyCTA";
 import { PostHogProvider } from "./providers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ExitIntentModal } from "@/components/ui/ExitIntentModal";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -52,6 +53,9 @@ export default function RootLayout({
             </main>
             <Suspense fallback={null}>
               <StickyCTA />
+            </Suspense>
+            <Suspense fallback={null}>
+              <ExitIntentModal />
             </Suspense>
           </PostHogProvider>
         </NuqsAdapter>
