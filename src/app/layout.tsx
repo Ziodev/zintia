@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Outfit, Inter, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/ui/Navbar";
 import { StickyCTA } from "@/components/ui/StickyCTA";
@@ -89,6 +90,20 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
+        {/* Google Analytics Tag */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-XG2WYM519S"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-XG2WYM519S');
+          `}
+        </Script>
         <NuqsAdapter>
           <PostHogProvider>
             <Suspense fallback={<div className="h-14 w-full bg-zinc-900/10 animate-pulse border-b border-white/5" />}>
