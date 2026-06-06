@@ -123,8 +123,9 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
         <h3 className="text-xs font-bold text-white uppercase tracking-wider">
           {t.live_models_title}
         </h3>
-        <span className="ml-auto text-[9px] font-bold text-rose-500 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded animate-pulse">
-          Live
+        <span className="ml-auto text-[9px] font-bold text-rose-400 uppercase tracking-widest bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse">
+          <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+          <span>Live</span>
         </span>
       </div>
 
@@ -142,7 +143,7 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
               rel="noopener noreferrer"
               onMouseEnter={() => setHoveredId(model.id)}
               onMouseLeave={() => setHoveredId(null)}
-              className="group relative flex flex-col bg-zinc-900/60 hover:bg-zinc-900 border border-white/5 hover:border-rose-500/20 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-rose-500/5 cursor-pointer"
+              className="group relative flex flex-col bg-zinc-900/40 hover:bg-zinc-900 border border-white/5 hover:border-rose-500/50 rounded-xl overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-rose-500/10 cursor-pointer"
             >
               {/* Media Section */}
               <div 
@@ -150,8 +151,11 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
                 style={{ aspectRatio: "16/9" }}
               >
                 {/* Flashing Live Indicator */}
-                <div className="absolute top-2 left-2 bg-rose-600/90 text-white text-[8px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1 z-20 shadow">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" />
+                <div className="absolute top-2.5 left-2.5 bg-rose-500 text-white text-[8px] font-black px-2 py-0.5 rounded-md flex items-center gap-1 z-20 shadow-lg shadow-rose-500/20">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                  </span>
                   <span>LIVE</span>
                 </div>
 
@@ -198,9 +202,12 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
                 <span className="text-xs font-bold text-white group-hover:text-rose-500 transition-colors">
                   @{modelName}
                 </span>
-                <span className="text-[9px] text-muted-foreground font-medium flex items-center gap-1">
-                  <span className="h-1 w-1 rounded-full bg-green-500 animate-pulse" />
-                  <span>Disponible para chat privado</span>
+                <span className="text-[9px] text-muted-foreground font-medium flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span>{activeLang === "es" ? "Disponible para chat privado" : activeLang === "ja" ? "プライベートチャット可能" : "Available for private chat"}</span>
                 </span>
               </div>
             </a>

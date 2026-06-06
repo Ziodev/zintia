@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Search, Flame, Award, Globe, Check, X, Menu } from "lucide-react";
@@ -9,6 +10,9 @@ import { Logo } from "@/components/ui/Logo";
 import { translations, Language } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { SurpriseModal } from "@/components/ui/SurpriseModal";
+import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
+import { translateTitle } from "@/lib/auto-tagger";
 
 const LANG_DETAILS = [
   { id: "es", label: "Español" },
@@ -52,7 +56,11 @@ export function Navbar() {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSurpriseOpen, setIsSurpriseOpen] = useState(false);
+  const [hoveredSearchVideoId, setHoveredSearchVideoId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const videoSuggestions = DRTUBER_FALLBACK_VIDEOS.slice(0, 3);
 
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
@@ -168,6 +176,56 @@ export function Navbar() {
                     </button>
                   ))}
                 </div>
+
+                <div className="mt-4 border-t border-white/5 pt-3">
+                  <span className="text-[10px] uppercase font-extrabold tracking-wider text-muted-foreground block mb-2.5">
+                    {activeLang === "es" ? "Tendencias de hoy" : activeLang === "ja" ? "今日のトレンド" : "Trending Today"}
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    {videoSuggestions.map((video) => {
+                      const isRowHovered = hoveredSearchVideoId === video.id;
+                      const videoTitle = translateTitle(video.title, activeLang);
+                      return (
+                        <Link
+                          key={video.id}
+                          href={`/video/${video.id}?lang=${activeLang}`}
+                          onMouseDown={() => {
+                            window.location.href = `/video/${video.id}?lang=${activeLang}`;
+                          }}
+                          onMouseEnter={() => setHoveredSearchVideoId(video.id)}
+                          onMouseLeave={() => setHoveredSearchVideoId(null)}
+                          className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-white/5 transition-all group/row"
+                        >
+                          <div className="relative w-12 h-7 rounded bg-zinc-900 overflow-hidden shrink-0 border border-white/5">
+                            <Image
+                              src={video.thumbnailUrl}
+                              alt={videoTitle}
+                              fill
+                              unoptimized
+                              className={cn(
+                                "object-cover transition-opacity duration-300",
+                                isRowHovered ? "opacity-0" : "opacity-100"
+                              )}
+                            />
+                            {isRowHovered && (
+                              <video
+                                src={video.videoPreviewUrl}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <span className="text-[10px] font-semibold text-muted-foreground group-hover/row:text-white line-clamp-1 truncate flex-1 transition-colors">
+                            {videoTitle}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -229,6 +287,14 @@ export function Navbar() {
               </div>
             )}
           </div>
+
+          {/* Surprise Me Button (Desktop Only) */}
+          <button 
+            onClick={() => setIsSurpriseOpen(true)}
+            className="hidden sm:block bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/5 hover:border-white/10 transition-all active:scale-95 shrink-0 font-heading"
+          >
+            🎲 {activeLang === "es" ? "Sorpréndeme" : activeLang === "ja" ? "お楽しみ" : "Surprise Me"}
+          </button>
 
           {/* Action Button (Desktop Only) */}
           <button className="hidden sm:block bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-full transition-all shadow-lg shadow-rose-500/20 active:scale-95 shrink-0 font-heading animate-glow">
@@ -343,11 +409,20 @@ export function Navbar() {
                 </Link>
               </div>
 
-              {/* Go Live CTA */}
-              <div className="mt-auto">
+              {/* Action CTAs */}
+              <div className="mt-auto flex flex-col gap-2.5">
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsSurpriseOpen(true);
+                  }}
+                  className="w-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold py-3 rounded-xl flex items-center justify-center gap-2 border border-white/5 transition-all font-heading"
+                >
+                  <span>🎲 {activeLang === "es" ? "Sorpréndeme" : activeLang === "ja" ? "お楽しみ" : "Surprise Me"}</span>
+                </button>
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-full bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 transition-all font-heading"
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 transition-all font-heading animate-glow"
                 >
                   <span>{t.goLive}</span>
                 </button>
@@ -356,6 +431,13 @@ export function Navbar() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Surprise Me Slot Machine Modal */}
+      <SurpriseModal
+        isOpen={isSurpriseOpen}
+        onClose={() => setIsSurpriseOpen(false)}
+        lang={activeLang}
+      />
     </header>
   );
 }
