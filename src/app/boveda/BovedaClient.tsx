@@ -448,10 +448,21 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
           "--mouse-y": "-999px",
         } as React.CSSProperties}
       >
-        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[12px] scale-105 select-none pointer-events-none" aria-hidden="true">
+        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[6px] scale-105 select-none pointer-events-none" aria-hidden="true">
           {tiles.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
-              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
+              {tile.videoUrl ? (
+                <video 
+                  src={tile.videoUrl} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125"
+                />
+              ) : (
+                <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
+              )}
             </div>
           ))}
         </div>
