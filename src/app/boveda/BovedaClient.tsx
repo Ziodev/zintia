@@ -13,7 +13,9 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
-  Zap
+  Zap,
+  MessageSquare,
+  Bell
 } from "lucide-react";
 import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
 
@@ -87,6 +89,8 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
   const [displayCountry, setDisplayCountry] = useState(country);
   const [detectedLang, setDetectedLang] = useState<string>("es");
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(0);
+  const [angleIndex, setAngleIndex] = useState<number>(0);
+  const [activeToast, setActiveToast] = useState<{ id: number, text: string, type: 'message' | 'alert' } | null>(null);
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -105,9 +109,10 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     videoUrl: video.videoPreviewUrl
   }));
 
-  // Choose offer index on mount for Desktop 50/50 split testing session consistency
+  // Choose offer index and angle on mount for split testing session consistency
   useEffect(() => {
     setSelectedOfferIndex(Math.floor(Math.random() * 2)); // 0 or 1 for Mofos/CandyAI split on desktop
+    setAngleIndex(Math.floor(Math.random() * 3)); // 0, 1, or 2 for text angles
   }, []);
 
   // Decrypt helper for context-sensitive redirects (CRO smartlink)
@@ -129,24 +134,24 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     if (isMobile) {
       if (tier1Countries.includes(c)) {
         // Mobile Tier 1: CandyAI is best (PPA flow, full $30 payout, lower registration friction)
-        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile`;
+        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile_A${angleIndex}`;
       } else {
         // Mobile Global Fallback: Mobidea Smartlink
-        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile`;
+        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile_A${angleIndex}`;
       }
     } else {
       // Desktop Tier 1: 50/50 split between Mofos ($35 payout on desktop) and CandyAI ($35 PPA)
       if (tier1Countries.includes(c)) {
         const isMofos = selectedOfferIndex === 0;
         if (isMofos) {
-          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop`;
+          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop_A${angleIndex}`;
         } else {
-          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop`;
+          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop_A${angleIndex}`;
         }
       }
       
       // Desktop non-Tier 1 fallback
-      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop`;
+      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop_A${angleIndex}`;
     }
   };
 
@@ -166,7 +171,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     return () => {
       window.removeEventListener("popstate", handleBackButton);
     };
-  }, [displayCountry, detectedLang, selectedOfferIndex]);
+  }, [displayCountry, detectedLang, selectedOfferIndex, angleIndex]);
 
   // 2. CRO Hack: Tab Visibility Alert (Recuperación de pestaña inactiva)
   useEffect(() => {
@@ -247,48 +252,136 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
 
   // Supported Multilanguage Dict
   const dict: Record<string, any> = {
-    es: {
-      step1Title: `Descubre maduras cerca de ${displayCity}`,
-      step1Desc: "¿Qué tipo de encuentros estás buscando?",
-      btnAmateur: "Maduras Casadas",
-      btnProfessional: "Maduras Solteras",
-      step2Title: "Advertencia de Discreción",
-      step2Desc: "Este acceso VIP a perfiles locales es confidencial y privado.",
-      step2Question: "¿Prometes mantener en secreto la identidad de estas mujeres?",
-      btnPromise: "SÍ, LO PROMETO",
-      loadingTitle: "Buscando perfiles compatibles...",
-      status1: `Analizando perfiles activos en ${displayCity}...`,
-      status2: "Verificando disponibilidad para encuentros de hoy...",
-      status3: "Filtrando fotos y videos privados sin censura...",
-      status4: "Preparando acceso directo al chat local...",
-      successTitle: "¡Maduras Encontradas!",
-      successExpiry: "Tu acceso VIP expira en:",
-      successDesc: `¡Verificación completada! Hemos conectado con perfiles reales y activos cerca de ti en ${displayCity}. Para proteger la privacidad de las usuarias y poder ver sus videos íntimos y contactarlas, activa tu Pase de Acceso VIP de forma segura.`,
-      successNote: "Verificación de edad requerida (18+)",
-      btnFinal: "VER PERFILES AHORA",
-      detailsText: "Red de Encuentros Local 100% Verificada"
-    },
-    en: {
-      step1Title: `Discover mature women near ${displayCity}`,
-      step1Desc: "What kind of encounters are you looking for?",
-      btnAmateur: "Married Mature Women",
-      btnProfessional: "Single Mature Women",
-      step2Title: "Discretion Warning",
-      step2Desc: "This VIP access to local profiles is confidential and private.",
-      step2Question: "Do you promise to keep the identity of these women a secret?",
-      btnPromise: "YES, I PROMISE",
-      loadingTitle: "Searching for compatible profiles...",
-      status1: `Analyzing active profiles in ${displayCity}...`,
-      status2: "Verifying availability for encounters today...",
-      status3: "Filtering private uncensored photos and videos...",
-      status4: "Preparing direct access to local chat...",
-      successTitle: "Mature Women Found!",
-      successExpiry: "Your VIP access expires in:",
-      successDesc: `Verification completed! We have connected with real, active profiles near you in ${displayCity}. To protect the users' privacy and be able to see their intimate videos and contact them, activate your VIP Access Pass securely.`,
-      successNote: "Age verification required (18+)",
-      btnFinal: "SEE PROFILES NOW",
-      detailsText: "100% Verified Local Dating Network"
-    },
+    es: [
+      { // Angle 0: Cercanía y Descubrimiento
+        step1Title: `Descubre maduras cerca de ${displayCity}`,
+        step1Desc: "¿Qué tipo de encuentros estás buscando?",
+        btnAmateur: "Maduras Casadas",
+        btnProfessional: "Maduras Solteras",
+        step2Title: "Advertencia de Discreción",
+        step2Desc: "Este acceso VIP a perfiles locales es confidencial y privado.",
+        step2Question: "¿Prometes mantener en secreto la identidad de estas mujeres?",
+        btnPromise: "SÍ, LO PROMETO",
+        loadingTitle: "Buscando perfiles compatibles...",
+        status1: `Analizando perfiles activos en ${displayCity}...`,
+        status2: "Verificando disponibilidad para encuentros de hoy...",
+        status3: "Filtrando fotos y videos privados sin censura...",
+        status4: "Preparando acceso directo al chat local...",
+        successTitle: "¡Maduras Encontradas!",
+        successExpiry: "Tu acceso VIP expira en:",
+        successDesc: `¡Verificación completada! Hemos conectado con perfiles reales y activos cerca de ti en ${displayCity}. Para proteger la privacidad de las usuarias y poder ver sus videos íntimos y contactarlas, activa tu Pase de Acceso VIP de forma segura.`,
+        successNote: "Verificación de edad requerida (18+)",
+        btnFinal: "VER PERFILES AHORA",
+        detailsText: "Red de Encuentros Local 100% Verificada"
+      },
+      { // Angle 1: Urgencia y Escasez
+        step1Title: `¡3 mujeres en ${displayCity} buscan encuentros hoy!`,
+        step1Desc: "Están en línea ahora mismo. ¿A quién prefieres conocer?",
+        btnAmateur: "Amas de casa aburridas",
+        btnProfessional: "Mujeres maduras liberales",
+        step2Title: "Cupos Limitados",
+        step2Desc: "Solo aceptamos 5 nuevos registros al día en tu zona.",
+        step2Question: "¿Puedes reunirte con ellas esta misma semana?",
+        btnPromise: "SÍ, PUEDO",
+        loadingTitle: "Confirmando disponibilidad...",
+        status1: `Conectando con servidor local en ${displayCity}...`,
+        status2: "Reservando tu cupo de registro...",
+        status3: "Verificando que las usuarias sigan en línea...",
+        status4: "Abriendo canal de chat privado...",
+        successTitle: "¡Cupo Reservado!",
+        successExpiry: "Tu reservación expira en:",
+        successDesc: `¡Felicidades! Tienes uno de los últimos cupos disponibles en ${displayCity} para contactar a estas mujeres. Ellas están esperando tu mensaje. Completa tu registro de seguridad ahora antes de que el cupo pase a otro usuario.`,
+        successNote: "Verificación de edad requerida (18+)",
+        btnFinal: "CONTACTAR AHORA",
+        detailsText: "Cupos Disponibles: 2"
+      },
+      { // Angle 2: Mensajes Privados/Curiosidad
+        step1Title: `Tienes (2) solicitudes de contacto en ${displayCity}`,
+        step1Desc: "Alguien cerca de ti quiere enviarte fotos privadas.",
+        btnAmateur: "Ver fotos privadas",
+        btnProfessional: "Abrir chat anónimo",
+        step2Title: "Privacidad Estricta",
+        step2Desc: "Las fotos que estás a punto de ver son muy explícitas.",
+        step2Question: "¿Eres mayor de 18 años y aceptas ver este contenido?",
+        btnPromise: "SÍ, SOY MAYOR DE EDAD",
+        loadingTitle: "Desencriptando mensajes...",
+        status1: `Buscando buzón local en ${displayCity}...`,
+        status2: "Descargando archivos multimedia adjuntos...",
+        status3: "Eliminando restricciones de visualización...",
+        status4: "Preparando visualizador seguro...",
+        successTitle: "¡Mensajes Listos!",
+        successExpiry: "Las fotos se eliminarán en:",
+        successDesc: `¡Archivos desencriptados! Las usuarias de ${displayCity} han solicitado que sus fotos íntimas sean borradas si no respondes rápido. Activa tu acceso privado ahora para ver el contenido y responder a sus mensajes.`,
+        successNote: "Verificación de edad requerida (18+)",
+        btnFinal: "VER FOTOS Y MENSAJES",
+        detailsText: "Mensajes Privados Protegidos"
+      }
+    ],
+    en: [
+      { // Angle 0: Cercanía y Descubrimiento
+        step1Title: `Discover mature women near ${displayCity}`,
+        step1Desc: "What kind of encounters are you looking for?",
+        btnAmateur: "Married Mature Women",
+        btnProfessional: "Single Mature Women",
+        step2Title: "Discretion Warning",
+        step2Desc: "This VIP access to local profiles is confidential and private.",
+        step2Question: "Do you promise to keep the identity of these women a secret?",
+        btnPromise: "YES, I PROMISE",
+        loadingTitle: "Searching for compatible profiles...",
+        status1: `Analyzing active profiles in ${displayCity}...`,
+        status2: "Verifying availability for encounters today...",
+        status3: "Filtering private uncensored photos and videos...",
+        status4: "Preparing direct access to local chat...",
+        successTitle: "Mature Women Found!",
+        successExpiry: "Your VIP access expires in:",
+        successDesc: `Verification completed! We have connected with real, active profiles near you in ${displayCity}. To protect the users' privacy and be able to see their intimate videos and contact them, activate your VIP Access Pass securely.`,
+        successNote: "Age verification required (18+)",
+        btnFinal: "SEE PROFILES NOW",
+        detailsText: "100% Verified Local Dating Network"
+      },
+      { // Angle 1: Urgencia y Escasez
+        step1Title: `3 women in ${displayCity} are looking to meet today!`,
+        step1Desc: "They are online right now. Who do you prefer to meet?",
+        btnAmateur: "Bored housewives",
+        btnProfessional: "Open-minded mature women",
+        step2Title: "Limited Spots",
+        step2Desc: "We only accept 5 new registrations per day in your area.",
+        step2Question: "Can you meet with them this week?",
+        btnPromise: "YES, I CAN",
+        loadingTitle: "Confirming availability...",
+        status1: `Connecting to local server in ${displayCity}...`,
+        status2: "Reserving your registration spot...",
+        status3: "Verifying users are still online...",
+        status4: "Opening private chat channel...",
+        successTitle: "Spot Reserved!",
+        successExpiry: "Your reservation expires in:",
+        successDesc: `Congratulations! You have one of the last available spots in ${displayCity} to contact these women. They are waiting for your message. Complete your secure registration now before the spot goes to someone else.`,
+        successNote: "Age verification required (18+)",
+        btnFinal: "CONTACT NOW",
+        detailsText: "Available Spots: 2"
+      },
+      { // Angle 2: Mensajes Privados/Curiosidad
+        step1Title: `You have (2) contact requests in ${displayCity}`,
+        step1Desc: "Someone near you wants to send you private photos.",
+        btnAmateur: "View private photos",
+        btnProfessional: "Open anonymous chat",
+        step2Title: "Strict Privacy",
+        step2Desc: "The photos you are about to see are very explicit.",
+        step2Question: "Are you over 18 and agree to view this content?",
+        btnPromise: "YES, I AM OVER 18",
+        loadingTitle: "Decrypting messages...",
+        status1: `Locating local inbox in ${displayCity}...`,
+        status2: "Downloading attached media files...",
+        status3: "Removing viewing restrictions...",
+        status4: "Preparing secure viewer...",
+        successTitle: "Messages Ready!",
+        successExpiry: "Photos will be deleted in:",
+        successDesc: `Files decrypted! The users from ${displayCity} have requested their intimate photos be deleted if you don't reply fast. Activate your private access now to view the content and reply to their messages.`,
+        successNote: "Age verification required (18+)",
+        btnFinal: "VIEW PHOTOS & MESSAGES",
+        detailsText: "Protected Private Messages"
+      }
+    ],
     fr: {
       step1Title: `Découvrez des femmes mûres près de ${displayCity}`,
       step1Desc: "Quel genre de rencontres recherchez-vous?",
@@ -375,7 +468,86 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     }
   };
 
-  const t = dict[detectedLang] || dict.es;
+  const genericQuestions: Record<string, any> = {
+    es: {
+      q1Desc: "Por favor, verifica tu edad para continuar:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Último paso de verificación",
+      q2Desc: "¿Qué tipo de cuerpo prefieres conocer hoy?",
+      q2Btn1: "Delgadas",
+      q2Btn2: "Curvilíneas",
+      q2Btn3: "Me da igual",
+    },
+    en: {
+      q1Desc: "Please verify your age to continue:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Final verification step",
+      q2Desc: "What body type do you prefer to meet today?",
+      q2Btn1: "Slim",
+      q2Btn2: "Curvy",
+      q2Btn3: "Any",
+    },
+    fr: {
+      q1Desc: "Veuillez vérifier votre âge pour continuer:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Dernière étape de vérification",
+      q2Desc: "Quel type de corps préférez-vous rencontrer aujourd'hui?",
+      q2Btn1: "Mince",
+      q2Btn2: "Avec des courbes",
+      q2Btn3: "Peu importe",
+    },
+    ja: {
+      q1Desc: "続行するには年齢を確認してください:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "最終確認ステップ",
+      q2Desc: "今日会いたい体型は？",
+      q2Btn1: "スリム",
+      q2Btn2: "ぽっちゃり",
+      q2Btn3: "こだわらない",
+    },
+    it: {
+      q1Desc: "Verifica la tua età per continuare:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Ultimo passaggio di verifica",
+      q2Desc: "Che tipo di corpo preferisci incontrare oggi?",
+      q2Btn1: "Magra",
+      q2Btn2: "Curvy",
+      q2Btn3: "Qualsiasi",
+    },
+    pt: {
+      q1Desc: "Por favor, verifique sua idade para continuar:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Última etapa de verificação",
+      q2Desc: "Que tipo de corpo você prefere conhecer hoje?",
+      q2Btn1: "Magra",
+      q2Btn2: "Com curvas",
+      q2Btn3: "Tanto faz",
+    }
+  };
+
+  const getDictAngle = (langDict: any) => {
+    if (Array.isArray(langDict)) {
+      return langDict[angleIndex] || langDict[0];
+    }
+    return langDict;
+  };
+
+  const t = {
+    ...getDictAngle(dict[detectedLang] || dict.es),
+    ...(genericQuestions[detectedLang] || genericQuestions.es)
+  };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!backgroundRef.current) return;
@@ -435,6 +607,24 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
+
+  const toastMessages = [
+    { text: detectedLang === 'es' ? `🟢 Alguien de ${displayCity} se conectó` : `🟢 Someone from ${displayCity} is online`, type: 'alert' },
+    { text: detectedLang === 'es' ? `💬 Tienes 1 nuevo mensaje privado` : `💬 You have 1 new private message`, type: 'message' },
+    { text: detectedLang === 'es' ? `📸 Una usuaria ha compartido una foto` : `📸 A user shared a photo`, type: 'message' },
+    { text: detectedLang === 'es' ? `⚠️ Tu cupo está a punto de expirar` : `⚠️ Your spot is about to expire`, type: 'alert' },
+  ];
+
+  useEffect(() => {
+    if (step >= 5) return;
+    const interval = setInterval(() => {
+      if (Math.random() > 0.6) return;
+      const randomToast = toastMessages[Math.floor(Math.random() * toastMessages.length)];
+      setActiveToast({ id: Date.now(), text: randomToast.text, type: randomToast.type as 'message' | 'alert' });
+      setTimeout(() => setActiveToast(null), 4000);
+    }, 9000);
+    return () => clearInterval(interval);
+  }, [step, detectedLang, displayCity]);
 
   return (
     <main className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
@@ -560,24 +750,30 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
                     {t.step1Title}
                   </h2>
                   <p className="text-xs text-zinc-400 max-w-[280px] mx-auto leading-relaxed">
-                    {t.step1Desc}
+                    {t.q1Desc}
                   </p>
                 </div>
 
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                   >
-                    <span className="text-sm tracking-wide">{t.btnAmateur}</span>
+                    <span className="text-sm tracking-wide">{t.q1Btn1}</span>
                     <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
                   </button>
-
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                   >
-                    <span className="text-sm tracking-wide">{t.btnProfessional}</span>
+                    <span className="text-sm tracking-wide">{t.q1Btn2}</span>
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                  <button 
+                    onClick={() => setStep(2)}
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+                  >
+                    <span className="text-sm tracking-wide">{t.q1Btn3}</span>
                     <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
                   </button>
                 </div>
@@ -587,6 +783,55 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
             {step === 2 && (
               <motion.div
                 key="step2"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="w-full flex flex-col items-center gap-6"
+              >
+                <div className="relative w-16 h-16 bg-fuchsia-500/15 rounded-full flex items-center justify-center border border-fuchsia-500/35 shadow-lg animate-pulse">
+                  <div className="absolute inset-0 rounded-full border border-fuchsia-500/30 animate-ping opacity-25" />
+                  <Users className="w-7 h-7 text-fuchsia-500" />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-black uppercase text-fuchsia-400 tracking-wider">
+                    {t.q2Title}
+                  </span>
+                  <h2 className="text-xl md:text-2xl font-black font-heading tracking-tight leading-tight text-white">
+                    {t.q2Desc}
+                  </h2>
+                </div>
+
+                <div className="w-full flex flex-col gap-3 pt-2">
+                  <button 
+                    onClick={() => setStep(3)}
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-fuchsia-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:outline-none"
+                  >
+                    <span className="text-sm tracking-wide">{t.q2Btn1}</span>
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-fuchsia-500 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                  <button 
+                    onClick={() => setStep(3)}
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-fuchsia-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:outline-none"
+                  >
+                    <span className="text-sm tracking-wide">{t.q2Btn2}</span>
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-fuchsia-500 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                  <button 
+                    onClick={() => setStep(3)}
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-fuchsia-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:outline-none"
+                  >
+                    <span className="text-sm tracking-wide">{t.q2Btn3}</span>
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-fuchsia-500 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 3 && (
+              <motion.div
+                key="step3"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -612,8 +857,8 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
 
                 <div className="w-full pt-2">
                   <button 
-                    onClick={() => setStep(3)}
-                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
+                    onClick={() => setStep(4)}
+                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
                     <Zap className="w-4 h-4 fill-white" />
@@ -623,9 +868,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
               </motion.div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <motion.div
-                key="step3"
+                key="step4"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -667,9 +912,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
               </motion.div>
             )}
 
-            {step === 4 && (
+            {step === 5 && (
               <motion.div
-                key="step4"
+                key="step5"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
@@ -741,6 +986,27 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
           animation: glow 2s infinite ease-in-out;
         }
       `}</style>
+
+      {/* Fake Chat Toasts */}
+      <AnimatePresence>
+        {activeToast && (
+          <motion.div
+            key={activeToast.id}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 z-50 flex items-center gap-3 bg-zinc-900/95 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-2xl max-w-[90vw] w-max"
+          >
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${activeToast.type === 'message' ? 'bg-fuchsia-500/20 border-fuchsia-500/30 text-fuchsia-400' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'}`}>
+              {activeToast.type === 'message' ? <MessageSquare className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
+            </div>
+            <p className="text-xs font-medium text-white pr-2 tracking-tight">
+              {activeToast.text}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </main>
   );
