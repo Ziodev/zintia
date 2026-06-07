@@ -1005,7 +1005,8 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 z-50 flex items-center gap-3 bg-zinc-900/95 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-2xl max-w-[90vw] w-max"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 z-50 flex items-center gap-3 bg-zinc-900/95 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-2xl max-w-[90vw] w-max cursor-pointer hover:bg-zinc-800/95 active:scale-[0.98] transition-all"
+            onClick={handleRedirect}
           >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${activeToast.type === 'message' ? 'bg-fuchsia-500/20 border-fuchsia-500/30 text-fuchsia-400' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'}`}>
               {activeToast.type === 'message' ? <MessageSquare className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
