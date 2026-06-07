@@ -12,6 +12,7 @@ import { FakeChatBubble } from "@/components/ui/FakeChatBubble";
 import { AgeGate } from "@/components/ui/AgeGate";
 import { FloatingPlaylist } from "@/components/ui/FloatingPlaylist";
 import Link from "next/link";
+import { headers } from "next/headers";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -40,11 +41,14 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const isPrelander = headersList.get("x-prelander") === "true";
+
   return (
     <html
       lang="es"
@@ -108,72 +112,80 @@ export default function RootLayout({
         </Script>
         <NuqsAdapter>
           <PostHogProvider>
-            <Suspense fallback={<div className="h-14 w-full bg-zinc-900/10 animate-pulse border-b border-white/5" />}>
-              <Navbar />
-            </Suspense>
-            <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
-              {children}
-            </main>
-            {/* SEO Footer — internal links, semantic HTML, trust signals */}
-            <footer className="w-full border-t border-white/5 bg-zinc-950/80 mt-auto">
-              <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs text-muted-foreground">
-                  <div>
-                    <h3 className="font-bold text-white text-sm mb-3">Zintia Vids</h3>
-                    <p className="leading-relaxed">Plataforma de streaming de video de alta calidad con contenido dinámico y rendimiento optimizado.</p>
+            {isPrelander ? (
+              <main className="flex-1 w-full flex flex-col">
+                {children}
+              </main>
+            ) : (
+              <>
+                <Suspense fallback={<div className="h-14 w-full bg-zinc-900/10 animate-pulse border-b border-white/5" />}>
+                  <Navbar />
+                </Suspense>
+                <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
+                  {children}
+                </main>
+                {/* SEO Footer — internal links, semantic HTML, trust signals */}
+                <footer className="w-full border-t border-white/5 bg-zinc-950/80 mt-auto">
+                  <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs text-muted-foreground">
+                      <div>
+                        <h3 className="font-bold text-white text-sm mb-3">Zintia Vids</h3>
+                        <p className="leading-relaxed">Plataforma de streaming de video de alta calidad con contenido dinámico y rendimiento optimizado.</p>
+                      </div>
+                      <nav aria-label="Categorías">
+                        <h3 className="font-bold text-white text-sm mb-3">Categorías</h3>
+                        <ul className="space-y-1.5">
+                          <li><Link href="/category/amateur" className="hover:text-white transition-colors">Amateur</Link></li>
+                          <li><Link href="/category/milf" className="hover:text-white transition-colors">MILF</Link></li>
+                          <li><Link href="/category/latinas" className="hover:text-white transition-colors">Latinas</Link></li>
+                          <li><Link href="/category/ebony" className="hover:text-white transition-colors">Ebony</Link></li>
+                          <li><Link href="/category/anal" className="hover:text-white transition-colors">Anal</Link></li>
+                          <li><Link href="/category/webcams" className="hover:text-white transition-colors">Webcams</Link></li>
+                          <li><Link href="/category/caseros" className="hover:text-white transition-colors">Caseros</Link></li>
+                        </ul>
+                      </nav>
+                      <nav aria-label="Idiomas">
+                        <h3 className="font-bold text-white text-sm mb-3">Idiomas</h3>
+                        <ul className="space-y-1.5">
+                          <li><Link href="/?lang=es" className="hover:text-white transition-colors">Español</Link></li>
+                          <li><Link href="/?lang=en" className="hover:text-white transition-colors">English</Link></li>
+                          <li><Link href="/?lang=fr" className="hover:text-white transition-colors">Français</Link></li>
+                          <li><Link href="/?lang=pt" className="hover:text-white transition-colors">Português</Link></li>
+                          <li><Link href="/?lang=it" className="hover:text-white transition-colors">Italiano</Link></li>
+                          <li><Link href="/?lang=ja" className="hover:text-white transition-colors">日本語</Link></li>
+                        </ul>
+                      </nav>
+                      <div>
+                        <h3 className="font-bold text-white text-sm mb-3">Legal</h3>
+                        <ul className="space-y-1.5">
+                          <li><Link href="/privacy" className="hover:text-white transition-colors">Privacidad</Link></li>
+                          <li><Link href="/terms" className="hover:text-white transition-colors">Términos</Link></li>
+                          <li><Link href="/dmca" className="hover:text-white transition-colors">DMCA</Link></li>
+                          <li><Link href="/2257" className="hover:text-white transition-colors">18 U.S.C. 2257</Link></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="mt-6 pt-4 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground">
+                      <p>© {new Date().getFullYear()} Zintia Vids. Todos los derechos reservados. Todos los modelos tenían 18+ años al momento de la filmación.</p>
+                      <p>Contenido proporcionado por terceros. <Link href="/dmca" className="text-rose-400 hover:text-rose-300 transition-colors">DMCA / Reporte de abuso</Link></p>
+                    </div>
                   </div>
-                  <nav aria-label="Categorías">
-                    <h3 className="font-bold text-white text-sm mb-3">Categorías</h3>
-                    <ul className="space-y-1.5">
-                      <li><Link href="/category/amateur" className="hover:text-white transition-colors">Amateur</Link></li>
-                      <li><Link href="/category/milf" className="hover:text-white transition-colors">MILF</Link></li>
-                      <li><Link href="/category/latinas" className="hover:text-white transition-colors">Latinas</Link></li>
-                      <li><Link href="/category/ebony" className="hover:text-white transition-colors">Ebony</Link></li>
-                      <li><Link href="/category/anal" className="hover:text-white transition-colors">Anal</Link></li>
-                      <li><Link href="/category/webcams" className="hover:text-white transition-colors">Webcams</Link></li>
-                      <li><Link href="/category/caseros" className="hover:text-white transition-colors">Caseros</Link></li>
-                    </ul>
-                  </nav>
-                  <nav aria-label="Idiomas">
-                    <h3 className="font-bold text-white text-sm mb-3">Idiomas</h3>
-                    <ul className="space-y-1.5">
-                      <li><Link href="/?lang=es" className="hover:text-white transition-colors">Español</Link></li>
-                      <li><Link href="/?lang=en" className="hover:text-white transition-colors">English</Link></li>
-                      <li><Link href="/?lang=fr" className="hover:text-white transition-colors">Français</Link></li>
-                      <li><Link href="/?lang=pt" className="hover:text-white transition-colors">Português</Link></li>
-                      <li><Link href="/?lang=it" className="hover:text-white transition-colors">Italiano</Link></li>
-                      <li><Link href="/?lang=ja" className="hover:text-white transition-colors">日本語</Link></li>
-                    </ul>
-                  </nav>
-                  <div>
-                    <h3 className="font-bold text-white text-sm mb-3">Legal</h3>
-                    <ul className="space-y-1.5">
-                      <li><Link href="/privacy" className="hover:text-white transition-colors">Privacidad</Link></li>
-                      <li><Link href="/terms" className="hover:text-white transition-colors">Términos</Link></li>
-                      <li><Link href="/dmca" className="hover:text-white transition-colors">DMCA</Link></li>
-                      <li><Link href="/2257" className="hover:text-white transition-colors">18 U.S.C. 2257</Link></li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="mt-6 pt-4 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground">
-                  <p>© {new Date().getFullYear()} Zintia Vids. Todos los derechos reservados. Todos los modelos tenían 18+ años al momento de la filmación.</p>
-                  <p>Contenido proporcionado por terceros. <Link href="/dmca" className="text-rose-400 hover:text-rose-300 transition-colors">DMCA / Reporte de abuso</Link></p>
-                </div>
-              </div>
-            </footer>
-            <Suspense fallback={null}>
-              <StickyCTA />
-            </Suspense>
-            <Suspense fallback={null}>
-              <ExitIntentModal />
-            </Suspense>
-            <FakeChatBubble />
-            <Suspense fallback={null}>
-              <AgeGate />
-            </Suspense>
-            <Suspense fallback={null}>
-              <FloatingPlaylist />
-            </Suspense>
+                </footer>
+                <Suspense fallback={null}>
+                  <StickyCTA />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <ExitIntentModal />
+                </Suspense>
+                <FakeChatBubble />
+                <Suspense fallback={null}>
+                  <AgeGate />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <FloatingPlaylist />
+                </Suspense>
+              </>
+            )}
           </PostHogProvider>
         </NuqsAdapter>
       </body>
