@@ -7,6 +7,7 @@ import { Play, X, ExternalLink, Maximize, Minimize } from "lucide-react";
 import { Video } from "@/lib/data";
 import { Language, translations } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
+import { cn } from "@/lib/utils";
 
 interface VideoPlayerWrapperProps {
   embedUrl: string | null;
@@ -30,31 +31,108 @@ export function VideoPlayerWrapper({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
   const [isIframeLoaded, setIsIframeLoaded] = useState(false);
   const t = translations[lang] || translations.es;
   const nextUrl = nextVideoUrl || `/video/${nextVideo.id}?lang=${lang}`;
 
+  const isIOS = () => {
+    if (typeof window === "undefined") return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  };
+
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
+    const el = containerRef.current;
 
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-      }).catch((err) => {
-        console.error("Error enabling fullscreen:", err);
-      });
+    const hasNativeFullscreen = !!(
+      el.requestFullscreen ||
+      (el as any).webkitRequestFullscreen ||
+      (el as any).mozRequestFullScreen ||
+      (el as any).msRequestFullscreen
+    );
+
+    if (hasNativeFullscreen && !isIOS()) {
+      const isNativeActive = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+
+      if (!isNativeActive) {
+        const req = el.requestFullscreen
+          ? el.requestFullscreen()
+          : (el as any).webkitRequestFullscreen
+          ? (el as any).webkitRequestFullscreen()
+          : (el as any).mozRequestFullScreen
+          ? (el as any).mozRequestFullScreen()
+          : (el as any).msRequestFullscreen();
+
+        Promise.resolve(req)
+          .then(() => {
+            setIsFullscreen(true);
+          })
+          .catch(() => {
+            setIsFakeFullscreen(true);
+            document.body.style.overflow = "hidden";
+          });
+      } else {
+        const exit = document.exitFullscreen
+          ? document.exitFullscreen()
+          : (document as any).webkitExitFullscreen
+          ? (document as any).webkitExitFullscreen()
+          : (document as any).mozCancelFullScreen
+          ? (document as any).mozCancelFullScreen()
+          : (document as any).msExitFullscreen();
+
+        Promise.resolve(exit).then(() => {
+          setIsFullscreen(false);
+        });
+      }
     } else {
-      document.exitFullscreen();
+      setIsFakeFullscreen((prev) => {
+        const next = !prev;
+        if (next) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "";
+        }
+        return next;
+      });
     }
   };
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isNativeActive = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setIsFullscreen(isNativeActive);
     };
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = "";
+      }
     };
   }, []);
 
@@ -87,11 +165,17 @@ export function VideoPlayerWrapper({
   };
 
   const nextTitle = translateTitle(nextVideo.title, lang);
+  const isCurrentlyFullscreen = isFullscreen || isFakeFullscreen;
 
   return (
     <div 
       ref={containerRef}
-      className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl group/player fullscreen:rounded-none fullscreen:aspect-auto fullscreen:w-full fullscreen:h-full"
+      className={cn(
+        "bg-zinc-950 overflow-hidden shadow-2xl group/player transition-all duration-200",
+        isCurrentlyFullscreen
+          ? "fixed inset-0 z-50 w-screen h-screen rounded-none aspect-auto"
+          : "relative w-full aspect-video rounded-2xl border border-white/5"
+      )}
     >
       {embedUrl ? (
         <>
@@ -117,7 +201,7 @@ export function VideoPlayerWrapper({
             className="absolute top-4 left-4 z-25 p-2 bg-black/60 hover:bg-black/80 backdrop-blur border border-white/10 rounded-full text-white transition-all cursor-pointer md:opacity-0 md:group-hover/player:opacity-100 flex items-center gap-1.5 text-xs font-bold font-sans"
             title="Pantalla Completa"
           >
-            {isFullscreen ? (
+            {isCurrentlyFullscreen ? (
               <>
                 <Minimize className="w-4 h-4 text-rose-500" />
                 <span className="pr-1">{lang === "es" ? "Salir" : "Exit"}</span>
