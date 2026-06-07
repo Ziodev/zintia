@@ -630,6 +630,25 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     return () => clearInterval(interval);
   }, [step, detectedLang, displayCity]);
 
+  // --- HACK: BACKBUTTON HIJACK ---
+  // If the user tries to press "Back" on their phone to exit the prelander,
+  // we intercept the event and redirect them to the offer link instead.
+  useEffect(() => {
+    // 1. Push a dummy state so the browser thinks there's a history
+    window.history.pushState({ noBack: true }, "");
+
+    const handlePopState = () => {
+      // 2. When they press back, intercept it and redirect to offer
+      handleRedirect();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   return (
     <main 
       style={{ 
