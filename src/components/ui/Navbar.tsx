@@ -290,8 +290,9 @@ export function Navbar() {
                     <button
                       key={l.id}
                       onClick={() => {
-                        setLang(l.id);
-                        setIsDropdownOpen(false);
+                        const url = new URL(window.location.href);
+                        url.searchParams.set("lang", l.id);
+                        window.location.href = url.pathname + url.search;
                       }}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 text-xs transition-colors text-left hover:bg-white/5 cursor-pointer",
