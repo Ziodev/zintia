@@ -33,6 +33,29 @@ export function VideoPlayerWrapper({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isFakeFullscreen, setIsFakeFullscreen] = useState(false);
   const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+  const [viewportSize, setViewportSize] = useState({ width: "100vw", height: "100dvh" });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleResize = () => {
+      setViewportSize({
+        width: `${window.innerWidth}px`,
+        height: `${window.innerHeight}px`,
+      });
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
   const t = translations[lang] || translations.es;
   const nextUrl = nextVideoUrl || `/video/${nextVideo.id}?lang=${lang}`;
 
@@ -173,9 +196,10 @@ export function VideoPlayerWrapper({
       className={cn(
         "bg-zinc-950 overflow-hidden shadow-2xl group/player transition-all duration-200",
         isCurrentlyFullscreen
-          ? "fixed inset-0 z-50 w-screen h-[100dvh] rounded-none aspect-auto flex items-center justify-center pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] px-[env(safe-area-inset-left)]"
+          ? "fixed inset-0 z-50 rounded-none aspect-auto flex items-center justify-center pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] px-[env(safe-area-inset-left)]"
           : "relative w-full aspect-video rounded-2xl border border-white/5"
       )}
+      style={isCurrentlyFullscreen ? { width: viewportSize.width, height: viewportSize.height } : undefined}
     >
       {embedUrl ? (
         <>
