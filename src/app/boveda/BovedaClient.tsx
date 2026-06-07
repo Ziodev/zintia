@@ -469,7 +469,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
+    <main className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
       
       <div 
         ref={backgroundRef}
@@ -480,7 +480,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
           "--mouse-y": "-999px",
         } as React.CSSProperties}
       >
-        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[12px] scale-105 select-none pointer-events-none">
+        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[12px] scale-105 select-none pointer-events-none" aria-hidden="true">
           {BACKGROUND_TILES.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
               <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
@@ -496,6 +496,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
             maskImage: "radial-gradient(circle 120px at var(--mouse-x) var(--mouse-y), black 0%, black 40%, transparent 100%)",
             WebkitMaskImage: "radial-gradient(circle 120px at var(--mouse-x) var(--mouse-y), black 0%, black 40%, transparent 100%)"
           }}
+          aria-hidden="true"
         >
           {BACKGROUND_TILES.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/15 overflow-hidden aspect-[4/3] flex flex-col justify-end p-3 shadow-2xl">
@@ -576,7 +577,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                   >
                     <span className="text-sm tracking-wide">{t.btnAmateur}</span>
                     <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
@@ -584,7 +585,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
 
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)] focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                   >
                     <span className="text-sm tracking-wide">{t.btnProfessional}</span>
                     <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
@@ -622,7 +623,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
                 <div className="w-full pt-2">
                   <button 
                     onClick={() => setStep(3)}
-                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse"
+                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
                     <Zap className="w-4 h-4 fill-white" />
@@ -654,7 +655,14 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
                   </p>
                 </div>
 
-                <div className="w-full bg-zinc-950 border border-white/10 rounded-full h-3.5 overflow-hidden p-[2px]">
+                <div 
+                  className="w-full bg-zinc-950 border border-white/10 rounded-full h-3.5 overflow-hidden p-[2px]"
+                  role="progressbar"
+                  aria-valuenow={Math.round(progress)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuetext={progressText}
+                >
                   <motion.div 
                     className="h-full bg-gradient-to-r from-rose-600 to-fuchsia-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]"
                     initial={{ width: "0%" }}
@@ -703,7 +711,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button 
                     onClick={handleRedirect}
-                    className="w-full bg-gradient-to-r from-rose-600 via-rose-500 to-fuchsia-600 hover:from-rose-500 hover:to-fuchsia-500 text-white font-black text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-[0_0_25px_rgba(244,63,94,0.5)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-rose-400/20 tracking-wider relative overflow-hidden group select-none animate-glow"
+                    className="w-full bg-gradient-to-r from-rose-600 via-rose-500 to-fuchsia-600 hover:from-rose-500 hover:to-fuchsia-500 text-white font-black text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-[0_0_25px_rgba(244,63,94,0.5)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-rose-400/20 tracking-wider relative overflow-hidden group select-none animate-glow focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
                     <Sparkles className="w-4 h-4 fill-white animate-spin duration-[4000ms]" />
@@ -744,6 +752,6 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
         }
       `}</style>
 
-    </div>
+    </main>
   );
 }

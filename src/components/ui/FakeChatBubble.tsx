@@ -83,16 +83,29 @@ export function FakeChatBubble() {
     window.open(getMobideaLink("fake_chat_bubble"), "_blank", "noopener,noreferrer");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleChatClick();
+    }
+  };
+
   if (!showBubble) return null;
 
   const currentMsg = messages[lang] || messages.es;
   const currentAvatar = avatars[lang] || avatars.es;
 
   return (
-    <div className="fixed bottom-20 left-4 z-50 max-w-[320px] w-[calc(100vw-2rem)] animate-in slide-in-from-bottom-5 duration-500 font-sans">
+    <aside 
+      className="fixed bottom-20 left-4 z-50 max-w-[320px] w-[calc(100vw-2rem)] animate-in slide-in-from-bottom-5 duration-500 font-sans"
+      aria-label="Live Chat Notification"
+    >
       <div 
+        role="button"
+        tabIndex={0}
         onClick={handleChatClick}
-        className="relative flex flex-col bg-zinc-950/95 border border-rose-500/25 shadow-[0_8px_32px_rgba(244,63,94,0.15)] rounded-2xl p-4 cursor-pointer hover:border-rose-500/40 hover:shadow-[0_12px_40px_rgba(244,63,94,0.25)] transition-all duration-300 group overflow-hidden"
+        onKeyDown={handleKeyDown}
+        className="relative flex flex-col bg-zinc-950/95 border border-rose-500/25 shadow-[0_8px_32px_rgba(244,63,94,0.15)] rounded-2xl p-4 cursor-pointer hover:border-rose-500/40 hover:shadow-[0_12px_40px_rgba(244,63,94,0.25)] transition-all duration-300 group overflow-hidden focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
       >
         {/* Decorative glassmorphic background layer */}
         <div className="absolute inset-0 bg-gradient-to-tr from-rose-500/5 via-transparent to-transparent opacity-50 pointer-events-none" />
@@ -110,7 +123,7 @@ export function FakeChatBubble() {
           </div>
           <button 
             onClick={handleClose}
-            className="p-1 text-muted-foreground hover:text-white hover:bg-white/5 rounded-full transition-colors"
+            className="p-1 text-muted-foreground hover:text-white hover:bg-white/5 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
             aria-label="Close"
           >
             <X className="w-3.5 h-3.5" />
@@ -159,6 +172,6 @@ export function FakeChatBubble() {
           </span>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

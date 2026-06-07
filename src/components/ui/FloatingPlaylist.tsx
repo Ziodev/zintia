@@ -205,7 +205,7 @@ export function FloatingPlaylist() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-zinc-950/90 hover:bg-rose-600 border border-rose-500/30 hover:border-rose-500 text-rose-500 hover:text-white flex items-center justify-center transition-all duration-300 shadow-[0_4px_20px_rgba(244,63,94,0.2)] hover:scale-110 cursor-pointer animate-glow group"
+        className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-zinc-950/90 hover:bg-rose-600 border border-rose-500/30 hover:border-rose-500 text-rose-500 hover:text-white flex items-center justify-center transition-all duration-300 shadow-[0_4px_20px_rgba(244,63,94,0.2)] hover:scale-110 cursor-pointer animate-glow group focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
         aria-label="Open playlist"
       >
         <Film className="w-6 h-6 group-hover:animate-pulse" />
@@ -230,12 +230,15 @@ export function FloatingPlaylist() {
             />
 
             {/* Sidebar Drawer */}
-            <motion.div
+            <motion.aside
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-zinc-950 border-l border-white/5 shadow-2xl flex flex-col font-sans"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-zinc-950 border-l border-white/5 shadow-2xl flex flex-col font-sans focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+              aria-label="Hot Playlist Drawer"
+              role="dialog"
+              aria-modal="true"
             >
               {/* Header */}
               <div className="p-4 border-b border-white/5 flex items-center justify-between bg-zinc-900/40">
@@ -252,7 +255,7 @@ export function FloatingPlaylist() {
                   {playlist.length > 0 && (
                     <button
                       onClick={handleClear}
-                      className="text-xs text-muted-foreground hover:text-rose-400 font-semibold transition-colors flex items-center gap-1 cursor-pointer mr-2"
+                      className="text-xs text-muted-foreground hover:text-rose-400 font-semibold transition-colors flex items-center gap-1 cursor-pointer mr-2 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none rounded"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>{t.clear}</span>
@@ -260,7 +263,7 @@ export function FloatingPlaylist() {
                   )}
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-1.5 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                    className="p-1.5 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -283,7 +286,7 @@ export function FloatingPlaylist() {
                     <Link
                       href={`/swipe?lang=${activeLang}`}
                       onClick={() => setIsOpen(false)}
-                      className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md shadow-rose-500/20 text-center font-heading"
+                      className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md shadow-rose-500/20 text-center font-heading focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                     >
                       {t.playGame}
                     </Link>
@@ -331,7 +334,7 @@ export function FloatingPlaylist() {
                           {/* Actions */}
                           <button
                             onClick={() => handleRemoveItem(video.id)}
-                            className="p-1.5 text-muted-foreground hover:text-rose-400 rounded-lg hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+                            className="p-1.5 text-muted-foreground hover:text-rose-400 rounded-lg hover:bg-white/5 transition-colors cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                             aria-label="Remove video"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -357,7 +360,7 @@ export function FloatingPlaylist() {
                         window.location.href = playUrl;
                       }
                     }}
-                    className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-lg shadow-rose-500/20 text-center font-heading animate-glow cursor-pointer"
+                    className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-lg shadow-rose-500/20 text-center font-heading animate-glow cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                   >
                     <Play className="w-3.5 h-3.5 fill-white" />
                     <span>{t.playAll}</span>
@@ -365,14 +368,14 @@ export function FloatingPlaylist() {
 
                   <button
                     onClick={handleShare}
-                    className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 border border-white/5 cursor-pointer font-heading"
+                    className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 border border-white/5 cursor-pointer font-heading focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                   >
                     <Share2 className="w-3.5 h-3.5 text-rose-500" />
                     <span>{t.share}</span>
                   </button>
                 </div>
               )}
-            </motion.div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>
@@ -395,15 +398,19 @@ export function FloatingPlaylist() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-55 w-[calc(100%-2rem)] max-w-sm bg-zinc-950 border border-rose-500/20 rounded-3xl p-6 md:p-8 text-center shadow-2xl font-sans"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-55 w-[calc(100%-2rem)] max-w-sm bg-zinc-950 border border-rose-500/20 rounded-3xl p-6 md:p-8 text-center shadow-2xl font-sans focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="playlist-unlock-title"
+              aria-describedby="playlist-unlock-desc"
             >
               <div className="bg-rose-500/10 text-rose-500 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
                 <Film className="w-7 h-7" />
               </div>
-              <h3 className="text-sm md:text-base font-black text-white mb-2 uppercase tracking-wide">
+              <h3 id="playlist-unlock-title" className="text-sm md:text-base font-black text-white mb-2 uppercase tracking-wide">
                 {t.unlockTitle}
               </h3>
-              <p className="text-[11px] text-muted-foreground leading-relaxed mb-6">
+              <p id="playlist-unlock-desc" className="text-[11px] text-muted-foreground leading-relaxed mb-6">
                 {t.unlockDesc}
               </p>
               
@@ -417,13 +424,13 @@ export function FloatingPlaylist() {
                     setShowUnlockModal(false);
                     window.location.href = getMobideaLink("floating_playlist");
                   }}
-                  className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-rose-500/20 animate-glow block text-center font-heading"
+                  className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-rose-500/20 animate-glow block text-center font-heading focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
                 >
                   {t.unlockBtn}
                 </a>
                 <button
                   onClick={() => setShowUnlockModal(false)}
-                  className="text-xs text-muted-foreground hover:text-white transition-colors py-2 font-semibold font-sans hover:underline cursor-pointer"
+                  className="text-xs text-muted-foreground hover:text-white transition-colors py-2 font-semibold font-sans hover:underline cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none rounded"
                 >
                   {t.unlockCancel}
                 </button>

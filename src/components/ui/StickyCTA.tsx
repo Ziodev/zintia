@@ -119,12 +119,13 @@ export function StickyCTA() {
 
   return (
     <AnimatePresence>
-      <motion.div
+      <motion.aside
         initial={{ y: 100, x: "-50%", opacity: 0 }}
         animate={{ y: 0, x: "-50%", opacity: 1 }}
         exit={{ y: 100, x: "-50%", opacity: 0 }}
         transition={{ type: "spring", stiffness: 120, damping: 14, delay: 1 }}
-        className="fixed bottom-4 left-1/2 z-40 w-[92%] max-w-lg bg-zinc-900/80 backdrop-blur-lg border border-white/10 rounded-2xl p-3 flex items-center justify-between shadow-2xl shadow-rose-500/10 gap-3"
+        className="fixed bottom-4 left-1/2 z-40 w-[92%] max-w-lg bg-zinc-900/80 backdrop-blur-lg border border-white/10 rounded-2xl p-3 flex items-center justify-between shadow-2xl shadow-rose-500/10 gap-3 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+        aria-label="Limited Offer CTA"
       >
         <div className="flex items-center gap-3">
           <div className="bg-rose-500/15 p-2 rounded-xl text-rose-500 shrink-0">
@@ -156,20 +157,20 @@ export function StickyCTA() {
           <a
             href="#"
             onClick={handleCTAClick}
-            className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow"
+            className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
           >
             <span>{t.enter}</span>
             <ExternalLink className="w-3 h-3" />
           </a>
           <button
             onClick={handleClose}
-            className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+            className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
             aria-label="Cerrar banner"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
-      </motion.div>
+      </motion.aside>
     </AnimatePresence>
   );
 }

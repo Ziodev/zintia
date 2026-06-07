@@ -116,7 +116,10 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
   if (relatedModels.length === 0) return null;
 
   return (
-    <div className="w-full flex flex-col gap-4 mt-6 p-4.5 bg-zinc-950/40 backdrop-blur-md border border-white/5 rounded-2xl">
+    <section 
+      className="w-full flex flex-col gap-4 mt-6 p-4.5 bg-zinc-950/40 backdrop-blur-md border border-white/5 rounded-2xl"
+      aria-label="Modelos en vivo"
+    >
       <div className="flex items-center gap-2 border-b border-white/5 pb-2.5">
         <Tv className="w-4 h-4 text-rose-500 shrink-0" />
         <h3 className="text-xs font-bold text-white uppercase tracking-wider">
@@ -144,7 +147,7 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
               }}
               onMouseEnter={() => setHoveredId(model.id)}
               onMouseLeave={() => setHoveredId(null)}
-              className="group relative flex flex-col bg-zinc-900/40 hover:bg-zinc-900 border border-white/5 hover:border-rose-500/50 rounded-xl overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-rose-500/10 cursor-pointer"
+              className="group relative flex flex-col bg-zinc-900/40 hover:bg-zinc-900 border border-white/5 hover:border-rose-500/50 rounded-xl overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-rose-500/10 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
             >
 
               {/* Media Section */}
@@ -216,6 +219,6 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

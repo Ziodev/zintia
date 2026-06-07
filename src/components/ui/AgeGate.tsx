@@ -57,6 +57,10 @@ export function AgeGate() {
   // escaping any parent stacking contexts from providers/wrappers
   return createPortal(
     <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="age-gate-title"
+      aria-describedby="age-gate-desc"
       style={{
         position: "fixed",
         inset: 0,
@@ -109,10 +113,10 @@ export function AgeGate() {
         </div>
 
         {/* Content */}
-        <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight">
+        <h2 id="age-gate-title" className="font-heading text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight">
           {t.ageGateTitle}
         </h2>
-        <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-sm">
+        <p id="age-gate-desc" className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-sm">
           {t.ageGateDesc}
         </p>
 
@@ -141,13 +145,14 @@ export function AgeGate() {
               textTransform: "uppercase" as const,
               cursor: "pointer",
             }}
+            className="focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
           >
             {t.ageGateConfirm}
           </button>
 
           <button
             onClick={handleReject}
-            className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors uppercase tracking-wider underline underline-offset-4 cursor-pointer font-sans py-2 px-4 hover:bg-white/5 rounded-xl"
+            className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors uppercase tracking-wider underline underline-offset-4 cursor-pointer font-sans py-2 px-4 hover:bg-white/5 rounded-xl focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
           >
             {t.ageGateExit}
           </button>

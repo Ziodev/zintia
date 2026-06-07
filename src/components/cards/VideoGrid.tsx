@@ -382,14 +382,14 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
             <a
               href="#"
               onClick={handleRoadblockCTAClick}
-              className="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading"
+              className="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none"
             >
               <span>{ROADBLOCK_COPIES[activeLang].button}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <button
               onClick={handleBypass}
-              className="w-full sm:w-auto text-xs text-muted-foreground hover:text-white transition-colors cursor-pointer font-sans font-semibold py-3 px-4 hover:underline"
+              className="w-full sm:w-auto text-xs text-muted-foreground hover:text-white transition-colors cursor-pointer font-sans font-semibold py-3 px-4 hover:underline focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none focus:outline-none rounded"
             >
               {ROADBLOCK_COPIES[activeLang].bypass}
             </button>

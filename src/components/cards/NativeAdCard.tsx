@@ -131,6 +131,22 @@ export function NativeAdCard({
     window.location.href = activeUrl;
   };
 
+  const handleLikeKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      handleLikeClick(e as any);
+    }
+  };
+
+  const handlePassKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      handlePassClick(e as any);
+    }
+  };
+
   return (
     <a
       ref={containerRef}
@@ -141,7 +157,7 @@ export function NativeAdCard({
         setIsHovered(false);
         setIsVideoPlaying(false);
       }}
-      className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-rose-500/10 transition-all duration-300 hover:scale-[1.02] hover:border-rose-500/30 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer"
+      className="group relative flex flex-col bg-card rounded-2xl overflow-hidden border border-rose-500/10 transition-all duration-300 hover:scale-[1.02] hover:border-rose-500/30 hover:shadow-xl hover:shadow-rose-500/5 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
     >
       <div className="relative w-full aspect-video bg-zinc-950 overflow-hidden">
         {/* Poster Image */}
@@ -245,14 +261,20 @@ export function NativeAdCard({
         ) : (
           <div className="flex items-center gap-2 mt-2 w-full">
             <div
+              role="button"
+              tabIndex={0}
               onClick={handleLikeClick}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold text-[10px] py-2 rounded-xl text-center shadow-md shadow-rose-500/10 transition-all active:scale-95 cursor-pointer"
+              onKeyDown={handleLikeKeyDown}
+              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold text-[10px] py-2 rounded-xl text-center shadow-md shadow-rose-500/10 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             >
               {INTERACTIVE_LABELS[activeLang].like}
             </div>
             <div
+              role="button"
+              tabIndex={0}
               onClick={handlePassClick}
-              className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-muted-foreground hover:text-white font-semibold text-[10px] py-2 rounded-xl text-center transition-all active:scale-95 cursor-pointer"
+              onKeyDown={handlePassKeyDown}
+              className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-muted-foreground hover:text-white font-semibold text-[10px] py-2 rounded-xl text-center transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
             >
               {INTERACTIVE_LABELS[activeLang].pass}
             </div>
