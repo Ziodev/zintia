@@ -17,12 +17,12 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const activeLang = (resolvedParams.lang as Language) || "es";
 
   const titles: Record<Language, string> = {
-    es: "Zintia Vids - Video Gratis Online HD y Webcams en Vivo",
-    en: "Zintia Vids - Free HD Video Online & Live Webcams",
-    fr: "Zintia Vids - Vidéo Gratuite en HD & Webcams en Direct",
-    ja: "Zintia Vids - 無料高画質動画オンライン＆ライブチャット",
-    it: "Zintia Vids - Video Gratis Online HD e Webcam dal Vivo",
-    pt: "Zintia Vids - Vídeo Grátis Online HD e Webcams ao Vivo"
+    es: "Zintia Vids - Video Premium Online HD y Webcams en Vivo",
+    en: "Zintia Vids - Premium HD Video Online & Live Webcams",
+    fr: "Zintia Vids - Vidéo Premium en HD & Webcams en Direct",
+    ja: "Zintia Vids - プレミアム高画質動画オンライン＆ライブチャット",
+    it: "Zintia Vids - Video Premium Online HD e Webcam dal Vivo",
+    pt: "Zintia Vids - Vídeo Premium Online HD e Webcams ao Vivo"
   };
 
   const descriptions: Record<Language, string> = {

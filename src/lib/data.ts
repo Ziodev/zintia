@@ -22,7 +22,7 @@ export interface Ad {
 export const MOCK_ADS: Ad[] = [
   {
     title: "💋 Chat en Vivo",
-    ctaText: "Entrar Gratis →",
+    ctaText: "Entrar VIP →",
     affiliateUrl: "https://example.com/affiliate/livechat",
     thumbnailUrl: "",
     videoPreviewUrl: "",

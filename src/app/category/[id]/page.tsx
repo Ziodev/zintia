@@ -26,28 +26,28 @@ const CATEGORY_NAMES: Record<string, Record<Language, string>> = {
 
 const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
   amateur: {
-    es: "Explora los mejores videos amateur gratis en alta definición. Contenido casero, real y de parejas aficionadas.",
-    en: "Explore the best free amateur videos in high definition. Homemade, real and amateur couple content.",
-    fr: "Explorez les meilleures vidéos amateurs gratuites en haute définition. Contenu fait maison et réel.",
-    ja: "高画質の最高の無料アマチュア動画をご覧ください。自家製、リアル、素人カップルのコンテンツ。",
-    it: "Esplora i migliori video amatoriali gratis in alta definizione. Contenuto casalingo e reale.",
-    pt: "Explore os melhores vídeos amadores gratuitos em alta definição. Conteúdo caseiro e real."
+    es: "Explora los mejores videos amateur en alta definición. Contenido casero, real y de parejas aficionadas.",
+    en: "Explore the best amateur videos in high definition. Homemade, real and amateur couple content.",
+    fr: "Explorez les meilleures vidéos amateurs en haute définition. Contenu fait maison et réel.",
+    ja: "高画質のベストアマチュア動画をご覧ください。自家製、リアル、素人カップルのコンテンツ。",
+    it: "Esplora i migliori video amatoriali in alta definizione. Contenuto casalingo e reale.",
+    pt: "Explore os melhores vídeos amadores em alta definição. Conteúdo caseiro e real."
   },
   anal: {
-    es: "Los videos de sexo anal más populares en calidad HD sin interrupciones. Disfruta de la mejor colección gratis.",
-    en: "The most popular anal sex videos in HD quality without buffering. Enjoy the best free collection.",
-    fr: "Les vidéos de sodomie les plus populaires en qualité HD sans interruption. Profitez de la meilleure collection gratuite.",
-    ja: "バッファリングなしの高画質アナル動画。最高の無料コレクションをお楽しみください。",
-    it: "I video di sesso anale più popolari in qualità HD senza buffering. Goditi la migliore collezione gratuita.",
-    pt: "Os vídeos de sexo anal mais populares em qualidade HD sem interrupções. Desfrute da melhor coleção gratuita."
+    es: "Los videos de sexo anal más populares en calidad HD sin interrupciones. Disfruta de la mejor colección online.",
+    en: "The most popular anal sex videos in HD quality without buffering. Enjoy the best collection.",
+    fr: "Les vidéos de sodomie les plus populaires en qualité HD sans interruption. Profitez de la meilleure collection.",
+    ja: "バッファリングなしの高画質アナル動画。最高のコレクションをお楽しみください。",
+    it: "I video di sesso anale più popolari in qualità HD senza buffering. Goditi la migliore collezione.",
+    pt: "Os vídeos de sexo anal mais populares em qualidade HD sem interrupções. Desfrute da melhor coleção."
   },
   milf: {
-    es: "Videos gratis de maduras, señoras y MILFs ardientes en alta definición. El mejor contenido de maduras online.",
-    en: "Free videos of hot MILFs and mature women in high definition. The best mature content online.",
-    fr: "Vidéos gratuites de MILF et de femmes matures en haute définition. Le meilleur contenu mature en ligne.",
-    ja: "高画質のホットな熟女や人妻の無料動画。オンラインで最高の熟女コンテンツ。",
-    it: "Video gratuiti di MILF calde e donne mature in alta definizione. Il mejor contenuto maturo online.",
-    pt: "Vídeos gratuitos de MILFs quentes e mulheres maduras em alta definição. O melhor conteúdo de coroas online."
+    es: "Videos de maduras, señoras y MILFs ardientes en alta definición. El mejor contenido de maduras online.",
+    en: "Videos of hot MILFs and mature women in high definition. The best mature content online.",
+    fr: "Vidéos de MILF et de femmes matures en haute définition. Le meilleur contenu mature en ligne.",
+    ja: "高画質のホットな熟女や人妻の動画。オンラインで最高の熟女コンテンツ。",
+    it: "Video di MILF calde e donne mature in alta definizione. Il miglior contenuto maturo online.",
+    pt: "Vídeos de MILFs quentes e mulheres maduras em alta definição. O melhor conteúdo de coroas online."
   },
   caseros: {
     es: "Videos caseros reales grabados por parejas aficionadas en su intimidad. Acción real sin cortes en calidad HD.",
@@ -58,28 +58,28 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     pt: "Vídeos caseiros reais gravados por casais amadores na intimidade. Ação real sem cortes em qualidade HD."
   },
   latinas: {
-    es: "Disfruta de ardientes videos de latinas gratis. Contenido de modelos de Colombia, Brasil, México y más en HD.",
-    en: "Enjoy hot Latina videos for free. HD content from models in Colombia, Brazil, Mexico and more.",
-    fr: "Profitez de vidéos de latinas chaudes gratuitement. Contenu HD de modèles de Colombie, Brésil, Mexique et plus.",
-    ja: "ホットなラテン系の無料動画をお楽しみください。コロンビア、ブラジル、メキシコなどのモデルのHDコンテンツ。",
-    it: "Goditi video di latine calde gratis. Contenuto HD di modelle provenienti da Colombia, Brasile, Messico e altro.",
-    pt: "Desfrute de vídeos de latinas quentes gratuitamente. Conteúdo HD de modelos da Colômbia, Brasil, México e muito más."
+    es: "Disfruta de ardientes videos de latinas en alta definición. Contenido de modelos de Colombia, Brasil, México y más en HD.",
+    en: "Enjoy hot Latina videos in high definition. HD content from models in Colombia, Brazil, Mexico and more.",
+    fr: "Profitez de vidéos de latinas chaudes en haute définition. Contenu HD de modèles de Colombie, Brésil, Mexique et plus.",
+    ja: "ホットなラテン系の動画をお楽しみください。コロンビア、ブラジル、メキシコなどのモデルのHDコンテンツ。",
+    it: "Goditi video di latine calde in alta definizione. Contenuto HD di modelle provenienti da Colombia, Brasile, Messico e altro.",
+    pt: "Desfrute de vídeos de latinas quentes em alta definição. Conteúdo HD de modelos da Colômbia, Brasil, México e muito mais."
   },
   ebony: {
-    es: "La mejor colección de videos de negras y ebony gratis en alta definición. Disfruta de la mejor calidad premium.",
-    en: "The best collection of free black and ebony videos in high definition. Enjoy the best premium quality.",
-    fr: "La meilleure collection de vidéos de femmes noires et ébène gratuites en haute définition. Qualité premium.",
-    ja: "高画質の黒人とエボニーの無料動画の最高のコレクション。最高のプレミアム品質をお楽しみください。",
-    it: "La migliore collezione di video di nere ed ebano gratis in alta definizione. Goditi la migliore qualità premium.",
-    pt: "A melhor coleção de vídeos de negras e ebony gratuitos em alta definição. Desfrute da melhor qualidade premium."
+    es: "La mejor colección de videos de negras y ebony en alta definición. Disfruta de la mejor calidad premium.",
+    en: "The best collection of black and ebony videos in high definition. Enjoy the best premium quality.",
+    fr: "La meilleure collection de vidéos de femmes noires et ébène en haute définition. Qualité premium.",
+    ja: "高画質の黒人とエボニーの動画の最高のコレクション。最高のプレミアム品質をお楽しみください。",
+    it: "La migliore collezione di video di nere ed ebano in alta definizione. Goditi la migliore qualità premium.",
+    pt: "A melhor coleção de vídeos de negras e ebony em alta definição. Desfrute da melhor qualidade premium."
   },
   webcams: {
-    es: "Accede a las mejores salas de webcams premium en vivo gratis. Chat en directo con miles de modelos online.",
-    en: "Access the best premium live webcam rooms for free. Live chat with thousands of models online.",
-    fr: "Accédez gratuitement aux meilleurs salons de webcams en direct premium. Chat en direct avec des modèles.",
-    ja: "最高のプレミアムライブチャットルームに無料でアクセス。何千人ものモデルとのライブチャット。",
-    it: "Accedi gratuitamente alle migliori stanze di webcam dal vivo premium. Chat dal vivo con modelle online.",
-    pt: "Aceda às melhores salas de webcams premium ao vivo gratuitamente. Chat ao vivo com modelos online."
+    es: "Accede a las mejores salas de webcams premium en vivo. Chat en directo con miles de modelos online.",
+    en: "Access the best premium live webcam rooms. Live chat with thousands of models online.",
+    fr: "Accédez aux meilleurs salons de webcams en direct premium. Chat en direct avec des modèles.",
+    ja: "最高のプレミアムライブチャットルームにアクセス。何千人ものモデルとのライブチャット。",
+    it: "Accedi alle migliori stanze di webcam dal vivo premium. Chat dal vivo con modelle online.",
+    pt: "Aceda às melhores salas de webcams premium ao vivo. Chat ao vivo com modelos online."
   }
 };
 
@@ -95,7 +95,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const catName = CATEGORY_NAMES[id]?.[activeLang] || id;
   const catDesc = CATEGORY_DESCRIPTIONS[id]?.[activeLang] || "";
 
-  const title = `Videos de Categoría ${catName} Gratis HD | Zintia Vids`;
+  const title = `Videos de Categoría ${catName} HD | Zintia Vids`;
   const description = `${catDesc} Streaming de alto rendimiento sin interrupciones.`;
 
   return {

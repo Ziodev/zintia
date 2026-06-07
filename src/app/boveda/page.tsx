@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { BovedaClient } from "./BovedaClient";
 import { SfwPage } from "./SfwPage";
+import { getVideos } from "@/lib/feed";
 
 // Completely SFW Metadata for Search Engines and Ad Network Bot Reviews
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   robots: "noindex, nofollow", // Prevent organic indexing of pre-lander pages to keep campaigns clean
   openGraph: {
     title: "Bóveda Secure - Encriptación Local de Archivos AES-256",
-    description: "Encriptación de archivos a nivel de cliente en segundos. 100% privado.",
+    description: "Encriptación de archivos a nivel de client en segundos. 100% privado.",
     type: "website",
   }
 };
@@ -35,6 +36,10 @@ export default async function BovedaPage({ searchParams }: PageProps) {
     return <SfwPage />;
   }
 
+  // Fetch real videos from the DB (with static fallbacks)
+  const allVideos = await getVideos();
+  const initialVideos = allVideos.slice(0, 6);
+
   return (
     <BovedaClient 
       country={country} 
@@ -42,6 +47,7 @@ export default async function BovedaPage({ searchParams }: PageProps) {
       isBot={isBot} 
       clickId={click} 
       zoneId={zona} 
+      initialVideos={initialVideos}
     />
   );
 }

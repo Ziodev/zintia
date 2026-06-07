@@ -49,7 +49,7 @@ export async function GET() {
     
     for (const video of dbVideos) {
       const title = video.title;
-      const description = `Mira el video ${title} gratis en alta definicion en la categoria ${video.category}. Disfruta de la mejor calidad.`;
+      const description = `Mira el video ${title} en alta definicion en la categoria ${video.category}. Disfruta de la mejor calidad.`;
       
       const slug = slugify(translateTitle(title, "es"));
       const loc = `${SITE_URL}/video/${slug}-${video.id}`;

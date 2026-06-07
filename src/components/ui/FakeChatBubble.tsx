@@ -9,33 +9,33 @@ import { getMobideaLink } from "@/lib/utils";
 const messages: Record<Language, { name: string; text: string; cta: string }> = {
   es: {
     name: "Sofía (21)",
-    text: "¡Hola! Estoy online en mi webcam ahora mismo y no tengo a nadie en mi sala. ¿Quieres entrar a verme gratis? ❤️",
-    cta: "Chatear gratis ahora"
+    text: "¡Hola! Estoy online en mi webcam ahora mismo y no tengo a nadie en mi sala. ¿Quieres entrar a verme? ❤️",
+    cta: "Chatear ahora"
   },
   en: {
     name: "Chloe (21)",
-    text: "Hey! I'm live on my webcam right now and my room is empty. Want to join and watch me for free? ❤️",
-    cta: "Chat free now"
+    text: "Hey! I'm live on my webcam right now and my room is empty. Want to join and watch me? ❤️",
+    cta: "Chat now"
   },
   fr: {
     name: "Léa (20)",
-    text: "Salut ! Je suis en direct sur ma webcam en ce moment et mon salon est vide. Tu veux me rejoindre gratuitement ? ❤️",
-    cta: "Chatter gratuitement"
+    text: "Salut ! Je suis en direct sur ma webcam en ce moment et mon salon est vide. Tu veux me rejoindre ? ❤️",
+    cta: "Chatter maintenant"
   },
   ja: {
     name: "結衣 (22)",
-    text: "ねえ！今ウェブカメラで配信中なんだけど、誰もいなくて寂しいの。無料で私に会いに来ない？❤️",
-    cta: "今すぐ無料チャット"
+    text: "ねえ！今ウェブカメラで配信中なんだけど、誰もいなくて寂しいの。私に会いに来ない？❤️",
+    cta: "今すぐチャット"
   },
   it: {
     name: "Giulia (21)",
-    text: "Ciao! Sono in diretta sulla mia webcam in questo momento e la mia stanza è vuota. Vuoi entrare a vedermi gratis? ❤️",
-    cta: "Chatta gratis ora"
+    text: "Ciao! Sono in diretta sulla mia webcam in questo momento e la mia stanza è vuota. Vuoi entrare a vedermi? ❤️",
+    cta: "Chatta ora"
   },
   pt: {
     name: "Beatriz (22)",
-    text: "Oi! Estou ao vivo na minha webcam agora e minha sala está vazia. Quer entrar e me ver grátis? ❤️",
-    cta: "Conversar grátis"
+    text: "Oi! Estou ao vivo na minha webcam agora e minha sala está vazia. Quer entrar e me ver? ❤️",
+    cta: "Conversar agora"
   }
 };
 

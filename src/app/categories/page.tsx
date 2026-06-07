@@ -19,12 +19,12 @@ const CATEGORY_NAMES: Record<string, Record<Language, string>> = {
 
 const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
   amateur: {
-    es: "Los mejores videos amateur gratis de parejas reales en alta definición.",
-    en: "The best free amateur videos from real couples in high definition.",
-    fr: "Les meilleures vidéos amateurs gratuites de vrais couples en haute définition.",
-    ja: "高画質のリアルなカップルの最高の無料アマチュア動画。",
-    it: "I migliori video amatoriali gratuiti di coppie reali in alta definizione.",
-    pt: "Os melhores vídeos amadores gratuitos de casais reais em alta definição."
+    es: "Los mejores videos amateur de parejas reales en alta definición.",
+    en: "The best amateur videos from real couples in high definition.",
+    fr: "Les meilleures vidéos amateurs de vrais couples en haute définition.",
+    ja: "高画質のリアルなカップルのベストアマチュア動画。",
+    it: "I migliori video amatoriali di coppie reali in alta definizione.",
+    pt: "Os melhores vídeos amadores de casais reais em alta definição."
   },
   anal: {
     es: "La mejor colección de sexo anal en calidad HD sin interrupciones.",
@@ -43,7 +43,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     pt: "Coroas gostosas e mulheres maduras em alta definição."
   },
   caseros: {
-    es: "Acción casera real sin cortes grabada en la intimidad de parejas aficionadas.",
+    es: "Acción casera real sin cortes gravada en la intimidad de parejas aficionadas.",
     en: "Real uncut homemade action recorded in intimacy by amateur couples.",
     fr: "Action maison réelle non coupée enregistrée par des couples amateurs.",
     ja: "素人カップルの親密な空間で録画されたリアルなノーカット自家製アクション。",
@@ -54,17 +54,17 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     es: "Ardientes videos de modelos latinas de Colombia, Brasil, México y más en HD.",
     en: "Hot videos of Latina models from Colombia, Brazil, Mexico and more in HD.",
     fr: "Vidéos chaudes de modèles latines de Colombie, Brésil, Mexique et plus en HD.",
-    ja: "コロンビア、ブラジル、メキシコなどのラテン系モデルのホットなHD動画。",
+    ja: "コロンビア、ブラジル、メキシコなどのラテン系モデルのホットなHD動画.",
     it: "Video caldi di modelle latine provenienti da Colombia, Brasile, Messico e altro in HD.",
     pt: "Vídeos quentes de modelos latinas da Colômbia, Brasil, México e mais em HD."
   },
   ebony: {
-    es: "Espectacular colección de videos de negras y ebony gratis en alta definición.",
-    en: "Spectacular collection of free black and ebony videos in high definition.",
-    fr: "Spectaculaire collection de vidéos de femmes noires et ébène gratuites en HD.",
-    ja: "高画質の黒人とエボニーの無料動画の素晴らしいコレクション。",
-    it: "Spettacolare collezione di video di nere ed ebano gratis in alta definizione.",
-    pt: "Espetacular coleção de vídeos de negras e ebony gratuitos em alta definição."
+    es: "Espectacular colección de videos de negras y ebony en alta definición.",
+    en: "Spectacular collection of black and ebony videos in high definition.",
+    fr: "Spectaculaire collection de vidéos de femmes noires et ébène en HD.",
+    ja: "高画質の黒人とエボニーの動画の素晴らしいコレクション。",
+    it: "Spettacolare collezione di video di nere ed ebano in alta definizione.",
+    pt: "Espetacular coleção de vídeos de negras e ebony em alta definição."
   },
   webcams: {
     es: "Salas de webcams en vivo premium. Chat en directo con miles de modelos online.",
@@ -85,21 +85,21 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const activeLang = (resolvedParams.lang as Language) || "es";
 
   const titles: Record<Language, string> = {
-    es: "Categorías de Videos Gratis HD - Explorar Colección | Zintia Vids",
-    en: "Free HD Video Categories - Explore Collection | Zintia Vids",
-    fr: "Catégories de Vidéos Gratuites HD - Explorer | Zintia Vids",
-    ja: "無料高画質動画カテゴリー - コレクションを探索 | Zintia Vids",
-    it: "Categorie di Video Gratis HD - Esplora Collezione | Zintia Vids",
-    pt: "Categorias de Vídeos Grátis HD - Explorar Coleção | Zintia Vids"
+    es: "Categorías de Videos HD - Explorar Colección | Zintia Vids",
+    en: "HD Video Categories - Explore Collection | Zintia Vids",
+    fr: "Catégories de Vidéos HD - Explorer | Zintia Vids",
+    ja: "高画質動画カテゴリー - コレクションを探索 | Zintia Vids",
+    it: "Categorie di Video HD - Esplora Collezione | Zintia Vids",
+    pt: "Categorias de Vídeos HD - Explorar Coleção | Zintia Vids"
   };
 
   const descriptions: Record<Language, string> = {
-    es: "Explora todas las categorías de videos premium gratis. Videos amateur, milfs, latinas, webcam y más en alta definición.",
-    en: "Explore all free premium video categories. Amateur, milfs, latinas, webcam videos and more in high definition.",
-    fr: "Explorez toutes les catégories de vidéos gratuites. Vidéos amateur, milfs, latines, webcam et plus en HD.",
-    ja: "すべての無料プレミアム動画カテゴリーをご覧ください。アマチュア、熟女、ラテン系、ライブチャット動画など高画質で配信中。",
-    it: "Esplora tutte le categorie di video premium gratuiti. Video amatoriali, milf, latine, webcam e altro in HD.",
-    pt: "Explore todas as categorias de vídeos premium gratuitos. Vídeos amadores, coroas, latinas, webcam e mais em HD."
+    es: "Explora todas las categorías de videos premium. Videos amateur, milfs, latinas, webcam y más en alta definición.",
+    en: "Explore all premium video categories. Amateur, milfs, latinas, webcam videos and more in high definition.",
+    fr: "Explorez toutes les catégories de vidéos. Vidéos amateur, milfs, latines, webcam et plus en HD.",
+    ja: "すべてのプレミアム動画カテゴリーをご覧ください。アマチュア、熟女、ラテン系、ライブチャット動画など高画質で配信中。",
+    it: "Esplora tutte le categorie di video premium. Video amatoriali, milf, latine, webcam e altro in HD.",
+    pt: "Explore todas as categorias de vídeos premium. Vídeos amadores, coroas, latinas, webcam e mais em HD."
   };
 
   const title = titles[activeLang] || titles.es;

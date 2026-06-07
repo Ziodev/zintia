@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Zap
 } from "lucide-react";
+import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
 
 interface BovedaClientProps {
   country: string;
@@ -22,58 +23,10 @@ interface BovedaClientProps {
   isBot: boolean;
   clickId?: string;
   zoneId?: string;
+  initialVideos?: any[];
 }
 
-const BACKGROUND_TILES = [
-  {
-    id: 1,
-    title: "En Vivo: Sofia (21)",
-    tag: "POPULAR",
-    views: "14.2K",
-    match: "98%",
-    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=300&q=80"
-  },
-  {
-    id: 2,
-    title: "Casero: Estudiante Universitaria (20)",
-    tag: "LOCAL",
-    views: "9.8K",
-    match: "95%",
-    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&h=300&q=80"
-  },
-  {
-    id: 3,
-    title: "Privado: Valentina - Sesión VIP",
-    tag: "EXCLUSIVE",
-    views: "21.5K",
-    match: "99%",
-    img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&h=300&q=80"
-  },
-  {
-    id: 4,
-    title: "Cámara HD: Camila & Laura",
-    tag: "AMATEUR",
-    views: "8.4K",
-    match: "92%",
-    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=300&q=80"
-  },
-  {
-    id: 5,
-    title: "Casero: Conexión en Vivo",
-    tag: "RECENT",
-    views: "5.1K",
-    match: "89%",
-    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&h=300&q=80"
-  },
-  {
-    id: 6,
-    title: "Transmisión Directa: Andrea (22)",
-    tag: "TRENDING",
-    views: "18.3K",
-    match: "97%",
-    img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=400&h=300&q=80"
-  }
-];
+// Dynamic background tiles derived from video feed
 
 const tzToCountryMap: Record<string, string> = {
   "santo_domingo": "DO",
@@ -125,7 +78,7 @@ const getFlagEmoji = (countryCode: string) => {
   }
 };
 
-export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaClientProps) {
+export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVideos }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
@@ -136,6 +89,21 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
   const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(0);
   
   const backgroundRef = useRef<HTMLDivElement>(null);
+
+  // Map dynamic videos to background tiles
+  const videos = (initialVideos && initialVideos.length >= 6) 
+    ? initialVideos 
+    : DRTUBER_FALLBACK_VIDEOS.slice(0, 6);
+
+  const tiles = videos.map((video, idx) => ({
+    id: video.id || String(idx),
+    title: video.title,
+    tag: (video.category || "AMATEUR").toUpperCase(),
+    views: video.views || "15.4K",
+    match: `${92 + (idx % 8)}%`,
+    img: video.thumbnailUrl,
+    videoUrl: video.videoPreviewUrl
+  }));
 
   // Choose offer index on mount for Desktop 50/50 split testing session consistency
   useEffect(() => {
@@ -295,9 +263,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       status4: "Estableciendo túnel SSL seguro...",
       successTitle: "¡Acceso Concedido!",
       successExpiry: "Tu pase de acceso expira en:",
-      successDesc: `¡Conexión Segura Establecida con Éxito! Hemos bloqueado los anuncios maliciosos y rastreadores para tu IP en ${displayCity}. Para proteger la privacidad de la red y liberar los streams en Ultra-HD permanentemente, activa tu Pase de Acceso Gratuito de forma segura.`,
+      successDesc: `¡Verificación de Edad Procesada con Éxito! Hemos configurado el acceso seguro y optimizado los streams para tu IP en ${displayCity}. Para mantener la privacidad de la red y liberar las transmisiones en Ultra-HD permanentemente, activa tu Pase de Acceso Premium de forma segura.`,
       successNote: "Verificación de edad requerida (18+)",
-      btnFinal: "INICIAR PRUEBA ULTRA-HD AHORA",
+      btnFinal: "OBTENER ACCESO VIP",
       detailsText: "Verificado por Red de Seguridad Local"
     },
     en: {
@@ -316,9 +284,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       status4: "Establishing secure SSL tunnel...",
       successTitle: "Access Granted!",
       successExpiry: "Your access pass expires in:",
-      successDesc: `Secure Connection Successfully Established! We have blocked malicious ads and trackers for your IP in ${displayCity}. To protect network privacy and unlock Ultra-HD streams permanently, activate your Free Access Pass securely.`,
+      successDesc: `Age Verification Successfully Processed! We have configured secure access and optimized streams for your IP in ${displayCity}. To maintain network privacy and unlock Ultra-HD streams permanently, activate your Premium Access Pass securely.`,
       successNote: "Age verification required (18+)",
-      btnFinal: "START ULTRA-HD TRIAL NOW",
+      btnFinal: "GET VIP ACCESS",
       detailsText: "Verified by Local Security Network"
     },
     fr: {
@@ -337,9 +305,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       status4: "Établissement d'un tunnel SSL sécurisé...",
       successTitle: "Accès Accordé!",
       successExpiry: "Votre pass d'accès expire dans:",
-      successDesc: `Connexion sécurisée établie avec succès! Nous avons bloqué les publicités malveillantes et les traceurs pour votre IP à ${displayCity}. Pour protéger la confidentialité du réseau et débloquer définitivement les flux Ultra-HD, activez votre Pass d'Accès Gratuit en toute sécurité.`,
+      successDesc: `Vérification d'âge traitée avec succès ! Nous avons configuré l'accès sécurisé et optimisé les flux pour votre IP à ${displayCity}. Pour maintenir la confidentialité du réseau et débloquer définitivement les flux Ultra-HD, activez votre Pass d'Accès Premium en toute sécurité.`,
       successNote: "Vérification d'âge requise (18+)",
-      btnFinal: "DÉMARRER L'ESSAI ULTRA-HD MAINTENANT",
+      btnFinal: "OBTENIR L'ACCÈS VIP",
       detailsText: "Vérifié par le Réseau de Sécurité Local"
     },
     ja: {
@@ -348,19 +316,19 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       btnAmateur: "素人コンテンツ",
       btnProfessional: "プロスタジオ",
       step2Title: "セキュリティ警告",
-      step2Desc: "このVIP優待パスは個人用であり、譲渡することはできません。",
+      step2Desc: "このVIP優待パス is 個人用であり、譲渡することはできません。",
       step2Question: "絶対的な機密保持を約束しますか？",
       btnPromise: "はい、約束します",
       loadingTitle: "保管庫の復号化中...",
-      status1: `${displayCity}にある14台のローカルサーバーと同期中...`,
+      status1: `${displayCity}にある14台 of ローカルサーバーと同期中...`,
       status2: "ローカルネットワークファイアウォールのバイパス中...",
       status3: "広告なしのアクティブな配信を検索中...",
       status4: "安全なSSLトンネルの確立中...",
       successTitle: "アクセス許可！",
       successExpiry: "アクセスパスの有効期限:",
-      successDesc: `安全な接続が正常に確立されました！${displayCity}のIPアドレスに対する悪質な広告とトラッカーをブロックしました。ネットワークのプライバシーを保護し、Ultra-HD配信を永久に解放するには、今すぐ安全に無料アクセスパスを有効にしてください。`,
+      successDesc: `年齢確認が正常に完了しました！${displayCity}のIPアドレスに対して安全なアクセスを設定し、配信ストリームを最適化しました。ネットワークのプライバシーを維持し、Ultra-HD配信を永久に解放するには、今すぐ安全にプレミアムアクセスパスを有効にしてください。`,
       successNote: "年齢確認が必要です (18歳以上)",
-      btnFinal: "今すぐULTRA-HD体験を開始",
+      btnFinal: "VIPアクセスを取得",
       detailsText: "ローカルセキュリティネットワーク認証済"
     },
     it: {
@@ -379,9 +347,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       status4: "Stabilizzazione del tunnel SSL sicuro...",
       successTitle: "Accesso Consentito!",
       successExpiry: "Il tuo pass di accesso scade tra:",
-      successDesc: `Connessione sicura stabilita con successo! Abbiamo bloccato gli annunci dannosi e i tracker per il tuo IP a ${displayCity}. Per proteggere la privacy della rete e sbloccare permanentemente gli stream Ultra-HD, attiva il tuo Pass di Accesso Gratuito in modo sicuro.`,
+      successDesc: `Verifica dell'età elaborata con successo! Abbiamo configurato l'accesso sicuro e ottimizzato gli streaming per il tuo IP a ${displayCity}. Per mantenere la privacy della rete e sbloccare permanentemente gli stream Ultra-HD, attiva il tuo Pass di Accesso Premium in modo sicuro.`,
       successNote: "Richiesta verifica dell'età (18+)",
-      btnFinal: "AVVIA ORA LA PROVA ULTRA-HD",
+      btnFinal: "OTTIENI ACCESSO VIP",
       detailsText: "Verificato dalla Rete di Sicurezza Locale"
     },
     pt: {
@@ -400,9 +368,9 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
       status4: "Estabelecendo túnel SSL seguro...",
       successTitle: "Acesso Concedido!",
       successExpiry: "O seu passe de acesso expira em:",
-      successDesc: `Conexão segura estabelecida com sucesso! Bloqueamos anúncios maliciosos e rastreadores para o seu IP em ${displayCity}. Para proteger a privacidade da rede e liberar as transmissões em Ultra-HD permanentemente, ative o seu Passe de Acesso Gratuito com segurança.`,
+      successDesc: `Verificação de idade processada com sucesso! Configuramos o acesso seguro e otimizamos as transmissões para o seu IP em ${displayCity}. Para manter a privacidade da rede e liberar as transmissões em Ultra-HD permanentemente, ative o seu Passe de Acesso Premium com segurança.`,
       successNote: "Verificação de idade necessária (18+)",
-      btnFinal: "INICIAR TESTE ULTRA-HD AGORA",
+      btnFinal: "OBTER ACESSO VIP",
       detailsText: "Verificado pela Rede de Segurança Local"
     }
   };
@@ -481,7 +449,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
         } as React.CSSProperties}
       >
         <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-95 blur-[12px] scale-105 select-none pointer-events-none" aria-hidden="true">
-          {BACKGROUND_TILES.map((tile) => (
+          {tiles.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
               <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
             </div>
@@ -498,9 +466,20 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaCl
           }}
           aria-hidden="true"
         >
-          {BACKGROUND_TILES.map((tile) => (
+          {tiles.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/15 overflow-hidden aspect-[4/3] flex flex-col justify-end p-3 shadow-2xl">
-              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover brightness-[0.9] saturate-125" />
+              {tile.videoUrl ? (
+                <video 
+                  src={tile.videoUrl} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover brightness-[0.9] saturate-125"
+                />
+              ) : (
+                <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover brightness-[0.9] saturate-125" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
               <div className="absolute top-2.5 left-2.5 flex items-center gap-1">
                 <span className="bg-rose-500 text-white font-black text-[8px] px-1.5 py-0.5 rounded shadow-lg shadow-rose-500/30">

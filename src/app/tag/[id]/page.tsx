@@ -26,18 +26,18 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const tagName = getLabel(id);
 
   const titles: Record<Language, string> = {
-    es: `Videos de #${tagName} Gratis Online HD | Zintia Vids`,
-    en: `Free #${tagName} Videos Online HD | Zintia Vids`,
-    fr: `Vidéos de #${tagName} Gratuites en HD | Zintia Vids`,
-    ja: `無料 #${tagName} 動画高画質オンライン | Zintia Vids`,
-    it: `Video di #${tagName} Gratis Online HD | Zintia Vids`,
-    pt: `Vídeos de #${tagName} Grátis Online HD | Zintia Vids`,
+    es: `Videos de #${tagName} Online HD | Zintia Vids`,
+    en: `#${tagName} Videos Online HD | Zintia Vids`,
+    fr: `Vidéos de #${tagName} en HD | Zintia Vids`,
+    ja: `#${tagName} 動画高画質オンライン | Zintia Vids`,
+    it: `Video di #${tagName} Online HD | Zintia Vids`,
+    pt: `Vídeos de #${tagName} Online HD | Zintia Vids`,
   };
 
   const title = titles[activeLang] || titles.es;
   const description = activeLang === "es"
-    ? `Explora los mejores videos gratis con la etiqueta #${tagName} en alta definición. Transmisión fluida y rápida en Zintia Vids.`
-    : `Explore the best free videos tagged with #${tagName} in high definition. Fast and smooth streaming on Zintia Vids.`;
+    ? `Explora los mejores videos con la etiqueta #${tagName} en alta definición. Transmisión fluida y rápida en Zintia Vids.`
+    : `Explore the best videos tagged with #${tagName} in high definition. Fast and smooth streaming on Zintia Vids.`;
 
   return {
     title,
@@ -99,8 +99,8 @@ export default async function TagPage({ params, searchParams }: PageProps) {
         </h1>
         <p className="text-xs md:text-sm text-muted-foreground">
           {activeLang === "es"
-            ? `Explora los mejores videos amateur gratis etiquetados con #${tagName} en alta definición.`
-            : `Explore the best free amateur videos tagged with #${tagName} in high definition.`}
+            ? `Explora los mejores videos amateur etiquetados con #${tagName} en alta definición.`
+            : `Explore the best amateur videos tagged with #${tagName} in high definition.`}
         </p>
       </div>
 

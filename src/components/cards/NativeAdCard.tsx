@@ -19,12 +19,12 @@ interface NativeAdCardProps {
 }
 
 const PRIVATE_LABELS: Record<Language, { title: string; cta: string }> = {
-  es: { title: "VIDEO PRIVADO FILTRADO", cta: "Toca para desbloquear gratis" },
-  en: { title: "FILTERED PRIVATE VIDEO", cta: "Tap to unlock for free" },
+  es: { title: "VIDEO PRIVADO FILTRADO", cta: "Toca para desbloquear" },
+  en: { title: "FILTERED PRIVATE VIDEO", cta: "Tap to unlock" },
   fr: { title: "VIDÉO PRIVÉE FILTRÉE", cta: "Appuyez pour déverrouiller" },
-  ja: { title: "限定公開のプライベート動画", cta: "タップして無料でロック解除" },
-  it: { title: "VIDEO PRIVATO FILTRATO", cta: "Tocca per sbloccare gratis" },
-  pt: { title: "VÍDEO PRIVADO FILTRADO", cta: "Toque para desbloquear grátis" },
+  ja: { title: "限定公開のプライベート動画", cta: "タップしてロック解除" },
+  it: { title: "VIDEO PRIVATO FILTRATO", cta: "Tocca per sbloccare" },
+  pt: { title: "VÍDEO PRIVADO FILTRADO", cta: "Toque para desbloquear" },
 };
 
 const INTERACTIVE_LABELS: Record<Language, { question: string; like: string; pass: string }> = {
