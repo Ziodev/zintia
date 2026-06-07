@@ -22,7 +22,6 @@ interface BovedaClientProps {
   isBot: boolean;
 }
 
-// Highly saturated, vibrant, SFW models for background suggestion contrast
 const BACKGROUND_TILES = [
   {
     id: 1,
@@ -74,14 +73,12 @@ const BACKGROUND_TILES = [
   }
 ];
 
-// Encrypted Affiliate Links (Base64)
 const OBFUSCATED_URLS = {
-  tier1: "aHR0cHM6Ly9wbGF5LmFkdWx0Zm9yY2UuY29tL3JlZGlyZWN0P3N1Yj1hZDUtcHJlbGFuZGVyLXRpZXIx", // Adult Force Link
-  tier2: "aHR0cHM6Ly9pbW9uZXRpeml0LmNvbS9zbWFydGxpbms/c3ViPWFkNS1wcmVsYW5kZXItdGllcjI=", // iMonetizIt Link
-  tier3: "aHR0cHM6Ly9sb3Nwb2xsb3MuY29tL3NtYXJ0bGluaz9zdWI9YWQ1LXByZWxhbmRlci10aWVyMw=="  // LosPollos/Backup Link
+  tier1: "aHR0cHM6Ly9wbGF5LmFkdWx0Zm9yY2UuY29tL3JlZGlyZWN0P3N1Yj1hZDUtcHJlbGFuZGVyLXRpZXIx", 
+  tier2: "aHR0cHM6Ly9pbW9uZXRpeml0LmNvbS9zbWFydGxpbms/c3ViPWFkNS1wcmVsYW5kZXItdGllcjI=", 
+  tier3: "aHR0cHM6Ly9sb3Nwb2xsb3MuY29tL3NtYXJ0bGluaz9zdWI9YWQ1LXByZWxhbmRlci10aWVyMw=="  
 };
 
-// Convert country code into flag emoji
 const getFlagEmoji = (countryCode: string) => {
   if (!countryCode || countryCode.length !== 2) return "";
   const codePoints = countryCode
@@ -99,13 +96,25 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
-  const [timeLeft, setTimeLeft] = useState<number>(120); // 2 minutes countdown
+  const [timeLeft, setTimeLeft] = useState<number>(120); 
   const [displayCity, setDisplayCity] = useState(city);
+  const [detectedLang, setDetectedLang] = useState<string>("es");
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  // Dynamic Timezone City Lookup Fallback
+  // Dynamic Browser Language & Timezone Lookup
   useEffect(() => {
+    // Detect preferred browser language with fallback to Spanish
+    if (typeof window !== "undefined") {
+      const mainLang = (window.navigator.language || "").split("-")[0].toLowerCase();
+      const supported = ["es", "en", "fr", "ja", "it", "pt"];
+      if (supported.includes(mainLang)) {
+        setDetectedLang(mainLang);
+      } else {
+        setDetectedLang("es");
+      }
+    }
+
     const isGeneric = !city || 
       city.toLowerCase() === "tu área" || 
       city.toLowerCase() === "your area" || 
@@ -130,7 +139,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     }
   }, [city]);
 
-  // Decrypt and redirect based on geo tier
   const handleRedirect = () => {
     const c = country.toUpperCase();
     const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
@@ -138,10 +146,10 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
     ];
 
-    let obfuscatedLink = OBFUSCATED_URLS.tier3; // default fallback
+    let obfuscatedLink = OBFUSCATED_URLS.tier3; 
     if (tier1Countries.includes(c)) {
       obfuscatedLink = OBFUSCATED_URLS.tier1;
-    } else if (tier2Countries.includes(c) || isSpanishSpeaking()) {
+    } else if (tier2Countries.includes(c) || detectedLang === "es") {
       obfuscatedLink = OBFUSCATED_URLS.tier2;
     }
 
@@ -153,16 +161,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     }
   };
 
-  const isSpanishSpeaking = () => {
-    if (typeof window === "undefined") return true;
-    const lang = window.navigator.language || "";
-    return lang.toLowerCase().includes("es");
-  };
-
-  const activeLang = isSpanishSpeaking() ? "es" : "en";
-
-  // Content dictionary reading displayCity dynamically
-  const dict = {
+  // Supported Multilanguage Dict
+  const dict: Record<string, any> = {
     es: {
       step1Title: `Se ha detectado una red segura en ${displayCity}`,
       step1Desc: "¿Qué tipo de archivo deseas desencriptar?",
@@ -204,12 +204,95 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       successNote: "No credit card required.",
       btnFinal: "START ULTRA-HD TRIAL NOW",
       detailsText: "Verified by Local Security Network"
+    },
+    fr: {
+      step1Title: `Réseau sécurisé détecté à ${displayCity}`,
+      step1Desc: "Quel type de fichier souhaitez-vous décrypter?",
+      btnAmateur: "Flux Amateur",
+      btnProfessional: "Studio Professionnel",
+      step2Title: "Avertissement de Sécurité",
+      step2Desc: "Ce pass VIP de courtoisie est personnel et non transférable.",
+      step2Question: "Promettez-vous une discrétion absolue?",
+      btnPromise: "OUI, JE LE PROMETS",
+      loadingTitle: "Décryptage du Coffre...",
+      status1: `Synchronisation de 14 serveurs locaux à ${displayCity}...`,
+      status2: "Contournement des pare-feu réseau locaux...",
+      status3: "Recherche de flux actifs sans publicité...",
+      status4: "Établissement d'un tunnel SSL sécurisé...",
+      successTitle: "Accès Accordé!",
+      successExpiry: "Votre pass d'accès expire dans:",
+      successDesc: `Connexion sécurisée établie avec succès! Nous avons bloqué les publicités malveillantes et les traceurs pour votre IP à ${displayCity}. Pour protéger la confidentialité du réseau et débloquer définitivement les flux Ultra-HD, activez votre Pass d'Accès Gratuit en toute sécurité.`,
+      successNote: "Aucune carte de crédit requise.",
+      btnFinal: "DÉMARRER L'ESSAI ULTRA-HD MAINTENANT",
+      detailsText: "Vérifié par le Réseau de Sécurité Local"
+    },
+    ja: {
+      step1Title: `${displayCity}で安全なネットワークが検出されました`,
+      step1Desc: "復号化するファイルの種類を選択してください",
+      btnAmateur: "素人コンテンツ",
+      btnProfessional: "プロスタジオ",
+      step2Title: "セキュリティ警告",
+      step2Desc: "このVIP優待パスは個人用であり、譲渡することはできません。",
+      step2Question: "絶対的な機密保持を約束しますか？",
+      btnPromise: "はい、約束します",
+      loadingTitle: "保管庫の復号化中...",
+      status1: `${displayCity}にある14台のローカルサーバーと同期中...`,
+      status2: "ローカルネットワークファイアウォールのバイパス中...",
+      status3: "広告なしのアクティブな配信を検索中...",
+      status4: "安全なSSLトンネルの確立中...",
+      successTitle: "アクセス許可！",
+      successExpiry: "アクセスパスの有効期限:",
+      successDesc: `安全な接続が正常に確立されました！${displayCity}のIPアドレスに対する悪質な広告とトラッカーをブロックしました。ネットワークのプライバシーを保護し、Ultra-HD配信を永久に解放するには、今すぐ安全に無料アクセスパスを有効にしてください。`,
+      successNote: "クレジットカード不要",
+      btnFinal: "今すぐULTRA-HD体験を開始",
+      detailsText: "ローカルセキュリティネットワーク認証済"
+    },
+    it: {
+      step1Title: `Rete sicura rilevata a ${displayCity}`,
+      step1Desc: "Che tipo di file desideri decrittografare?",
+      btnAmateur: "Contenuto Amateur",
+      btnProfessional: "Studio Professionale",
+      step2Title: "Avviso di Sicurezza",
+      step2Desc: "Questo pass di cortesia VIP è personale e non trasferibile.",
+      step2Question: "Prometti assoluta discrezione?",
+      btnPromise: "SÌ, LO PROMETTO",
+      loadingTitle: "Decrittografia del Vault...",
+      status1: `Sincronizzazione di 14 server locali a ${displayCity}...`,
+      status2: "Bypass dei firewall di rete locali...",
+      status3: "Ricerca di streaming attivi senza pubblicità...",
+      status4: "Stabilizzazione del tunnel SSL sicuro...",
+      successTitle: "Accesso Consentito!",
+      successExpiry: "Il tuo pass di accesso scade tra:",
+      successDesc: `Connessione sicura stabilita con successo! Abbiamo bloccato gli annunci dannosi e i tracker per il tuo IP a ${displayCity}. Per proteggere la privacy della rete e sbloccare permanentemente gli stream Ultra-HD, attiva il tuo Pass di Accesso Gratuito in modo sicuro.`,
+      successNote: "Nessuna carta di credito richiesta.",
+      btnFinal: "AVVIA ORA LA PROVA ULTRA-HD",
+      detailsText: "Verificato dalla Rete di Sicurezza Locale"
+    },
+    pt: {
+      step1Title: `Rede segura detectada em ${displayCity}`,
+      step1Desc: "Que tipo de arquivo você deseja descriptografar?",
+      btnAmateur: "Conteúdo Amador",
+      btnProfessional: "Estúdio Profissional",
+      step2Title: "Aviso de Segurança",
+      step2Desc: "Este passe de cortesia VIP é pessoal e intransferível.",
+      step2Question: "Você promete discrição absoluta?",
+      btnPromise: "SIM, EU PROMETO",
+      loadingTitle: "Descriptografando Cofre...",
+      status1: `Sincronizando 14 servidores locais em ${displayCity}...`,
+      status2: "Evitando firewalls de rede locais...",
+      status3: "Localizando transmissões ativas livres de anúncios...",
+      status4: "Estabelecendo túnel SSL seguro...",
+      successTitle: "Acesso Concedido!",
+      successExpiry: "O seu passe de acesso expira em:",
+      successDesc: `Conexão segura estabelecida com sucesso! Bloqueamos anúncios maliciosos e rastreadores para o seu IP em ${displayCity}. Para proteger a privacidade da rede e liberar as transmissões em Ultra-HD permanentemente, ative o seu Passe de Acesso Gratuito com segurança.`,
+      successNote: "Não requer cartão de crédito.",
+      btnFinal: "INICIAR TESTE ULTRA-HD AGORA",
+      detailsText: "Verificado pela Rede de Segurança Local"
     }
   };
 
-  const t = dict[activeLang];
+  const t = dict[detectedLang] || dict.es;
 
-  // Track pointer movements to drive the lens overlay
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!backgroundRef.current) return;
     const rect = backgroundRef.current.getBoundingClientRect();
@@ -220,11 +303,10 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     backgroundRef.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
-  // Step 3: Fake loading progress animation
   useEffect(() => {
     if (step === 3) {
       setProgress(0);
-      const duration = 1800; // 1.8 seconds total
+      const duration = 1800; 
       const intervalTime = 30;
       const stepValue = 100 / (duration / intervalTime);
 
@@ -255,7 +337,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     }
   }, [step, t.status1, t.status2, t.status3, t.status4]);
 
-  // Step 4: Countdown timer logic
   useEffect(() => {
     if (step === 4 && timeLeft > 0) {
       const timer = setInterval(() => {
@@ -265,7 +346,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     }
   }, [step, timeLeft]);
 
-  // Format seconds to MM:SS
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -275,7 +355,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   return (
     <div className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
       
-      {/* Background Interactive Blur Canvas */}
       <div 
         ref={backgroundRef}
         onPointerMove={handlePointerMove}
@@ -285,7 +364,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           "--mouse-y": "-999px",
         } as React.CSSProperties}
       >
-        {/* Layer 1: High Contrast Blurred Grid (SFW shapes & skin-toned contrast) */}
         <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-85 blur-[16px] scale-105 select-none pointer-events-none">
           {BACKGROUND_TILES.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
@@ -294,10 +372,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           ))}
         </div>
 
-        {/* Colored Suggestive Neon Gradient Overlay to pop colors out of the blur */}
         <div className="absolute inset-0 bg-gradient-to-tr from-rose-600/20 via-fuchsia-600/10 to-transparent pointer-events-none mix-blend-color-dodge z-[2]" />
 
-        {/* Layer 2: Unblurred Grid with Mask (Scratch reveal effect) */}
         <div 
           className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-90 select-none pointer-events-none transition-opacity duration-300 z-[3]"
           style={{
@@ -308,7 +384,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           {BACKGROUND_TILES.map((tile) => (
             <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/15 overflow-hidden aspect-[4/3] flex flex-col justify-end p-3 shadow-2xl">
               <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover brightness-[0.9] saturate-125" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#040406] via-[#040406]/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
               <div className="absolute top-2.5 left-2.5 flex items-center gap-1">
                 <span className="bg-rose-500 text-white font-black text-[8px] px-1.5 py-0.5 rounded shadow-lg shadow-rose-500/30">
                   {tile.tag}
@@ -332,10 +408,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         </div>
       </div>
 
-      {/* Dark tint overlay for readability of the modal */}
       <div className="absolute inset-0 bg-[#040406]/65 backdrop-blur-[3px] z-10 pointer-events-none" />
 
-      {/* Floating security indicators */}
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[10px] text-zinc-200 shadow-xl">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -353,16 +427,13 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         <span className="font-semibold text-rose-400 uppercase tracking-wide">{displayCity}</span>
       </div>
 
-      {/* Central Interactive Card (Modal) */}
       <div className="relative z-30 max-w-md w-[92%] p-[1px] bg-gradient-to-b from-zinc-700/30 to-zinc-900/10 rounded-[32px] border border-white/15 shadow-2xl backdrop-blur-xl">
         <div className="bg-[#101014]/95 rounded-[28px] p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden shadow-inner">
-          {/* Neon mesh gradient reflection */}
           <div className="absolute -top-16 -left-16 w-32 h-32 bg-rose-500/15 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-fuchsia-500/15 rounded-full blur-2xl pointer-events-none" />
 
           <AnimatePresence mode="wait">
             
-            {/* Step 1: Preferences / Intention */}
             {step === 1 && (
               <motion.div
                 key="step1"
@@ -372,7 +443,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center gap-6"
               >
-                {/* Safe lock animation header */}
                 <div className="relative w-16 h-16 bg-rose-500/15 rounded-full flex items-center justify-center border border-rose-500/35 shadow-lg shadow-rose-500/10 animate-pulse">
                   <div className="absolute inset-0 rounded-full border border-rose-500/40 animate-ping opacity-30" />
                   <Lock className="w-7 h-7 text-rose-500 animate-pulse" />
@@ -407,7 +477,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
               </motion.div>
             )}
 
-            {/* Step 2: Warnings & Commit */}
             {step === 2 && (
               <motion.div
                 key="step2"
@@ -439,7 +508,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                     onClick={() => setStep(3)}
                     className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse"
                   >
-                    {/* Glowing effect inside button */}
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
                     <Zap className="w-4 h-4 fill-white" />
                     {t.btnPromise}
@@ -448,7 +516,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
               </motion.div>
             )}
 
-            {/* Step 3: Fake Decryption progress bar */}
             {step === 3 && (
               <motion.div
                 key="step3"
@@ -471,7 +538,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                   </p>
                 </div>
 
-                {/* Progress bar container */}
                 <div className="w-full bg-zinc-950 border border-white/10 rounded-full h-3.5 overflow-hidden p-[2px]">
                   <motion.div 
                     className="h-full bg-gradient-to-r from-rose-600 to-fuchsia-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]"
@@ -487,7 +553,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
               </motion.div>
             )}
 
-            {/* Step 4: Paywall / Final conversion trigger */}
             {step === 4 && (
               <motion.div
                 key="step4"
@@ -496,7 +561,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
                 className="w-full flex flex-col items-center gap-5"
               >
-                {/* Successful validation shield */}
                 <div className="relative w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center border border-emerald-500/35 shadow-lg shadow-emerald-500/10">
                   <div className="absolute inset-0 rounded-full border border-emerald-500/30 animate-ping opacity-25" />
                   <ShieldCheck className="w-8 h-8 text-emerald-400" />
@@ -542,7 +606,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         </div>
       </div>
       
-      {/* Styles for animation utility class helper */}
       <style jsx global>{`
         @keyframes shimmer {
           100% {
