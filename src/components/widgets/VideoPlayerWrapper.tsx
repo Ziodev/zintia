@@ -185,20 +185,28 @@ export function VideoPlayerWrapper({
               <div className="w-10 h-10 border-4 border-rose-500/20 border-t-rose-500 rounded-full animate-spin" />
             </div>
           )}
-          <iframe
-            src={embedUrl}
-            onLoad={() => setIsIframeLoaded(true)}
-            allowFullScreen
-            allow="autoplay; fullscreen"
-            sandbox="allow-scripts allow-same-origin allow-presentation"
-            className={cn(
-              "relative border-0 z-10 bg-transparent",
-              isCurrentlyFullscreen
-                ? "w-full aspect-video max-h-full max-w-full"
-                : "w-full h-full"
-            )}
-            loading="lazy"
-          />
+          <div className={cn(
+            "z-10",
+            isCurrentlyFullscreen 
+              ? "relative w-full aspect-video max-h-full max-w-full flex items-center justify-center"
+              : "absolute inset-0 w-full h-full"
+          )}>
+            <iframe
+              src={embedUrl}
+              onLoad={() => setIsIframeLoaded(true)}
+              allowFullScreen
+              allow="autoplay; fullscreen"
+              sandbox="allow-scripts allow-same-origin allow-presentation"
+              className="w-full h-full border-0 bg-transparent"
+              style={{
+                width: "1px",
+                minWidth: "100%",
+                height: "1px",
+                minHeight: "100%",
+              }}
+              loading="lazy"
+            />
+          </div>
 
           {/* Custom Fullscreen Button (Always visible on mobile, visible on hover on desktop) */}
           <button
