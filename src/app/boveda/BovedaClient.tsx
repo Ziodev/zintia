@@ -979,6 +979,14 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
       </div>
       
       <style jsx global>{`
+        /* NUCLEAR FIX: Force system fonts on ALL boveda elements.
+           Next.js font subsetting + Tailwind v4 @theme inline breaks digit rendering
+           on certain mobile browsers. This guarantees 0-9 always render correctly. */
+        main *, main *::before, main *::after {
+          --font-outfit: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+          --font-inter: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        }
         @keyframes shimmer {
           100% {
             transform: translateX(100%);
