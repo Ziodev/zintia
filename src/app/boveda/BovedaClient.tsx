@@ -560,7 +560,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
   };
 
   useEffect(() => {
-    if (step === 3) {
+    if (step === 4) {
       setProgress(0);
       const duration = 1800; 
       const intervalTime = 30;
@@ -571,7 +571,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
           const next = prev + stepValue;
           if (next >= 100) {
             clearInterval(timer);
-            setStep(4);
+            setStep(5);
             return 100;
           }
           
@@ -594,7 +594,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
   }, [step, t.status1, t.status2, t.status3, t.status4]);
 
   useEffect(() => {
-    if (step === 4 && timeLeft > 0) {
+    if (step === 5 && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
