@@ -22,7 +22,7 @@ interface BovedaClientProps {
   isBot: boolean;
 }
 
-// Beautiful, high-quality, SFW mock thumbnails for the background grid
+// Highly saturated, vibrant, SFW models for background suggestion contrast
 const BACKGROUND_TILES = [
   {
     id: 1,
@@ -30,7 +30,7 @@ const BACKGROUND_TILES = [
     tag: "POPULAR",
     views: "14.2K",
     match: "98%",
-    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=300&q=80"
+    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=300&q=80"
   },
   {
     id: 2,
@@ -54,7 +54,7 @@ const BACKGROUND_TILES = [
     tag: "AMATEUR",
     views: "8.4K",
     match: "92%",
-    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=300&q=80"
+    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=300&q=80"
   },
   {
     id: 5,
@@ -81,23 +81,59 @@ const OBFUSCATED_URLS = {
   tier3: "aHR0cHM6Ly9sb3Nwb2xsb3MuY29tL3NtYXJ0bGluaz9zdWI9YWQ1LXByZWxhbmRlci10aWVyMw=="  // LosPollos/Backup Link
 };
 
+// Convert country code into flag emoji
+const getFlagEmoji = (countryCode: string) => {
+  if (!countryCode || countryCode.length !== 2) return "";
+  const codePoints = countryCode
+    .toUpperCase()
+    .split("")
+    .map((char) => 127397 + char.charCodeAt(0));
+  try {
+    return String.fromCodePoint(...codePoints);
+  } catch (e) {
+    return "";
+  }
+};
+
 export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(120); // 2 minutes countdown
+  const [displayCity, setDisplayCity] = useState(city);
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
+  // Dynamic Timezone City Lookup Fallback
+  useEffect(() => {
+    const isGeneric = !city || 
+      city.toLowerCase() === "tu área" || 
+      city.toLowerCase() === "your area" || 
+      city.toLowerCase() === "area" || 
+      city.toLowerCase() === "tu ciudad";
+
+    if (isGeneric) {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz && tz.includes("/")) {
+          const cityPart = tz.split("/")[1];
+          const cleanedCity = cityPart.replace(/_/g, " ");
+          if (cleanedCity) {
+            setDisplayCity(cleanedCity);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to guess city from timezone:", e);
+      }
+    } else {
+      setDisplayCity(city);
+    }
+  }, [city]);
+
   // Decrypt and redirect based on geo tier
   const handleRedirect = () => {
-    // Identify geographic tier
     const c = country.toUpperCase();
-    
-    // Tier 1 list: US, GB, CA, AU, NZ, DE, FR, JP
     const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
-    
-    // Tier 2 list (Spanish speaking countries)
     const tier2Countries = [
       "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
     ];
@@ -113,7 +149,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       const targetUrl = atob(obfuscatedLink);
       window.location.href = targetUrl;
     } catch (e) {
-      // Emergency fallback in case base64 decode fails
       window.location.href = "https://play.adultforce.com/redirect";
     }
   };
@@ -124,13 +159,12 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     return lang.toLowerCase().includes("es");
   };
 
-  // Determine display language based on country/browser language
   const activeLang = isSpanishSpeaking() ? "es" : "en";
 
-  // Content dictionary
+  // Content dictionary reading displayCity dynamically
   const dict = {
     es: {
-      step1Title: `Se ha detectado una red segura en ${city}`,
+      step1Title: `Se ha detectado una red segura en ${displayCity}`,
       step1Desc: "¿Qué tipo de archivo deseas desencriptar?",
       btnAmateur: "Contenido Amateur",
       btnProfessional: "Estudio Profesional",
@@ -139,19 +173,19 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       step2Question: "¿Prometes discreción absoluta?",
       btnPromise: "SÍ, LO PROMETO",
       loadingTitle: "Desencriptando Bóveda...",
-      status1: `Sincronizando 14 servidores locales en ${city}...`,
+      status1: `Sincronizando 14 servidores locales en ${displayCity}...`,
       status2: "Evitando cortafuegos de red locales...",
       status3: "Encontrando transmisiones activas libres de anuncios...",
       status4: "Estableciendo túnel SSL seguro...",
       successTitle: "¡Acceso Concedido!",
       successExpiry: "Tu pase de acceso expira en:",
-      successDesc: `¡Conexión Segura Establecida con Éxito! Hemos bloqueado los anuncios maliciosos y rastreadores para tu IP en ${city}. Para proteger la privacidad de la red y liberar los streams en Ultra-HD permanentemente, activa tu Pase de Acceso Gratuito de forma segura.`,
+      successDesc: `¡Conexión Segura Establecida con Éxito! Hemos bloqueado los anuncios maliciosos y rastreadores para tu IP en ${displayCity}. Para proteger la privacidad de la red y liberar los streams en Ultra-HD permanentemente, activa tu Pase de Acceso Gratuito de forma segura.`,
       successNote: "No se requiere tarjeta de crédito.",
       btnFinal: "INICIAR PRUEBA ULTRA-HD AHORA",
       detailsText: "Verificado por Red de Seguridad Local"
     },
     en: {
-      step1Title: `Secure network detected in ${city === "your area" ? "your area" : city}`,
+      step1Title: `Secure network detected in ${displayCity}`,
       step1Desc: "Which type of file do you wish to decrypt?",
       btnAmateur: "Amateur Feed",
       btnProfessional: "Professional Studio",
@@ -160,13 +194,13 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
       step2Question: "Do you promise absolute discretion?",
       btnPromise: "YES, I PROMISE",
       loadingTitle: "Decrypting Vault...",
-      status1: `Syncing 14 local servers in ${city === "your area" ? "your area" : city}...`,
+      status1: `Syncing 14 local servers in ${displayCity}...`,
       status2: "Bypassing network firewalls...",
       status3: "Locating active ad-free streams...",
       status4: "Establishing secure SSL tunnel...",
       successTitle: "Access Granted!",
       successExpiry: "Your access pass expires in:",
-      successDesc: `Secure Connection Successfully Established! We have blocked malicious ads and trackers for your IP in ${city === "your area" ? "your area" : city}. To protect network privacy and unlock Ultra-HD streams permanently, activate your Free Access Pass securely.`,
+      successDesc: `Secure Connection Successfully Established! We have blocked malicious ads and trackers for your IP in ${displayCity}. To protect network privacy and unlock Ultra-HD streams permanently, activate your Free Access Pass securely.`,
       successNote: "No credit card required.",
       btnFinal: "START ULTRA-HD TRIAL NOW",
       detailsText: "Verified by Local Security Network"
@@ -203,7 +237,6 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
             return 100;
           }
           
-          // Update status text based on progress
           if (next < 25) {
             setProgressText(t.status1);
           } else if (next < 60) {
@@ -240,7 +273,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-[#060608] text-white flex items-center justify-center overflow-hidden select-none font-sans">
+    <div className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
       
       {/* Background Interactive Blur Canvas */}
       <div 
@@ -252,32 +285,35 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
           "--mouse-y": "-999px",
         } as React.CSSProperties}
       >
-        {/* Layer 1: Blurred Grid (SFW shapes & layout) */}
-        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-50 blur-xl scale-105 select-none pointer-events-none">
+        {/* Layer 1: High Contrast Blurred Grid (SFW shapes & skin-toned contrast) */}
+        <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-85 blur-[16px] scale-105 select-none pointer-events-none">
           {BACKGROUND_TILES.map((tile) => (
-            <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/5 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4">
-              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover" />
+            <div key={tile.id} className="relative rounded-2xl bg-zinc-950 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-4 shadow-inner">
+              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover saturate-150 contrast-125" />
             </div>
           ))}
         </div>
 
+        {/* Colored Suggestive Neon Gradient Overlay to pop colors out of the blur */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-rose-600/20 via-fuchsia-600/10 to-transparent pointer-events-none mix-blend-color-dodge z-[2]" />
+
         {/* Layer 2: Unblurred Grid with Mask (Scratch reveal effect) */}
         <div 
-          className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-75 select-none pointer-events-none transition-opacity duration-300"
+          className="absolute inset-0 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 opacity-90 select-none pointer-events-none transition-opacity duration-300 z-[3]"
           style={{
             maskImage: "radial-gradient(circle 120px at var(--mouse-x) var(--mouse-y), black 0%, black 40%, transparent 100%)",
             WebkitMaskImage: "radial-gradient(circle 120px at var(--mouse-x) var(--mouse-y), black 0%, black 40%, transparent 100%)"
           }}
         >
           {BACKGROUND_TILES.map((tile) => (
-            <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/10 overflow-hidden aspect-[4/3] flex flex-col justify-end p-3 shadow-2xl">
-              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover brightness-[0.85]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+            <div key={tile.id} className="relative rounded-2xl bg-zinc-900 border border-white/15 overflow-hidden aspect-[4/3] flex flex-col justify-end p-3 shadow-2xl">
+              <img src={tile.img} alt={tile.title} className="absolute inset-0 w-full h-full object-cover brightness-[0.9] saturate-125" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040406] via-[#040406]/10 to-transparent" />
               <div className="absolute top-2.5 left-2.5 flex items-center gap-1">
-                <span className="bg-rose-500 text-white font-extrabold text-[8px] px-1.5 py-0.5 rounded shadow-lg shadow-rose-500/20">
+                <span className="bg-rose-500 text-white font-black text-[8px] px-1.5 py-0.5 rounded shadow-lg shadow-rose-500/30">
                   {tile.tag}
                 </span>
-                <span className="bg-black/60 backdrop-blur-sm text-[8px] font-medium text-emerald-400 px-1.5 py-0.5 rounded border border-white/5">
+                <span className="bg-black/60 backdrop-blur-sm text-[8px] font-bold text-emerald-400 px-1.5 py-0.5 rounded border border-white/10">
                   {tile.match} MATCH
                 </span>
               </div>
@@ -296,26 +332,33 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         </div>
       </div>
 
-      {/* Dark tint overlay for maximum readability of the modal */}
-      <div className="absolute inset-0 bg-[#060608]/70 backdrop-blur-sm z-10 pointer-events-none" />
+      {/* Dark tint overlay for readability of the modal */}
+      <div className="absolute inset-0 bg-[#040406]/65 backdrop-blur-[3px] z-10 pointer-events-none" />
 
       {/* Floating security indicators */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/5 text-[10px] text-zinc-400 shadow-xl">
-        <Shield className="w-3.5 h-3.5 text-rose-500" />
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[10px] text-zinc-200 shadow-xl">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
         <span>{t.detailsText}</span>
       </div>
 
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/5 text-[10px] text-zinc-400 shadow-xl">
-        <MapPin className="w-3.5 h-3.5 text-rose-500" />
-        <span className="font-semibold text-rose-400">{city}</span>
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[10px] text-zinc-200 shadow-xl">
+        {country && (
+          <span className="text-sm leading-none" title={country}>
+            {getFlagEmoji(country)}
+          </span>
+        )}
+        <span className="font-semibold text-rose-400 uppercase tracking-wide">{displayCity}</span>
       </div>
 
       {/* Central Interactive Card (Modal) */}
-      <div className="relative z-30 max-w-md w-[92%] p-1 bg-gradient-to-b from-zinc-700/25 to-zinc-900/10 rounded-[32px] border border-white/10 shadow-2xl backdrop-blur-xl">
-        <div className="bg-[#121216]/95 rounded-[28px] p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden shadow-inner">
+      <div className="relative z-30 max-w-md w-[92%] p-[1px] bg-gradient-to-b from-zinc-700/30 to-zinc-900/10 rounded-[32px] border border-white/15 shadow-2xl backdrop-blur-xl">
+        <div className="bg-[#101014]/95 rounded-[28px] p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden shadow-inner">
           {/* Neon mesh gradient reflection */}
-          <div className="absolute -top-16 -left-16 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-fuchsia-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -top-16 -left-16 w-32 h-32 bg-rose-500/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-fuchsia-500/15 rounded-full blur-2xl pointer-events-none" />
 
           <AnimatePresence mode="wait">
             
@@ -330,9 +373,9 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 className="w-full flex flex-col items-center gap-6"
               >
                 {/* Safe lock animation header */}
-                <div className="relative w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 shadow-lg shadow-rose-500/5">
-                  <div className="absolute inset-0 rounded-full border border-rose-500/30 animate-ping opacity-25" />
-                  <Lock className="w-7 h-7 text-rose-500" />
+                <div className="relative w-16 h-16 bg-rose-500/15 rounded-full flex items-center justify-center border border-rose-500/35 shadow-lg shadow-rose-500/10 animate-pulse">
+                  <div className="absolute inset-0 rounded-full border border-rose-500/40 animate-ping opacity-30" />
+                  <Lock className="w-7 h-7 text-rose-500 animate-pulse" />
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -347,18 +390,18 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-900 hover:bg-zinc-800/80 border border-white/5 hover:border-white/10 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99]"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
                     <span className="text-sm tracking-wide">{t.btnAmateur}</span>
-                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
                   </button>
 
                   <button 
                     onClick={() => setStep(2)}
-                    className="group flex items-center justify-between w-full bg-zinc-900 hover:bg-zinc-800/80 border border-white/5 hover:border-white/10 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99]"
+                    className="group flex items-center justify-between w-full bg-zinc-950 hover:bg-zinc-900 border border-white/10 hover:border-rose-500/50 text-white font-bold py-3.5 px-5 rounded-2xl transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.99] hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
                     <span className="text-sm tracking-wide">{t.btnProfessional}</span>
-                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all" />
                   </button>
                 </div>
               </motion.div>
@@ -374,7 +417,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center gap-6"
               >
-                <div className="relative w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20 shadow-lg">
+                <div className="relative w-16 h-16 bg-amber-500/15 rounded-full flex items-center justify-center border border-amber-500/35 shadow-lg animate-pulse">
+                  <div className="absolute inset-0 rounded-full border border-amber-500/30 animate-ping opacity-25" />
                   <AlertTriangle className="w-7 h-7 text-amber-500" />
                 </div>
 
@@ -393,7 +437,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 <div className="w-full pt-2">
                   <button 
                     onClick={() => setStep(3)}
-                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/30 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/20 uppercase tracking-widest relative overflow-hidden group"
+                    className="w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-extrabold text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-rose-600/40 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 select-none border border-rose-500/30 uppercase tracking-widest relative overflow-hidden group animate-pulse"
                   >
                     {/* Glowing effect inside button */}
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
@@ -414,7 +458,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center gap-6 py-4"
               >
-                <div className="relative w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 shadow-lg shadow-rose-500/5">
+                <div className="relative w-16 h-16 bg-rose-500/15 rounded-full flex items-center justify-center border border-rose-500/35 shadow-lg shadow-rose-500/10">
                   <div className="w-8 h-8 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
                 </div>
 
@@ -422,14 +466,13 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                   <h3 className="text-lg font-bold text-white tracking-tight">
                     {t.loadingTitle}
                   </h3>
-                  {/* Status update ticker */}
                   <p className="text-xs text-rose-400 font-medium h-5 tracking-tight transition-all duration-150">
                     {progressText}
                   </p>
                 </div>
 
                 {/* Progress bar container */}
-                <div className="w-full bg-zinc-900 border border-white/5 rounded-full h-3.5 overflow-hidden p-[2px]">
+                <div className="w-full bg-zinc-950 border border-white/10 rounded-full h-3.5 overflow-hidden p-[2px]">
                   <motion.div 
                     className="h-full bg-gradient-to-r from-rose-600 to-fuchsia-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]"
                     initial={{ width: "0%" }}
@@ -454,8 +497,8 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 className="w-full flex flex-col items-center gap-5"
               >
                 {/* Successful validation shield */}
-                <div className="relative w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
-                  <div className="absolute inset-0 rounded-full border border-emerald-500/20 animate-ping opacity-25" />
+                <div className="relative w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center border border-emerald-500/35 shadow-lg shadow-emerald-500/10">
+                  <div className="absolute inset-0 rounded-full border border-emerald-500/30 animate-ping opacity-25" />
                   <ShieldCheck className="w-8 h-8 text-emerald-400" />
                 </div>
 
@@ -467,7 +510,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                       {t.successExpiry}
                     </span>
-                    <span className="font-mono text-sm font-black text-rose-500 animate-pulse bg-rose-950/40 px-2 py-0.5 rounded border border-rose-500/10">
+                    <span className="font-mono text-sm font-black text-rose-500 animate-pulse bg-rose-950/40 px-2 py-0.5 rounded border border-rose-500/20">
                       {formatTime(timeLeft)}
                     </span>
                   </div>
@@ -480,7 +523,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button 
                     onClick={handleRedirect}
-                    className="w-full bg-gradient-to-r from-rose-600 via-rose-500 to-fuchsia-600 hover:from-rose-500 hover:to-fuchsia-500 text-white font-black text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-[0_0_25px_rgba(244,63,94,0.4)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-rose-400/20 tracking-wider relative overflow-hidden group select-none animate-glow"
+                    className="w-full bg-gradient-to-r from-rose-600 via-rose-500 to-fuchsia-600 hover:from-rose-500 hover:to-fuchsia-500 text-white font-black text-sm py-4 px-6 rounded-2xl transition-all duration-300 shadow-[0_0_25px_rgba(244,63,94,0.5)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-rose-400/20 tracking-wider relative overflow-hidden group select-none animate-glow"
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
                     <Sparkles className="w-4 h-4 fill-white animate-spin duration-[4000ms]" />
@@ -488,7 +531,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
                   </button>
                   
                   <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest flex items-center justify-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm animate-pulse" />
                     {t.successNote}
                   </span>
                 </div>
@@ -511,10 +554,10 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
         }
         @keyframes glow {
           0%, 100% {
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.45);
           }
           50% {
-            box-shadow: 0 0 35px rgba(244, 63, 94, 0.6);
+            box-shadow: 0 0 35px rgba(244, 63, 94, 0.65);
           }
         }
         .animate-glow {
