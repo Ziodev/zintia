@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/SkeletonLoader";
 import { translations, Language } from "@/lib/translations";
 import { getVideos } from "@/lib/feed";
 import { HomeHeader } from "@/components/ui/HomeHeader";
+import { CommunityPlaylists } from "@/components/ui/CommunityPlaylists";
 
 interface PageProps {
   searchParams: Promise<{ lang?: string }>;
@@ -82,6 +83,7 @@ export default async function Home({ searchParams }: PageProps) {
 
       <Suspense fallback={<GridSkeleton />}>
         <CategoryFilter videos={videos} />
+        <CommunityPlaylists videos={videos} lang={activeLang} />
         <VideoGrid initialVideos={videos} />
       </Suspense>
     </div>

@@ -10,6 +10,7 @@ import { Video } from "@/lib/data";
 import { Language, translations } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
 import { slugify } from "@/lib/utils";
+import { AFFILIATE_LINKS } from "@/lib/config";
 
 const PLAYLIST_TRANSLATIONS = {
   es: {
@@ -21,6 +22,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "Limpiar todo",
     toastCopied: "¡Enlace de playlist copiado al portapapeles!",
     playGame: "JUGAR 'HOT OR NOT'",
+    unlockTitle: "Desbloquear Playlists Ilimitadas 💋",
+    unlockDesc: "Has alcanzado el límite gratuito de 5 videos. Para guardar videos ilimitados, usar reproducción continua y disfrutar de autoplay permanente, apoya a nuestros sponsors con un registro rápido y gratis.",
+    unlockBtn: "💋 Ver Modelos y Desbloquear Gratis",
+    unlockCancel: "Volver a la Playlist",
   },
   en: {
     title: "Your Hot Playlist",
@@ -31,6 +36,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "Clear all",
     toastCopied: "Playlist link copied to clipboard!",
     playGame: "PLAY 'HOT OR NOT'",
+    unlockTitle: "Unlock Unlimited Playlists 💋",
+    unlockDesc: "You have reached the free limit of 5 videos. To save unlimited videos, use continuous playback, and enjoy permanent autoplay, support our sponsors with a quick free sign up.",
+    unlockBtn: "💋 View Models & Unlock Free",
+    unlockCancel: "Back to Playlist",
   },
   fr: {
     title: "Votre Playlist Chaude",
@@ -41,6 +50,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "Tout effacer",
     toastCopied: "Lien de la playlist copié !",
     playGame: "JOUER A 'HOT OR NOT'",
+    unlockTitle: "Débloquer les Playlists Illimitées 💋",
+    unlockDesc: "Vous avez atteint la limite gratuite de 5 vidéos. Pour enregistrer des vidéos illimitées et profiter d'une lecture continue, soutenez nos sponsors.",
+    unlockBtn: "💋 Voir les Modèles & Débloquer",
+    unlockCancel: "Retour à la Playlist",
   },
   ja: {
     title: "ホットプレイリスト",
@@ -51,6 +64,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "すべてクリア",
     toastCopied: "リンクをコピーしました！",
     playGame: "「HOT OR NOT」をプレイ",
+    unlockTitle: "無制限プレイリストを解除 💋",
+    unlockDesc: "無料制限の5個に達しました。無制限保存、連続再生、自動再生を楽しむには、スポンサーの無料登録をお願いします。",
+    unlockBtn: "💋 ライブモデルを見て解除",
+    unlockCancel: "プレイリストに戻る",
   },
   it: {
     title: "La Tua Playlist Calda",
@@ -61,6 +78,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "Cancella tutto",
     toastCopied: "Link copiato negli appunti!",
     playGame: "GIOCA A 'HOT OR NOT'",
+    unlockTitle: "Sblocca Playlist Illimitate 💋",
+    unlockDesc: "Hai raggiunto il limite gratuito di 5 video. Per salvare video illimitati e usare l'autoplay permanente, registrati gratis con i nostri partner.",
+    unlockBtn: "💋 Vedi Modelle e Sblocca Gratis",
+    unlockCancel: "Torna alla Playlist",
   },
   pt: {
     title: "Sua Playlist Quente",
@@ -71,6 +92,10 @@ const PLAYLIST_TRANSLATIONS = {
     clear: "Limpar tudo",
     toastCopied: "Link copiado para a área de transferência!",
     playGame: "JOGAR 'HOT OR NOT'",
+    unlockTitle: "Desbloquear Playlists Ilimitadas 💋",
+    unlockDesc: "Você atingiu o limite gratuito de 5 vídeos. Para salvar vídeos ilimitados e reprodução contínua permanente, apoie nossos patrocinadores.",
+    unlockBtn: "💋 Ver Modelos e Desbloquear Grátis",
+    unlockCancel: "Voltar para Playlist",
   },
 };
 
@@ -78,6 +103,7 @@ export function FloatingPlaylist() {
   const [isOpen, setIsOpen] = useState(false);
   const [playlist, setPlaylist] = useState<Video[]>([]);
   const [showToast, setShowToast] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [lang] = useQueryState("lang", { defaultValue: "es" });
 
   const activeLang = (lang as Language) || "es";
@@ -103,13 +129,19 @@ export function FloatingPlaylist() {
   useEffect(() => {
     loadPlaylist();
 
+    const handleTriggerUnlock = () => {
+      setShowUnlockModal(true);
+    };
+
     // Listen to custom updates and storage updates
     window.addEventListener("zintia_playlist_updated", loadPlaylist);
     window.addEventListener("storage", loadPlaylist);
+    window.addEventListener("zintia_trigger_unlock_modal", handleTriggerUnlock);
 
     return () => {
       window.removeEventListener("zintia_playlist_updated", loadPlaylist);
       window.removeEventListener("storage", loadPlaylist);
+      window.removeEventListener("zintia_trigger_unlock_modal", handleTriggerUnlock);
     };
   }, []);
 
@@ -314,14 +346,22 @@ export function FloatingPlaylist() {
               {/* Footer Actions */}
               {playlist.length > 0 && (
                 <div className="p-4 border-t border-white/5 bg-zinc-900/20 flex flex-col gap-2.5">
-                  <Link
-                    href={playUrl}
-                    onClick={() => setIsOpen(false)}
-                    className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-lg shadow-rose-500/20 text-center font-heading animate-glow"
+                  <button
+                    onClick={(e) => {
+                      const isUnlocked = typeof window !== "undefined" && localStorage.getItem("zintia_playlist_unlocked") === "true";
+                      if (playlist.length > 5 && !isUnlocked) {
+                        e.preventDefault();
+                        setShowUnlockModal(true);
+                      } else {
+                        setIsOpen(false);
+                        window.location.href = playUrl;
+                      }
+                    }}
+                    className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-lg shadow-rose-500/20 text-center font-heading animate-glow cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-white" />
                     <span>{t.playAll}</span>
-                  </Link>
+                  </button>
 
                   <button
                     onClick={handleShare}
@@ -332,6 +372,62 @@ export function FloatingPlaylist() {
                   </button>
                 </div>
               )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Unlock Modal */}
+      <AnimatePresence>
+        {showUnlockModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowUnlockModal(false)}
+              className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-55 w-[calc(100%-2rem)] max-w-sm bg-zinc-950 border border-rose-500/20 rounded-3xl p-6 md:p-8 text-center shadow-2xl font-sans"
+            >
+              <div className="bg-rose-500/10 text-rose-500 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
+                <Film className="w-7 h-7" />
+              </div>
+              <h3 className="text-sm md:text-base font-black text-white mb-2 uppercase tracking-wide">
+                {t.unlockTitle}
+              </h3>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-6">
+                {t.unlockDesc}
+              </p>
+              
+              <div className="flex flex-col gap-2.5">
+                <a
+                  href={AFFILIATE_LINKS.webcams}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    localStorage.setItem("zintia_playlist_unlocked", "true");
+                    window.dispatchEvent(new Event("zintia_playlist_updated"));
+                    setShowUnlockModal(false);
+                  }}
+                  className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-rose-500/20 animate-glow block text-center font-heading"
+                >
+                  {t.unlockBtn}
+                </a>
+                <button
+                  onClick={() => setShowUnlockModal(false)}
+                  className="text-xs text-muted-foreground hover:text-white transition-colors py-2 font-semibold font-sans hover:underline cursor-pointer"
+                >
+                  {t.unlockCancel}
+                </button>
+              </div>
             </motion.div>
           </>
         )}

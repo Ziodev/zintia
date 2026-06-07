@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Eye, Clock, ThumbsUp, Share2, Tag, ChevronLeft } from "lucide-react";
-import { MOCK_ADS } from "@/lib/data";
+import { ChevronLeft } from "lucide-react";
+import { MOCK_ADS, Video } from "@/lib/data";
 import { VideoCard } from "@/components/cards/VideoCard";
 import { NativeAdCard } from "@/components/cards/NativeAdCard";
 import { translations, Language } from "@/lib/translations";
@@ -13,6 +13,7 @@ import { VideoPlayerWrapper } from "@/components/widgets/VideoPlayerWrapper";
 import { VideoDetailsPanel } from "@/components/widgets/VideoDetailsPanel";
 import { translateTitle } from "@/lib/auto-tagger";
 import { slugify } from "@/lib/utils";
+import { PlaylistQueuePanel } from "@/components/widgets/PlaylistQueuePanel";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -117,15 +118,30 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
   let nextVideo = recommendations[0] || video;
   let nextVideoUrl = `/video/${slugify(translateTitle(nextVideo.title, activeLang))}-${nextVideo.id}?lang=${activeLang}`;
 
-  if (playlistParam) {
-    const playlistIds = playlistParam.split(",").filter((pid: string) => pid && pid !== id);
-    if (playlistIds.length > 0) {
-      const nextId = playlistIds[0];
-      const remainingIds = playlistIds.slice(1).join(",");
+  const playlistIds = playlistParam
+    ? playlistParam.split(",").map((pid: string) => pid.trim()).filter(Boolean)
+    : [];
+
+  const playlistVideos: Video[] = [];
+  let playlistCurrentIndex = -1;
+
+  if (playlistIds.length > 0) {
+    playlistCurrentIndex = playlistIds.indexOf(id);
+
+    for (const pid of playlistIds) {
+      const pvideo = await getVideoById(pid);
+      if (pvideo) {
+        playlistVideos.push(pvideo);
+      }
+    }
+
+    if (playlistCurrentIndex !== -1) {
+      const nextIndex = (playlistCurrentIndex + 1) % playlistIds.length;
+      const nextId = playlistIds[nextIndex];
       const resolvedNext = await getVideoById(nextId);
       if (resolvedNext) {
         nextVideo = resolvedNext;
-        nextVideoUrl = `/video/${slugify(translateTitle(resolvedNext.title, activeLang))}-${nextId}?lang=${activeLang}` + (remainingIds ? `&playlist=${remainingIds}` : "");
+        nextVideoUrl = `/video/${slugify(translateTitle(resolvedNext.title, activeLang))}-${nextId}?lang=${activeLang}&playlist=${playlistParam}`;
       }
     }
   }
@@ -289,6 +305,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
                     thumbnailUrl={rec.thumbnailUrl}
                     videoPreviewUrl={rec.videoPreviewUrl}
                     tags={rec.tags}
+                    category={rec.category}
                   />
                 ))}
               </div>
@@ -297,6 +314,15 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
 
         {/* Right Column: Recommendations & Native Ads */}
         <div className="flex flex-col gap-4">
+          {playlistVideos.length > 0 && playlistCurrentIndex !== -1 && (
+            <PlaylistQueuePanel
+              videos={playlistVideos}
+              currentIndex={playlistCurrentIndex}
+              playlistParam={playlistParam}
+              lang={activeLang}
+            />
+          )}
+
           <h2 className="text-sm font-bold text-white tracking-wide uppercase border-b border-white/5 pb-2.5">
             {t.nextRecs}
           </h2>
@@ -322,6 +348,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
                 thumbnailUrl={rec.thumbnailUrl}
                 videoPreviewUrl={rec.videoPreviewUrl}
                 tags={rec.tags}
+                category={rec.category}
               />
             ))}
           </div>

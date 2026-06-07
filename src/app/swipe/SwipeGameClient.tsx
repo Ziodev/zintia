@@ -136,6 +136,13 @@ export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {
             console.error(e);
           }
         }
+
+        const isUnlocked = localStorage.getItem("zintia_playlist_unlocked") === "true";
+        if (playlistData.length >= 5 && !isUnlocked && !playlistData.some((v) => v.id === swipedVideo.id)) {
+          window.dispatchEvent(new Event("zintia_trigger_unlock_modal"));
+          return;
+        }
+
         if (!playlistData.some((v) => v.id === swipedVideo.id)) {
           playlistData.push(swipedVideo);
           localStorage.setItem("zintia_hot_playlist", JSON.stringify(playlistData));

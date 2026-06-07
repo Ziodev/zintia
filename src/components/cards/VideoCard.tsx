@@ -20,6 +20,7 @@ interface VideoCardProps {
   thumbnailUrl: string;
   videoPreviewUrl: string;
   tags?: string[];
+  category?: string;
 }
 
 export function VideoCard({
@@ -30,6 +31,7 @@ export function VideoCard({
   thumbnailUrl,
   videoPreviewUrl,
   tags,
+  category,
 }: VideoCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -41,6 +43,26 @@ export function VideoCard({
   const { isMuted, setMuted, activeVideoId, setActiveVideoId } = useUIStore();
 
   const [lang] = useQueryState("lang", { defaultValue: "es" });
+  
+  const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
+  const [preferredTags, setPreferredTags] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const storedCats = localStorage.getItem("zintia_preferred_categories");
+    const storedTags = localStorage.getItem("zintia_preferred_tags");
+    if (storedCats) {
+      try {
+        setPreferredCategories(JSON.parse(storedCats));
+      } catch {}
+    }
+    if (storedTags) {
+      try {
+        setPreferredTags(JSON.parse(storedTags));
+      } catch {}
+    }
+  }, []);
   const activeLang = (lang as Language) || "es";
   const t = translations[activeLang] || translations.es;
 
@@ -123,6 +145,22 @@ export function VideoCard({
 
   const watchUrl = `/video/${slugify(translatedTitle)}-${id}?lang=${activeLang}`;
 
+  const matchPercentage = (() => {
+    if (!isClient) return 0;
+    let score = 0;
+    if (category && preferredCategories.includes(category)) {
+      score += 60;
+    }
+    if (tags) {
+      tags.forEach((tag) => {
+        if (preferredTags.includes(tag)) {
+          score += 10;
+        }
+      });
+    }
+    return score > 0 ? Math.min(score, 98) : 0;
+  })();
+
   return (
     <div
       ref={containerRef}
@@ -137,6 +175,12 @@ export function VideoCard({
         href={watchUrl}
         className="block relative w-full aspect-video bg-zinc-950 overflow-hidden"
       >
+        {/* Match Percentage Badge */}
+        {matchPercentage > 0 && (
+          <div className="absolute top-2.5 left-2.5 bg-rose-600/90 backdrop-blur-sm text-[9px] font-black text-white px-2 py-0.5 rounded border border-rose-500/20 flex items-center gap-0.5 z-20 shadow-[0_2px_10px_rgba(244,63,94,0.3)]">
+            <span>🔥 {matchPercentage}% Match</span>
+          </div>
+        )}
         {/* Poster Image - Fades out only when the video actually starts playing */}
         <Image
           src={thumbnailUrl}

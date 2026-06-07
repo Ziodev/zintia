@@ -30,6 +30,7 @@ export function VideoPlayerWrapper({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
   const t = translations[lang] || translations.es;
   const nextUrl = nextVideoUrl || `/video/${nextVideo.id}?lang=${lang}`;
 
@@ -90,16 +91,19 @@ export function VideoPlayerWrapper({
   return (
     <div 
       ref={containerRef}
-      className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl group/player fullscreen:rounded-none fullscreen:aspect-auto"
+      className="relative w-full aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-white/5 shadow-2xl group/player fullscreen:rounded-none fullscreen:aspect-auto fullscreen:w-full fullscreen:h-full"
     >
       {embedUrl ? (
         <>
           {/* Native Loading Spinner behind the iframe */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-10 h-10 border-4 border-rose-500/20 border-t-rose-500 rounded-full animate-spin" />
-          </div>
+          {!isIframeLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+              <div className="w-10 h-10 border-4 border-rose-500/20 border-t-rose-500 rounded-full animate-spin" />
+            </div>
+          )}
           <iframe
             src={embedUrl}
+            onLoad={() => setIsIframeLoaded(true)}
             allowFullScreen
             allow="autoplay; fullscreen"
             sandbox="allow-scripts allow-same-origin allow-presentation"

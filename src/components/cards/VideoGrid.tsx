@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
 import { useParams } from "next/navigation";
-import { ShieldCheck, ExternalLink } from "lucide-react";
+import { ShieldCheck, ExternalLink, Flame } from "lucide-react";
+import Link from "next/link";
 import { VideoCard } from "./VideoCard";
 import { NativeAdCard } from "./NativeAdCard";
 import { MOCK_ADS, Video } from "@/lib/data";
@@ -144,6 +145,30 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
       const bVal = parseFloat(b.views.replace("M", "").replace("K", "")) * (b.views.includes("M") ? 1000000 : 1000);
       return bVal - aVal;
     });
+  } else if (activeSort === "recommend" && isClient && (preferredCategories.length > 0 || preferredTags.length > 0)) {
+    filtered = [...filtered].sort((a, b) => {
+      let scoreA = 0;
+      let scoreB = 0;
+
+      if (preferredCategories.includes(a.category)) scoreA += 15;
+      if (preferredCategories.includes(b.category)) scoreB += 15;
+
+      if (a.tags) {
+        a.tags.forEach((tag) => {
+          if (preferredTags.includes(tag)) scoreA += 3;
+        });
+      }
+      if (b.tags) {
+        b.tags.forEach((tag) => {
+          if (preferredTags.includes(tag)) scoreB += 3;
+        });
+      }
+
+      if (scoreB !== scoreA) {
+        return scoreB - scoreA;
+      }
+      return b.id.localeCompare(a.id); // fallback to latest
+    });
   } else if (isClient && (preferredCategories.length > 0 || preferredTags.length > 0)) {
     // Personalize default feed on client using preferred categories and tags
     filtered = [...filtered].sort((a, b) => {
@@ -250,8 +275,64 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
     });
   };
 
+  const showNoPrefsBanner = activeSort === "recommend" && isClient && preferredCategories.length === 0 && preferredTags.length === 0;
+
+  const bannerTranslations = {
+    es: {
+      title: "🔥 Activa tu Feed Personalizado",
+      desc: "Juega a 'Hot or Not' deslizando videos para que nuestro algoritmo aprenda tus gustos y ordene la página a tu medida.",
+      btn: "JUGAR AHORA",
+    },
+    en: {
+      title: "🔥 Activate Your Personalized Feed",
+      desc: "Play 'Hot or Not' by swiping videos so our algorithm learns your tastes and sorts the page just for you.",
+      btn: "PLAY NOW",
+    },
+    fr: {
+      title: "🔥 Activez votre Flux Personnalisé",
+      desc: "Jouez à 'Hot or Not' pour que notre algorithme apprenne vos goûts.",
+      btn: "JOUER MAINTENANT",
+    },
+    ja: {
+      title: "🔥 あなただけのおすすめフィード",
+      desc: "「Hot or Not」ゲームで動画をスワイプし、好みをアルゴリズムに学習させましょう。",
+      btn: "今すぐプレイ",
+    },
+    it: {
+      title: "🔥 Attiva il tuo Feed Personalizzato",
+      desc: "Gioca a 'Hot or Not' trascinando i video per insegnare all'algoritmo i tuoi gusti.",
+      btn: "GIOCA ORA",
+    },
+    pt: {
+      title: "🔥 Ative seu Feed Personalizado",
+      desc: "Jogue 'Hot or Not' deslizando vídeos para que nosso algoritmo aprenda seus gostos.",
+      btn: "JOGAR AGORA",
+    },
+  };
+
+  const bt = bannerTranslations[activeLang] || bannerTranslations.es;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-2">
+      {showNoPrefsBanner && (
+        <div className="col-span-full bg-zinc-900/40 backdrop-blur-md border border-rose-500/20 rounded-3xl p-6 md:p-8 flex flex-col items-center text-center max-w-xl mx-auto my-4 shadow-2xl animate-in fade-in duration-300 w-full">
+          <div className="bg-rose-500/10 text-rose-500 p-3.5 rounded-full mb-4 animate-glow">
+            <Flame className="w-8 h-8 fill-rose-500" />
+          </div>
+          <h2 className="text-base font-bold text-white mb-2 font-heading uppercase tracking-wide">
+            {bt.title}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed font-sans mb-6">
+            {bt.desc}
+          </p>
+          <Link
+            href={`/swipe?lang=${activeLang}`}
+            className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded-2xl transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading"
+          >
+            {bt.btn}
+          </Link>
+        </div>
+      )}
       {gridItems.map((item, index) => {
         if (item.type === "ad") {
           return (
@@ -276,6 +357,7 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
               thumbnailUrl={item.data.thumbnailUrl}
               videoPreviewUrl={item.data.videoPreviewUrl}
               tags={item.data.tags}
+              category={item.data.category}
             />
           );
         }
