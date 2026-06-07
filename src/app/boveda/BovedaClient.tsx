@@ -131,27 +131,31 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     const click = clickId || sessionStorage.getItem("clickadu_click") || localStorage.getItem("clickadu_click") || "organic";
     const zona = zoneId || sessionStorage.getItem("clickadu_zona") || localStorage.getItem("clickadu_zona") || "organic";
 
+    // Extraemos todos los parametros que la red de trafico (ej Adsterra/BeMob) nos mande
+    const urlParams = new URLSearchParams(window.location.search);
+    const extraParams = urlParams.toString() ? `&${urlParams.toString()}` : "";
+
     if (isMobile) {
       if (tier1Countries.includes(c)) {
         // Mobile Tier 1: CandyAI is best (PPA flow, full $30 payout, lower registration friction)
-        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile_A${angleIndex}`;
+        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile_A${angleIndex}${extraParams}`;
       } else {
         // Mobile Global Fallback: Mobidea Smartlink
-        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile_A${angleIndex}`;
+        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile_A${angleIndex}${extraParams}`;
       }
     } else {
       // Desktop Tier 1: 50/50 split between Mofos ($35 payout on desktop) and CandyAI ($35 PPA)
       if (tier1Countries.includes(c)) {
         const isMofos = selectedOfferIndex === 0;
         if (isMofos) {
-          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop_A${angleIndex}`;
+          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop_A${angleIndex}${extraParams}`;
         } else {
-          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop_A${angleIndex}`;
+          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop_A${angleIndex}${extraParams}`;
         }
       }
       
       // Desktop non-Tier 1 fallback
-      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop_A${angleIndex}`;
+      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop_A${angleIndex}${extraParams}`;
     }
   };
 
