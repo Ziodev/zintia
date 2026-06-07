@@ -627,7 +627,16 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
   }, [step, detectedLang, displayCity]);
 
   return (
-    <main className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans">
+    <main 
+      style={{ 
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        // @ts-ignore
+        '--font-sans': 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        '--font-heading': 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        '--font-mono': 'ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Consolas, monospace'
+      } as React.CSSProperties}
+      className="relative w-full min-h-screen bg-[#040406] text-white flex items-center justify-center overflow-hidden select-none font-sans"
+    >
       
       <div 
         ref={backgroundRef}
