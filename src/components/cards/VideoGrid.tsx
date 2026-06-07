@@ -11,7 +11,7 @@ import { MOCK_ADS, Video } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import posthog from "posthog-js";
-import { AFFILIATE_LINKS } from "@/lib/config";
+import { getMobideaLink } from "@/lib/utils";
 
 const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: string; bypass: string }> = {
   es: {
@@ -268,11 +268,14 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
     setIsRoadblockBypassed(true);
   };
 
-  const handleRoadblockCTAClick = () => {
+  const handleRoadblockCTAClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const targetUrl = getMobideaLink("roadblock_cta");
     posthog.capture("roadblock_cta_click", {
       language: activeLang,
-      target_url: AFFILIATE_LINKS.webcams,
+      target_url: targetUrl,
     });
+    window.location.href = targetUrl;
   };
 
   const showNoPrefsBanner = activeSort === "recommend" && isClient && preferredCategories.length === 0 && preferredTags.length === 0;
@@ -377,10 +380,8 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
             <a
-              href={AFFILIATE_LINKS.webcams}
+              href="#"
               onClick={handleRoadblockCTAClick}
-              target="_blank"
-              rel="noopener noreferrer"
               className="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow cursor-pointer font-heading"
             >
               <span>{ROADBLOCK_COPIES[activeLang].button}</span>

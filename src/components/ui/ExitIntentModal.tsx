@@ -5,7 +5,7 @@ import { useQueryState } from "nuqs";
 import { Gift, X, ExternalLink } from "lucide-react";
 import { Language } from "@/lib/translations";
 import posthog from "posthog-js";
-import { AFFILIATE_LINKS } from "@/lib/config";
+import { getMobideaLink } from "@/lib/utils";
 
 const EXIT_COPIES: Record<Language, { title: string; desc: string; button: string; close: string }> = {
   es: {
@@ -94,11 +94,12 @@ export function ExitIntentModal() {
   if (!isOpen) return null;
 
   const handleClaim = () => {
+    const targetUrl = getMobideaLink("exit_intent_modal");
     posthog.capture("exit_intent_claimed", {
       language: activeLang,
-      target_url: AFFILIATE_LINKS.default,
+      target_url: targetUrl,
     });
-    window.open(AFFILIATE_LINKS.default, "_blank");
+    window.location.href = targetUrl;
     setIsOpen(false);
   };
 

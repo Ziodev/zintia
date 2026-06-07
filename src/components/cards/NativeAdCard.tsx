@@ -7,7 +7,7 @@ import { ExternalLink, Play, Eye, Lock } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { translations, Language } from "@/lib/translations";
 import posthog from "posthog-js";
-import { AFFILIATE_LINKS } from "@/lib/config";
+import { getMobideaLink } from "@/lib/utils";
 
 interface NativeAdCardProps {
   title: string;
@@ -88,54 +88,53 @@ export function NativeAdCard({
     }
   }, [isPlaying]);
 
-  // Resolve affiliate link from central config
+  // Resolve affiliate link dynamically using getMobideaLink
   const getAffiliateUrl = () => {
-    switch (variant) {
-      case "private":
-        return AFFILIATE_LINKS.private;
-      case "interactive":
-        return AFFILIATE_LINKS.dating;
-      case "standard":
-      default:
-        return AFFILIATE_LINKS.webcams;
-    }
+    return getMobideaLink("native_ad_" + variant);
   };
 
-  const activeUrl = getAffiliateUrl();
-
-  const handleCardClick = () => {
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const activeUrl = getAffiliateUrl();
     posthog.capture("ad_card_click", {
       variant,
       language: activeLang,
       target_url: activeUrl,
       element: "card_body",
     });
+    window.location.href = activeUrl;
   };
 
   const handleLikeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const activeUrl = getAffiliateUrl();
     posthog.capture("ad_card_click", {
       variant: "interactive",
       language: activeLang,
       target_url: activeUrl,
       element: "like_button",
     });
+    window.location.href = activeUrl;
   };
 
   const handlePassClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const activeUrl = getAffiliateUrl();
     posthog.capture("ad_card_click", {
       variant: "interactive",
       language: activeLang,
       target_url: activeUrl,
       element: "pass_button",
     });
+    window.location.href = activeUrl;
   };
 
   return (
     <a
       ref={containerRef}
-      href={activeUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+      href="#"
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {

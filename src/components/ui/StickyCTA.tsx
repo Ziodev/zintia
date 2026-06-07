@@ -7,7 +7,7 @@ import { X, Video, ExternalLink } from "lucide-react";
 import { translations, Language } from "@/lib/translations";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import posthog from "posthog-js";
-import { AFFILIATE_LINKS } from "@/lib/config";
+import { getMobideaLink } from "@/lib/utils";
 
 const EXPIRES_IN: Record<Language, string> = {
   es: "La oferta expira en",
@@ -97,12 +97,15 @@ export function StickyCTA() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleCTAClick = () => {
+  const handleCTAClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const targetUrl = getMobideaLink("sticky_cta");
     posthog.capture("sticky_cta_click", {
       language: activeLang,
       location_city: geo.city,
-      target_url: AFFILIATE_LINKS.default,
+      target_url: targetUrl,
     });
+    window.location.href = targetUrl;
   };
 
   const handleClose = () => {
@@ -151,10 +154,8 @@ export function StickyCTA() {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href={AFFILIATE_LINKS.default}
+            href="#"
             onClick={handleCTAClick}
-            target="_blank"
-            rel="noopener noreferrer"
             className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-500/20 animate-glow"
           >
             <span>{t.enter}</span>

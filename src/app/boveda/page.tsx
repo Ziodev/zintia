@@ -16,7 +16,15 @@ export const metadata: Metadata = {
   }
 };
 
-export default async function BovedaPage() {
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function BovedaPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const click = typeof resolvedSearchParams.click === "string" ? resolvedSearchParams.click : undefined;
+  const zona = typeof resolvedSearchParams.zona === "string" ? resolvedSearchParams.zona : undefined;
+
   const headersList = await headers();
   const country = headersList.get("x-user-country") || "ES";
   const rawCity = headersList.get("x-user-city") || "";
@@ -27,5 +35,14 @@ export default async function BovedaPage() {
     return <SfwPage />;
   }
 
-  return <BovedaClient country={country} city={city} isBot={isBot} />;
+  return (
+    <BovedaClient 
+      country={country} 
+      city={city} 
+      isBot={isBot} 
+      clickId={click} 
+      zoneId={zona} 
+    />
+  );
 }
+

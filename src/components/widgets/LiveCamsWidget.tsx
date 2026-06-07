@@ -6,8 +6,7 @@ import { useQueryState } from "nuqs";
 import { Tv, ExternalLink } from "lucide-react";
 import { Video } from "@/lib/data";
 import { translations, Language } from "@/lib/translations";
-import { AFFILIATE_LINKS } from "@/lib/config";
-import { cn } from "@/lib/utils";
+import { cn, getMobideaLink } from "@/lib/utils";
 
 interface LiveCamsWidgetProps {
   currentVideo: Video;
@@ -138,13 +137,16 @@ export function LiveCamsWidget({ currentVideo, allVideos }: LiveCamsWidgetProps)
           return (
             <a
               key={model.id}
-              href={AFFILIATE_LINKS.webcams}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = getMobideaLink("live_cams_widget_" + modelName.toLowerCase());
+              }}
               onMouseEnter={() => setHoveredId(model.id)}
               onMouseLeave={() => setHoveredId(null)}
               className="group relative flex flex-col bg-zinc-900/40 hover:bg-zinc-900 border border-white/5 hover:border-rose-500/50 rounded-xl overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-rose-500/10 cursor-pointer"
             >
+
               {/* Media Section */}
               <div 
                 className="block relative w-full aspect-video bg-zinc-950 overflow-hidden"

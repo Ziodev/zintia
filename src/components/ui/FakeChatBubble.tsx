@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { X, ShieldAlert } from "lucide-react";
 import Image from "next/image";
-import { AFFILIATE_LINKS } from "@/lib/config";
 import { Language } from "@/lib/translations";
+import { getMobideaLink } from "@/lib/utils";
 
 const messages: Record<Language, { name: string; text: string; cta: string }> = {
   es: {
@@ -80,7 +80,7 @@ export function FakeChatBubble() {
 
   const handleChatClick = () => {
     setUnreadCount(0);
-    window.open(AFFILIATE_LINKS.webcams, "_blank", "noopener,noreferrer");
+    window.open(getMobideaLink("fake_chat_bubble"), "_blank", "noopener,noreferrer");
   };
 
   if (!showBubble) return null;

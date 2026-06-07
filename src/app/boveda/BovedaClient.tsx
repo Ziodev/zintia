@@ -20,6 +20,8 @@ interface BovedaClientProps {
   country: string;
   city: string;
   isBot: boolean;
+  clickId?: string;
+  zoneId?: string;
 }
 
 const BACKGROUND_TILES = [
@@ -98,10 +100,17 @@ const tzToCountryMap: Record<string, string> = {
 };
 
 const OBFUSCATED_URLS = {
-  tier1: "aHR0cHM6Ly9wbGF5LmFkdWx0Zm9yY2UuY29tL3JlZGlyZWN0P3N1Yj1hZDUtcHJlbGFuZGVyLXRpZXIx", 
-  tier2: "aHR0cHM6Ly9pbW9uZXRpeml0LmNvbS9zbWFydGxpbms/c3ViPWFkNS1wcmVsYW5kZXItdGllcjI=", 
-  tier3: "aHR0cHM6Ly9sb3Nwb2xsb3MuY29tL3NtYXJ0bGluaz9zdWI9YWQ1LXByZWxhbmRlci10aWVyMw=="  
+  tier2: "aHR0cHM6Ly93d3cudW5kZXJsaW5nbWlzdGVyeS5zdXBwb3J0Lz9zbD02MTExMjk3LWY2NWI3", // Mobidea Smartlink base
+  tier3: "aHR0cHM6Ly93d3cudW5kZXJsaW5nbWlzdGVyeS5zdXBwb3J0Lz9zbD02MTExMjk3LWY2NWI3"  // Mobidea Smartlink base
 };
+
+// Obfuscated adultforce lineup offers for Tier 1 rotation (A/B/C/D split test)
+const ADULTFORCE_OFFERS = [
+  { name: 'Brazzers', url: 'aHR0cHM6Ly9sYW5kaW5nLmJyYXp6ZXJzbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TkN3aWN5STZPVEFzSW1VaU9qZzRNRE1zSW5BaU9qRXhmUT09' },
+  { name: 'Mofos', url: 'aHR0cHM6Ly9sYW5kaW5nLm1vZm9zbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TlN3aWN5STZNVGMyTENKbElqbzRPVFF6TENKd0lqb3hNWDA9' },
+  { name: 'CandyAI', url: 'aHR0cHM6Ly90cmFjay5hZnRyazMuY29tLzM4ZGY2ZjEyLWYxMDMtNDUyZi05Mzg2LTIyYmJhODhlYzhlZj9hdHM9ZXlKaElqb3pNRE16TURjc0ltTWlPalU0TmpRME9UVTVMQ0p1SWpvek55d2ljeUk2TnpNMUxDSmxJam94TVRBMU1pd2ljQ0k2TXpFM2ZRPT0mYWZmX3Rva2VuPUV5aDFjM1Y0' },
+  { name: 'BangBros', url: 'aHR0cHM6Ly9sYW5kaW5nLmJhbmdicm9zbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TXpBc0luTWlPalk1TXl3aVpTSTZNVEEyTnpNc0luQWlPakV4ZlE9PQ==' }
+];
 
 const getFlagEmoji = (countryCode: string) => {
   if (!countryCode || countryCode.length !== 2) return "";
@@ -116,7 +125,7 @@ const getFlagEmoji = (countryCode: string) => {
   }
 };
 
-export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
+export function BovedaClient({ country, city, isBot, clickId, zoneId }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
@@ -124,30 +133,55 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
   const [displayCity, setDisplayCity] = useState(city);
   const [displayCountry, setDisplayCountry] = useState(country);
   const [detectedLang, setDetectedLang] = useState<string>("es");
+  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(0);
   
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  // Decrypt helper for redirect actions
+  // Choose offer index on mount for Desktop 50/50 split testing session consistency
+  useEffect(() => {
+    setSelectedOfferIndex(Math.floor(Math.random() * 2)); // 0 or 1 for Mofos/CandyAI split on desktop
+  }, []);
+
+  // Decrypt helper for context-sensitive redirects (CRO smartlink)
   const getDecryptedLink = () => {
+    if (typeof window === "undefined") return "";
+
     const c = displayCountry.toUpperCase();
-    const tier1Countries = ["US", "GB", "CA", "AU", "NZ", "DE", "FR", "JP"];
-    const tier2Countries = [
-      "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CR", "UY", "DO", "PR", "BO", "PY", "SV", "HN", "NI", "PA"
-    ];
+    const tier1Countries = ["US", "GB", "CA", "AU", "DE", "FR"];
 
-    let obfuscatedLink = OBFUSCATED_URLS.tier3; 
-    if (tier1Countries.includes(c)) {
-      obfuscatedLink = OBFUSCATED_URLS.tier1;
-    } else if (tier2Countries.includes(c) || detectedLang === "es") {
-      obfuscatedLink = OBFUSCATED_URLS.tier2;
-    }
+    const isMobile = /mobile|android|iphone|ipad|phone/i.test(window.navigator.userAgent || "");
 
-    try {
-      return atob(obfuscatedLink);
-    } catch (e) {
-      return "https://play.adultforce.com/redirect";
+    const mofosUrl = atob(ADULTFORCE_OFFERS[1].url);    // index 1: Mofos
+    const candyAIUrl = atob(ADULTFORCE_OFFERS[2].url);  // index 2: CandyAI
+    const mobideaUrl = atob(OBFUSCATED_URLS.tier2);
+
+    const click = clickId || sessionStorage.getItem("clickadu_click") || localStorage.getItem("clickadu_click") || "organic";
+    const zona = zoneId || sessionStorage.getItem("clickadu_zona") || localStorage.getItem("clickadu_zona") || "organic";
+
+    if (isMobile) {
+      if (tier1Countries.includes(c)) {
+        // Mobile Tier 1: CandyAI is best (PPA flow, full $30 payout, lower registration friction)
+        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile`;
+      } else {
+        // Mobile Global Fallback: Mobidea Smartlink
+        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile`;
+      }
+    } else {
+      // Desktop Tier 1: 50/50 split between Mofos ($35 payout on desktop) and CandyAI ($35 PPA)
+      if (tier1Countries.includes(c)) {
+        const isMofos = selectedOfferIndex === 0;
+        if (isMofos) {
+          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop`;
+        } else {
+          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop`;
+        }
+      }
+      
+      // Desktop non-Tier 1 fallback
+      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop`;
     }
   };
+
 
   // 1. CRO Hack: Back-Button Hijack (Capturar el botón de retroceso)
   useEffect(() => {
@@ -164,7 +198,7 @@ export function BovedaClient({ country, city, isBot }: BovedaClientProps) {
     return () => {
       window.removeEventListener("popstate", handleBackButton);
     };
-  }, [displayCountry, detectedLang]);
+  }, [displayCountry, detectedLang, selectedOfferIndex]);
 
   // 2. CRO Hack: Tab Visibility Alert (Recuperación de pestaña inactiva)
   useEffect(() => {

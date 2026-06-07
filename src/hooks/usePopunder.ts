@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { getMobideaLink } from "@/lib/utils";
 
-export function usePopunder(url: string = "https://example.com/affiliate-link") {
+export function usePopunder() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -17,7 +18,8 @@ export function usePopunder(url: string = "https://example.com/affiliate-link") 
       if (checkPopunderCap()) {
         localStorage.setItem("zintia_last_popunder", Date.now().toString());
 
-        const popWindow = window.open(url, "_blank");
+        const targetUrl = getMobideaLink("popunder");
+        const popWindow = window.open(targetUrl, "_blank");
         if (popWindow) {
           window.focus();
         }
@@ -32,5 +34,6 @@ export function usePopunder(url: string = "https://example.com/affiliate-link") 
     return () => {
       document.removeEventListener("click", handleFirstClick);
     };
-  }, [url]);
+  }, []);
 }
+

@@ -9,10 +9,10 @@ import Link from "next/link";
 import { Video } from "@/lib/data";
 import { Language, translations } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
-import { slugify } from "@/lib/utils";
-import { AFFILIATE_LINKS } from "@/lib/config";
+import { slugify, getMobideaLink } from "@/lib/utils";
 
 const PLAYLIST_TRANSLATIONS = {
+
   es: {
     title: "Tu Playlist Caliente",
     empty: "¡Aún no tienes videos en tu playlist!",
@@ -409,13 +409,13 @@ export function FloatingPlaylist() {
               
               <div className="flex flex-col gap-2.5">
                 <a
-                  href={AFFILIATE_LINKS.webcams}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
                     localStorage.setItem("zintia_playlist_unlocked", "true");
                     window.dispatchEvent(new Event("zintia_playlist_updated"));
                     setShowUnlockModal(false);
+                    window.location.href = getMobideaLink("floating_playlist");
                   }}
                   className="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs py-3.5 rounded-xl uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-rose-500/20 animate-glow block text-center font-heading"
                 >
