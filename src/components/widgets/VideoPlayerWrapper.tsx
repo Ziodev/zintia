@@ -173,7 +173,7 @@ export function VideoPlayerWrapper({
       className={cn(
         "bg-zinc-950 overflow-hidden shadow-2xl group/player transition-all duration-200",
         isCurrentlyFullscreen
-          ? "fixed inset-0 z-50 w-screen h-screen rounded-none aspect-auto"
+          ? "fixed inset-0 z-50 w-screen h-[100dvh] rounded-none aspect-auto flex items-center justify-center pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] px-[env(safe-area-inset-left)]"
           : "relative w-full aspect-video rounded-2xl border border-white/5"
       )}
     >
@@ -191,14 +191,24 @@ export function VideoPlayerWrapper({
             allowFullScreen
             allow="autoplay; fullscreen"
             sandbox="allow-scripts allow-same-origin allow-presentation"
-            className="relative w-full h-full border-0 z-10 bg-transparent"
+            className={cn(
+              "relative border-0 z-10 bg-transparent",
+              isCurrentlyFullscreen
+                ? "w-full aspect-video max-h-full max-w-full"
+                : "w-full h-full"
+            )}
             loading="lazy"
           />
 
           {/* Custom Fullscreen Button (Always visible on mobile, visible on hover on desktop) */}
           <button
             onClick={toggleFullscreen}
-            className="absolute top-4 left-4 z-25 p-2 bg-black/60 hover:bg-black/80 backdrop-blur border border-white/10 rounded-full text-white transition-all cursor-pointer md:opacity-0 md:group-hover/player:opacity-100 flex items-center gap-1.5 text-xs font-bold font-sans"
+            className={cn(
+              "absolute z-25 p-2 bg-black/60 hover:bg-black/80 backdrop-blur border border-white/10 rounded-full text-white transition-all cursor-pointer md:opacity-0 md:group-hover/player:opacity-100 flex items-center gap-1.5 text-xs font-bold font-sans",
+              isCurrentlyFullscreen
+                ? "top-[calc(1rem+env(safe-area-inset-top))] left-[calc(1rem+env(safe-area-inset-left))]"
+                : "top-4 left-4"
+            )}
             title="Pantalla Completa"
           >
             {isCurrentlyFullscreen ? (
@@ -261,7 +271,12 @@ export function VideoPlayerWrapper({
           {/* Close button to cancel autoplay */}
           <button
             onClick={cancelAutoplay}
-            className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all cursor-pointer"
+            className={cn(
+              "absolute p-2 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all cursor-pointer",
+              isCurrentlyFullscreen
+                ? "top-[calc(1rem+env(safe-area-inset-top))] right-[calc(1rem+env(safe-area-inset-right))]"
+                : "top-4 right-4"
+            )}
             aria-label="Cancelar autoplay"
           >
             <X className="w-4 h-4" />
