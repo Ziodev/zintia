@@ -189,7 +189,20 @@ export async function POST(req: Request) {
 
       // Formatting properties
       const id = rawId.toString();
-      const cleanTitle = title;
+      let cleanTitle = title
+        .replace(/\b[a-zA-Z]{2,6}[-\s]?\d{2,5}/gi, "") // Remove JAV/Studio codes like MAAN-957
+        .replace(/[\[\(](720p|1080p|1080|2k|4k|hd|full\shd|sd|mobile|webcam|rip|cam|dvd|mp4)[\]\)]/gi, "") // Remove format brackets
+        .replace(/\b(720p|1080p|1080|4k|hd|full\shd|sd)\b/gi, "") // Remove format tags
+        .replace(/\s+/g, " ") // Collapse spaces
+        .replace(/[-\s,]+$/, "") // Trim trailing punctuation/spaces
+        .trim();
+
+      if (cleanTitle.length > 0) {
+        cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+      } else {
+        cleanTitle = title;
+      }
+      
       const duration = formatDuration(rawDuration);
       const views = generateViews(id);
       const category = mapCategories(rawCategories, title);
