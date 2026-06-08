@@ -79,7 +79,7 @@ const getFlagEmoji = (countryCode: string) => {
   }
 };
 
-export function BovedaClient({ country, city, isBot: _isBot, clickId: _clickId, zoneId: _zoneId, initialVideos }: BovedaClientProps) {
+export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _zoneId, initialVideos }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
@@ -116,8 +116,20 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId: _clickId, 
 
   // BeMob click tracker URL (replaced Decrypt helper)
   const getDecryptedLink = React.useCallback(() => {
-    return "https://sqena.bemobtrcks.com/click";
-  }, []);
+    let cid = "";
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      cid = urlParams.get("cid") || urlParams.get("click") || urlParams.get("clickId") || "";
+    }
+    
+    // Fallback to the clickId prop if query parameter is not in URL
+    if (!cid && clickId) {
+      cid = clickId;
+    }
+
+    const baseUrl = "https://sqena.bemobtrcks.com/click";
+    return cid ? `${baseUrl}?cid=${cid}` : baseUrl;
+  }, [clickId]);
 
 
   // 1. CRO Hack: Back-Button Hijack (Capturar el botón de retroceso)

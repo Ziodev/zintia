@@ -23,7 +23,9 @@ interface PageProps {
 
 export default async function BovedaPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
-  const click = typeof resolvedSearchParams.click === "string" ? resolvedSearchParams.click : undefined;
+  const click = typeof resolvedSearchParams.cid === "string"
+    ? resolvedSearchParams.cid
+    : (typeof resolvedSearchParams.click === "string" ? resolvedSearchParams.click : undefined);
   const zona = typeof resolvedSearchParams.zona === "string" ? resolvedSearchParams.zona : undefined;
 
   const headersList = await headers();
