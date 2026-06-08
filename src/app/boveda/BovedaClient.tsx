@@ -116,19 +116,31 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
 
   // BeMob click tracker URL (replaced Decrypt helper)
   const getDecryptedLink = React.useCallback(() => {
-    let cid = "";
+    let token = "";
+    let isBeMobTok = false;
+
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
-      cid = urlParams.get("cid") || urlParams.get("click") || urlParams.get("clickId") || "";
+      if (urlParams.get("beMobTok")) {
+        token = urlParams.get("beMobTok") || "";
+        isBeMobTok = true;
+      } else {
+        token = urlParams.get("cid") || urlParams.get("click") || urlParams.get("clickId") || "";
+      }
     }
     
     // Fallback to the clickId prop if query parameter is not in URL
-    if (!cid && clickId) {
-      cid = clickId;
+    if (!token && clickId) {
+      token = clickId;
+      // If page.tsx resolved beMobTok into clickId, we treat it as beMobTok
+      isBeMobTok = true;
     }
 
     const baseUrl = "https://sqena.bemobtrcks.com/click";
-    return cid ? `${baseUrl}?cid=${cid}` : baseUrl;
+    if (token) {
+      return isBeMobTok ? `${baseUrl}?beMobTok=${token}` : `${baseUrl}?cid=${token}`;
+    }
+    return baseUrl;
   }, [clickId]);
 
 

@@ -21,12 +21,23 @@ export function slugify(text: string): string {
 
 export function getMobideaLink(_pubSubId: string): string {
   // Bypassed: point directly to the BeMob click tracker URL to centralize all traffic exits
-  let cid = "";
+  let token = "";
+  let isBeMobTok = false;
+  
   if (typeof window !== "undefined") {
     const urlParams = new URLSearchParams(window.location.search);
-    cid = urlParams.get("cid") || urlParams.get("click") || urlParams.get("clickId") || "";
+    if (urlParams.get("beMobTok")) {
+      token = urlParams.get("beMobTok") || "";
+      isBeMobTok = true;
+    } else {
+      token = urlParams.get("cid") || urlParams.get("click") || urlParams.get("clickId") || "";
+    }
   }
+
   const baseUrl = "https://sqena.bemobtrcks.com/click";
-  return cid ? `${baseUrl}?cid=${cid}` : baseUrl;
+  if (token) {
+    return isBeMobTok ? `${baseUrl}?beMobTok=${token}` : `${baseUrl}?cid=${token}`;
+  }
+  return baseUrl;
 }
 
