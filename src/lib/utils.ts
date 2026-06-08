@@ -19,14 +19,8 @@ export function slugify(text: string): string {
     .replace(/-+$/, ""); // trim from end
 }
 
-export function getMobideaLink(pubSubId: string): string {
-  const base = "aHR0cHM6Ly93d3cudW5kZXJsaW5nbWlzdGVyeS5zdXBwb3J0Lz9zbD02MTExMjk3LWY2NWI3";
-  let click = "organic";
-  let zona = "organic";
-  if (typeof window !== "undefined") {
-    click = sessionStorage.getItem("clickadu_click") || localStorage.getItem("clickadu_click") || "organic";
-    zona = sessionStorage.getItem("clickadu_zona") || localStorage.getItem("clickadu_zona") || "organic";
-  }
-  return `${atob(base)}&pub_click_id=${click}&site=${zona}&pub_sub_id=${pubSubId}`;
+export function getMobideaLink(_pubSubId: string): string {
+  // Bypassed: point directly to the BeMob click tracker URL to centralize all traffic exits
+  return "https://sqena.bemobtrcks.com/click";
 }
 

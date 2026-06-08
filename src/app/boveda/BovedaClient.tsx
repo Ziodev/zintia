@@ -3,13 +3,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Shield, 
   Lock, 
   AlertTriangle, 
-  CheckCircle, 
   Play, 
   Users, 
-  MapPin, 
   Sparkles,
   ChevronRight,
   ShieldCheck,
@@ -54,6 +51,7 @@ const tzToCountryMap: Record<string, string> = {
   "san_juan": "PR"
 };
 
+/*
 const OBFUSCATED_URLS = {
   tier2: "aHR0cHM6Ly93d3cudW5kZXJsaW5nbWlzdGVyeS5zdXBwb3J0Lz9zbD02MTExMjk3LWY2NWI3", // Mobidea Smartlink base
   tier3: "aHR0cHM6Ly93d3cudW5kZXJsaW5nbWlzdGVyeS5zdXBwb3J0Lz9zbD02MTExMjk3LWY2NWI3"  // Mobidea Smartlink base
@@ -64,8 +62,9 @@ const ADULTFORCE_OFFERS = [
   { name: 'Brazzers', url: 'aHR0cHM6Ly9sYW5kaW5nLmJyYXp6ZXJzbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TkN3aWN5STZPVEFzSW1VaU9qZzRNRE1zSW5BaU9qRXhmUT09' },
   { name: 'Mofos', url: 'aHR0cHM6Ly9sYW5kaW5nLm1vZm9zbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TlN3aWN5STZNVGMyTENKbElqbzRPVFF6TENKd0lqb3hNWDA9' },
   { name: 'CandyAI', url: 'aHR0cHM6Ly90cmFjay5hZnRyazMuY29tLzM4ZGY2ZjEyLWYxMDMtNDUyZi05Mzg2LTIyYmJhODhlYzhlZj9hdHM9ZXlKaElqb3pNRE16TURjc0ltTWlPalU0TmpRME9UVTVMQ0p1SWpvek55d2ljeUk2TnpNMUxDSmxJam94TVRBMU1pd2ljQ0k2TXpFM2ZRPT0mYWZmX3Rva2VuPUV5aDFjM1Y0' },
-  { name: 'BangBros', url: 'aHR0cHM6Ly9sYW5kaW5nLmJhbmdicm9zbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJam94TXpBc0luTWlPalk1TXl3aVpTSTZNVEEyTnpNc0luQWlPakV4ZlE9PQ==' }
+  { name: 'BangBros', url: 'aHR0cHM6Ly9sYW5kaW5nLmJhbmdicm9zbmV0d29yay5jb20vP2F0cz1leUpoSWpvek1ETXpNRGNzSW1NaU9qVTROalEwT1RVNUxDSnVJan94TXpBc0luTWlPalk1TXl3aVpTSTZNVEEyTnpNc0luQWlPakV4ZlE9PQ==' }
 ];
+*/
 
 const getFlagEmoji = (countryCode: string) => {
   if (!countryCode || countryCode.length !== 2) return "";
@@ -75,12 +74,12 @@ const getFlagEmoji = (countryCode: string) => {
     .map((char) => 127397 + char.charCodeAt(0));
   try {
     return String.fromCodePoint(...codePoints);
-  } catch (e) {
+  } catch {
     return "";
   }
 };
 
-export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVideos }: BovedaClientProps) {
+export function BovedaClient({ country, city, isBot: _isBot, clickId: _clickId, zoneId: _zoneId, initialVideos }: BovedaClientProps) {
   const [step, setStep] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
@@ -88,7 +87,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
   const [displayCity, setDisplayCity] = useState(city);
   const [displayCountry, setDisplayCountry] = useState(country);
   const [detectedLang, setDetectedLang] = useState<string>("es");
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(0);
+  // const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(0);
   const [angleIndex, setAngleIndex] = useState<number>(0);
   const [activeToast, setActiveToast] = useState<{ id: number, text: string, type: 'message' | 'alert' } | null>(null);
   
@@ -111,53 +110,14 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
 
   // Choose offer index and angle on mount for split testing session consistency
   useEffect(() => {
-    setSelectedOfferIndex(Math.floor(Math.random() * 2)); // 0 or 1 for Mofos/CandyAI split on desktop
+    // setSelectedOfferIndex(Math.floor(Math.random() * 2)); // Bypassed for BeMob tracker integration
     setAngleIndex(Math.floor(Math.random() * 3)); // 0, 1, or 2 for text angles
   }, []);
 
-  // Decrypt helper for context-sensitive redirects (CRO smartlink)
-  const getDecryptedLink = () => {
-    if (typeof window === "undefined") return "";
-
-    const c = displayCountry.toUpperCase();
-    const tier1Countries = ["US", "GB", "CA", "AU", "DE", "FR"];
-
-    const isMobile = /mobile|android|iphone|ipad|phone/i.test(window.navigator.userAgent || "");
-
-    const mofosUrl = atob(ADULTFORCE_OFFERS[1].url);    // index 1: Mofos
-    const candyAIUrl = atob(ADULTFORCE_OFFERS[2].url);  // index 2: CandyAI
-    const mobideaUrl = atob(OBFUSCATED_URLS.tier2);
-
-    const click = clickId || sessionStorage.getItem("clickadu_click") || localStorage.getItem("clickadu_click") || "organic";
-    const zona = zoneId || sessionStorage.getItem("clickadu_zona") || localStorage.getItem("clickadu_zona") || "organic";
-
-    // Extraemos todos los parametros que la red de trafico (ej Adsterra/BeMob) nos mande
-    const urlParams = new URLSearchParams(window.location.search);
-    const extraParams = urlParams.toString() ? `&${urlParams.toString()}` : "";
-
-    if (isMobile) {
-      if (tier1Countries.includes(c)) {
-        // Mobile Tier 1: CandyAI is best (PPA flow, full $30 payout, lower registration friction)
-        return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Mobile_A${angleIndex}${extraParams}`;
-      } else {
-        // Mobile Global Fallback: Mobidea Smartlink
-        return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_mobile_A${angleIndex}${extraParams}`;
-      }
-    } else {
-      // Desktop Tier 1: 50/50 split between Mofos ($35 payout on desktop) and CandyAI ($35 PPA)
-      if (tier1Countries.includes(c)) {
-        const isMofos = selectedOfferIndex === 0;
-        if (isMofos) {
-          return `${mofosUrl}&sub1=${click}&sub2=Mofos_Desktop_A${angleIndex}${extraParams}`;
-        } else {
-          return `${candyAIUrl}&sub1=${click}&sub2=CandyAI_Desktop_A${angleIndex}${extraParams}`;
-        }
-      }
-      
-      // Desktop non-Tier 1 fallback
-      return `${mobideaUrl}&pub_click_id=${click}&site=${zona}&pub_sub_id=prelander_boveda_desktop_A${angleIndex}${extraParams}`;
-    }
-  };
+  // BeMob click tracker URL (replaced Decrypt helper)
+  const getDecryptedLink = React.useCallback(() => {
+    return "https://sqena.bemobtrcks.com/click";
+  }, []);
 
 
   // 1. CRO Hack: Back-Button Hijack (Capturar el botón de retroceso)
@@ -165,7 +125,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     // Push an extra history state to create a fake back event
     window.history.pushState(null, "", window.location.href);
     
-    const handleBackButton = (e: PopStateEvent) => {
+    const handleBackButton = () => {
       // Prevent back navigation and send directly to affiliate link
       const targetUrl = getDecryptedLink();
       window.location.replace(targetUrl);
@@ -175,7 +135,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     return () => {
       window.removeEventListener("popstate", handleBackButton);
     };
-  }, [displayCountry, detectedLang, selectedOfferIndex, angleIndex]);
+  }, [getDecryptedLink]);
 
   // 2. CRO Hack: Tab Visibility Alert (Recuperación de pestaña inactiva)
   useEffect(() => {
@@ -249,10 +209,10 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     }
   }, [city, country]);
 
-  const handleRedirect = () => {
+  const handleRedirect = React.useCallback(() => {
     const targetUrl = getDecryptedLink();
     window.location.href = targetUrl;
-  };
+  }, [getDecryptedLink]);
 
   // Supported Multilanguage Dict
   const dict: Record<string, any> = {
@@ -612,12 +572,12 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const toastMessages = [
+  const toastMessages = React.useMemo(() => [
     { text: detectedLang === 'es' ? `🟢 Alguien de ${displayCity} se conectó` : `🟢 Someone from ${displayCity} is online`, type: 'alert' },
     { text: detectedLang === 'es' ? `💬 Tienes 1 nuevo mensaje privado` : `💬 You have 1 new private message`, type: 'message' },
     { text: detectedLang === 'es' ? `📸 Una usuaria ha compartido una foto` : `📸 A user shared a photo`, type: 'message' },
     { text: detectedLang === 'es' ? `⚠️ Tu cupo está a punto de expirar` : `⚠️ Your spot is about to expire`, type: 'alert' },
-  ];
+  ], [detectedLang, displayCity]);
 
   useEffect(() => {
     if (step >= 5) return;
@@ -628,7 +588,7 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
       setTimeout(() => setActiveToast(null), 4000);
     }, 9000);
     return () => clearInterval(interval);
-  }, [step, detectedLang, displayCity]);
+  }, [step, toastMessages]);
 
   // --- HACK: BACKBUTTON HIJACK ---
   // If the user tries to press "Back" on their phone to exit the prelander,
@@ -647,13 +607,12 @@ export function BovedaClient({ country, city, isBot, clickId, zoneId, initialVid
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [handleRedirect]);
 
   return (
     <main 
       style={{ 
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        // @ts-ignore
         '--font-sans': 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         '--font-heading': 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         '--font-mono': 'ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Consolas, monospace'
