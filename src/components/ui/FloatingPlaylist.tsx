@@ -123,6 +123,20 @@ const PLAYLIST_TRANSLATIONS: Record<Language, {
     unlockBtn: "💋 Ogled modelov in odklepanje VIP dostopa",
     unlockCancel: "Nazaj na seznam",
   },
+  da: {
+    title: "Din hotte playliste",
+    empty: "Ingen videoer i din playliste endnu!",
+    emptyDesc: "Spil 'Hot or Not' for at swipe og tilføje hotte videoer til din liste.",
+    playAll: "AFSPIL ALLE",
+    share: "DEL PLAYLISTE",
+    clear: "Ryd alt",
+    toastCopied: "Playliste-link kopieret til udklipsholderen!",
+    playGame: "SPIL 'HOT OR NOT'",
+    unlockTitle: "Lås op for Premium Playlister 💋",
+    unlockDesc: "Du har nået grænsen på 5 videoer på dit basispas. For at gemme ubegrænset antal videoer, bruge kontinuerlig afspilning og nyde permanent automatisk afspilning, skal du støtte vores sponsorer med en hurtig og sikker registrering.",
+    unlockBtn: "💋 Se modeller og lås op for VIP-adgang",
+    unlockCancel: "Tilbage til playliste",
+  },
 };
 
 export function FloatingPlaylist() {

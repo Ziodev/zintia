@@ -17,6 +17,7 @@ const EXPIRES_IN: Record<Language, string> = {
   it: "L'offerta scade in",
   pt: "A oferta expira em",
   sl: "Ponudba poteče čez",
+  da: "Tilbuddet udløber om",
 };
 
 const GEOLOCATION_DESCS: Record<Language, (count: number, location: string) => string> = {
@@ -27,6 +28,7 @@ const GEOLOCATION_DESCS: Record<Language, (count: number, location: string) => s
   it: (count, loc) => `${count} Modelle in diretta vicino a ${loc}`,
   pt: (count, loc) => `${count} Modelos ao vivo perto de ${loc}`,
   sl: (count, loc) => `${count} modelov v živo v bližini kraja ${loc}`,
+  da: (count, loc) => `${count} Live-modeller i nærheden af ${loc}`,
 };
 
 export function StickyCTA() {

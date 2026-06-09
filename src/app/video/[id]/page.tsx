@@ -44,6 +44,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     it: `Guarda "${translatedTitle}" nella categoria "${video.category}". Goditi l'autoplay inteligente e la riproduzione fluida.`,
     pt: `Assista a "${translatedTitle}" na categoria "${video.category}". Desfrute de reprodução automática inteligente y streaming fluído.`,
     sl: `Poglejte "${translatedTitle}" v kategoriji "${video.category}". Uživajte v pametnem samodejnem predvajanju in tekočem predvajanju.`,
+    da: `Se "${translatedTitle}" i kategorien "${video.category}". Nyd smart automatisk afspilning og problemfri streaming.`,
   };
 
   const t = translations[activeLang] || translations.es;
@@ -64,6 +65,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         it: `/video/${slugify(translateTitle(video.title, "it"))}-${id}?lang=it`,
         pt: `/video/${slugify(translateTitle(video.title, "pt"))}-${id}?lang=pt`,
         sl: `/video/${slugify(translateTitle(video.title, "sl"))}-${id}?lang=sl`,
+        da: `/video/${slugify(translateTitle(video.title, "da"))}-${id}?lang=da`,
       },
     },
     openGraph: {
@@ -178,6 +180,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
     it: `Guarda "${translatedTitle}" nella categoria "${video.category}". Questo video dura ${video.duration} con oltre ${video.views} visualizzazioni. Goditi una riproduzione fluida, veloce e in alta definizione.`,
     pt: `Assista a "${translatedTitle}" na categoria "${video.category}". Este vídeo tem a duração de ${video.duration} com mais de ${video.views} visualizações. Desfrute de uma reprodução fluida, rápida e em alta definição.`,
     sl: `Oglejte si video "${translatedTitle}" v kategoriji "${video.category}". Ta video traja ${video.duration} in ima več kot ${video.views} ogledov. Uživajte v tekočem, hitrem in visoko ločljivem predvajanju.`,
+    da: `Se videoen "${translatedTitle}" i kategorien "${video.category}". Denne video varer ${video.duration} med over ${video.views} visninger. Nyd en problemfri, hurtig og højopløselig afspilning.`,
   };
   const videoDescription = localizedDescriptions[activeLang] || localizedDescriptions.es;
 

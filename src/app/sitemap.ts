@@ -5,7 +5,7 @@ import { slugify } from "@/lib/utils";
 import { TAG_LABELS } from "@/components/filters/TagCloud";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://zintiavids.com";
-const LANGUAGES = ["es", "en", "fr", "ja", "it", "pt", "sl"] as const;
+const LANGUAGES = ["es", "en", "fr", "ja", "it", "pt", "sl", "da"] as const;
 const VALID_CATEGORIES = ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"] as const;
 
 export const revalidate = 3600; // Refresh the sitemap every hour

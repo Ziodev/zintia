@@ -33,6 +33,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     it: `Video di #${tagName} Online HD | Zintia Vids`,
     pt: `Vídeos de #${tagName} Online HD | Zintia Vids`,
     sl: `Videoposnetki #${tagName} na spletu HD | Zintia Vids`,
+    da: `#${tagName} videoer online HD | Zintia Vids`,
   };
 
   const descriptions: Record<Language, string> = {
@@ -43,6 +44,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     it: `Esplora i migliori video con il tag #${tagName} in alta definizione. Streaming fluido e veloce su Zintia Vids.`,
     pt: `Explore os melhores vídeos com a tag #${tagName} em alta definição. Transmissão fluida e rápida no Zintia Vids.`,
     sl: `Raziščite najboljše videoposnetke z oznako #${tagName} v visoki ločljivosti. Hitro in nemoteno predvajanje na Zintia Vids.`,
+    da: `Udforsk de bedste videoer mærket med #${tagName} i høj opløsning. Hurtig og problemfri streaming på Zintia Vids.`,
   };
 
   const title = titles[activeLang] || titles.es;
@@ -62,6 +64,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         it: `/tag/${id}?lang=it`,
         pt: `/tag/${id}?lang=pt`,
         sl: `/tag/${id}?lang=sl`,
+        da: `/tag/${id}?lang=da`,
       },
     },
     openGraph: {
@@ -106,6 +109,7 @@ export default async function TagPage({ params, searchParams }: PageProps) {
     it: `Esplora i migliori video amatoriali con il tag #${tagName} in alta definizione.`,
     pt: `Explore os melhores vídeos amadores com a tag #${tagName} em alta definição.`,
     sl: `Raziščite najboljše amaterske videoposnetke z oznako #${tagName} v visoki ločljivosti.`,
+    da: `Udforsk de bedste amatørvideoer mærket med #${tagName} i høj opløsning.`,
   };
 
   return (

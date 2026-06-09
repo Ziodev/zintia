@@ -40,6 +40,10 @@ const LOCALIZED_COPIES: Record<Language, { trendsIn: string; activeNow: string }
     trendsIn: "Najbolj vroči trendi v",
     activeNow: "aktivnih uporabnikov zdaj",
   },
+  da: {
+    trendsIn: "Hotteste tendenser i",
+    activeNow: "aktive brugere nu",
+  },
 };
 
 export function HomeHeader({ activeLang, titleText, liveLabel, exploreText }: HomeHeaderProps) {

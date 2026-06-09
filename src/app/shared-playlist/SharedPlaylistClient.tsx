@@ -128,6 +128,22 @@ const MATCH_TRANSLATIONS = {
     chemistry: "Imata kemijo 😏",
     soulmates: "Vroče sorodne duše 💖",
   },
+  da: {
+    title: "Hot Kompatibilitet 🔥",
+    subtitle: "Din ven har delt sin hotte playliste. Hvilke af disse videoer kan du bedst lide? Swipe for at se jeres kompatibilitet!",
+    hot: "HOT!",
+    nope: "NOT",
+    calculating: "Beregner kompatibilitet...",
+    yourMatch: "Jeres kompatibilitet er",
+    importSuccess: "Playliste importeret med succes!",
+    importBtn: "Importer til mine favoritter 📥",
+    importedBtn: "Playliste importeret!",
+    playGameBtn: "Opret min egen playliste 🎮",
+    backHomeBtn: "Tilbage til forsiden 🏠",
+    opposite: "Modpoler ❄️",
+    chemistry: "I har kemi 😏",
+    soulmates: "Hotte sjælevenner 💖",
+  },
 };
 
 export function SharedPlaylistClient({ videos, lang }: SharedPlaylistClientProps) {

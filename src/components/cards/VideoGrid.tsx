@@ -56,6 +56,12 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
     button: "Ogled modelov v živo in nadaljevanje",
     bypass: "Nadaljuj z brezplačnim brskanjem",
   },
+  da: {
+    title: "Navigationsbekræftelse",
+    desc: "For at fortsætte med at se gratis indhold skal du bekræfte, at du er et menneske, eller se live-modeller i dit område.",
+    button: "Se live-modeller og fortsæt",
+    bypass: "Fortsæt gratis browsing",
+  },
 };
 
 interface VideoGridProps {
@@ -321,6 +327,11 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
       title: "🔥 Aktiviraj svoj prilagojeni vir",
       desc: "Igraj 'Hot or Not' s podrsavanjem videoposnetkov, da se naš algoritem nauči tvojega okusa in uredi stran po tvoji meri.",
       btn: "IGRAJ ZDAJ",
+    },
+    da: {
+      title: "🔥 Aktivér dit personlige feed",
+      desc: "Spil 'Hot or Not' ved at swipe videoer, så vores algoritme lærer din smag og sorterer siden til dig.",
+      btn: "SPIL NU",
     },
   };
 

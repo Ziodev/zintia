@@ -117,6 +117,19 @@ const PLAYLISTS_TRANSLATIONS: Record<Language, {
     pl3_title: "Elitni amaterski talenti",
     pl3_desc: "Sveži obrazi in neodvisni ustvarjalci, ki jih priporoča skupnost.",
   },
+  da: {
+    sectionTitle: "🏆 Populære fællesskabsplaylister",
+    sectionDesc: "Varme kollektioner anbefalet og kurateret af Zintia Vids-fællesskabet.",
+    playAll: "Afspil alle",
+    likes: "likes",
+    videosCount: "{count} videoer",
+    pl1_title: "Det bedste hjemmelavede fra 2026",
+    pl1_desc: "De hotteste amatøroptagelser og 100% ægte intime møder.",
+    pl2_title: "Uimodståelige latinaer",
+    pl2_desc: "Et varmt udvalg, der viser den bedste latinske smag, passion og kurver.",
+    pl3_title: "Elite amatørtalent",
+    pl3_desc: "Nye ansigter og uafhængige skabere anbefalet af fællesskabet.",
+  },
 };
 
 export function CommunityPlaylists({ videos, lang }: CommunityPlaylistsProps) {

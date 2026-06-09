@@ -167,6 +167,7 @@ export function AgeGate() {
           {activeLang === "it" && "Entrando confermi di avere almeno 18 anni e accetti i nostri Termini di Servizio."}
           {activeLang === "pt" && "Ao entrar, você confirma ter pelo menos 18 anos e concorda com os nossos Termos de Serviço."}
           {activeLang === "sl" && "Z vstopom potrjujete, da ste stari vsaj 18 let, in se strinjate z našimi pogoji storitve."}
+          {activeLang === "da" && "Ved at gå ind bekræfter du, at du er mindst 18 år gammel og accepterer vores cookiepolitik og servicevilkår."}
         </p>
       </div>
     </div>,

@@ -50,6 +50,12 @@ const EXIT_COPIES: Record<Language, { title: string; desc: string; button: strin
     button: "Prevzemi Premium VIP prepustnico",
     close: "Ne, hvala. Nadaljuj na spletno mesto.",
   },
+  da: {
+    title: "Smutter du allerede?",
+    desc: "🎁 Du har [1] Premium VIP-pas til at se private modeller i 5 minutter.",
+    button: "Få Premium VIP-pas",
+    close: "Nej tak. Fortsæt til hjemmesiden.",
+  },
 };
 
 export function ExitIntentModal() {

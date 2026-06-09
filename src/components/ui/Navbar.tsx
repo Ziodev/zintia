@@ -22,6 +22,7 @@ const LANG_DETAILS = [
   { id: "it", label: "Italiano" },
   { id: "pt", label: "Português" },
   { id: "sl", label: "Slovenščina" },
+  { id: "da", label: "Dansk" },
 ] as const;
 
 const SUGGESTED_TAGS = [
@@ -108,7 +109,7 @@ export function Navbar() {
       const urlParams = new URLSearchParams(window.location.search);
       if (!urlParams.has("lang")) {
         const browserLang = (window.navigator.language || "").split("-")[0].toLowerCase();
-        const supported: Language[] = ["es", "en", "fr", "ja", "it", "pt", "sl"];
+        const supported: Language[] = ["es", "en", "fr", "ja", "it", "pt", "sl", "da"];
         if (supported.includes(browserLang as Language)) {
           setLang(browserLang as Language);
         }

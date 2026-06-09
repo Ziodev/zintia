@@ -121,6 +121,21 @@ const GAME_TRANSLATIONS = {
     backHome: "NAZAJ NA ZAČETEK",
     copied: "Povezava do seznama je kopirana v odložišče!",
   },
+  da: {
+    title: "Hot or Not",
+    subtitle: "Swipe til højre (HOT) for at tilføje til din playliste, eller til venstre (NOT) for at springe over.",
+    hot: "HOT!",
+    nope: "NOT",
+    congrats: "Din hotte playliste er klar!",
+    noLikesTitle: "Meget kræsen i dag?",
+    noLikesDesc: "Du har ikke markeret nogen videoer som hotte. Prøv igen for at finde noget, du kan lide!",
+    likedCount: "Du har valgt {count} hotte videoer til din playliste.",
+    playPlaylist: "AFSPIL PLAYLISTE",
+    sharePlaylist: "DEL PLAYLISTE",
+    playAgain: "SPIL IGEN",
+    backHome: "TILBAGE TIL FORSIDEN",
+    copied: "Playliste-link kopieret til udklipsholderen!",
+  },
 };
 
 export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {

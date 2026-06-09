@@ -49,7 +49,8 @@ const tzToCountryMap: Record<string, string> = {
   "san_salvador": "SV",
   "panama": "PA",
   "san_juan": "PR",
-  "ljubljana": "SI"
+  "ljubljana": "SI",
+  "copenhagen": "DK"
 };
 
 /*
@@ -195,7 +196,7 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
   useEffect(() => {
     if (typeof window !== "undefined") {
       const mainLang = (window.navigator.language || "").split("-")[0].toLowerCase();
-      const supported = ["es", "en", "fr", "ja", "it", "pt", "sl"];
+      const supported = ["es", "en", "fr", "ja", "it", "pt", "sl", "da"];
       if (supported.includes(mainLang)) {
         setDetectedLang(mainLang);
       } else {
@@ -474,6 +475,26 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
       successNote: "Zahtevano preverjanje starosti (18+)",
       btnFinal: "POGLEJ PROFILE ZDAJ",
       detailsText: "100 % preverjeno lokalno omrežje za zmenke"
+    },
+    da: {
+      step1Title: `Find modne kvinder i nærheden af ${displayCity}`,
+      btnAmateur: "Gifte modne kvinder",
+      btnProfessional: "Single modne kvinder",
+      step2Title: "Diskretionsadvarsel",
+      step2Desc: "Denne VIP-adgang til lokale profiler er fortrolig og privat.",
+      step2Question: "Lover du at holde disse kvinders identitet hemmelig?",
+      btnPromise: "JA, JEG LOVER DET",
+      loadingTitle: "Søger efter kompatible profiler...",
+      status1: `Analyserer aktive profiler i nærheden af ${displayCity}...`,
+      status2: "Kontrollerer tilgængelighed for møder i dag...",
+      status3: "Filtrerer private, ucensurerede billeder og videoer...",
+      status4: "Forbereder direkte adgang til lokal chat...",
+      successTitle: "Modne kvinder fundet!",
+      successExpiry: "Din VIP-adgang udløber om:",
+      successDesc: `Bekræftelse fuldført! Vi har oprettet forbindelse til rigtige, aktive profiler i nærheden af dig i ${displayCity}. For at beskytte brugernes privatliv og kunne se deres intime videoer og kontakte dem, skal du aktivere dit VIP-adgangspas på en sikker måde.`,
+      successNote: "Aldersbekræftelse påkrævet (18+)",
+      btnFinal: "SE PROFILER NU",
+      detailsText: "100% verificeret lokalt datingnetværk"
     }
   };
 
@@ -554,6 +575,17 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
       q2Btn1: "Vitke",
       q2Btn2: "Z oblinami",
       q2Btn3: "Vseeno mi je",
+    },
+    da: {
+      q1Desc: "Bekræft venligst din alder for at fortsætte:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Sidste bekræftelsestrin",
+      q2Desc: "Hvilken kropstype foretrækker du at møde i dag?",
+      q2Btn1: "Slank",
+      q2Btn2: "Kurvet",
+      q2Btn3: "Lige meget",
     }
   };
 

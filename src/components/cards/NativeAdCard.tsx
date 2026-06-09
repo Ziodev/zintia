@@ -26,6 +26,7 @@ const PRIVATE_LABELS: Record<Language, { title: string; cta: string }> = {
   it: { title: "VIDEO PRIVATO FILTRATO", cta: "Tocca per sbloccare" },
   pt: { title: "VÍDEO PRIVADO FILTRADO", cta: "Toque para desbloquear" },
   sl: { title: "UJDEN ZASEBNI VIDEO", cta: "Dotaknite se za odklepanje" },
+  da: { title: "LÆKKET PRIVAT VIDEO", cta: "Tryk for at låse op" },
 };
 
 const INTERACTIVE_LABELS: Record<Language, { question: string; like: string; pass: string }> = {
@@ -36,6 +37,7 @@ const INTERACTIVE_LABELS: Record<Language, { question: string; like: string; pas
   it: { question: "Chattare in privato ora?", like: "❤️ Connetti", pass: "❌ Passa" },
   pt: { question: "Chat privado agora?", like: "❤️ Conectar", pass: "❌ Pasar" },
   sl: { question: "Želite klepetati zasebno?", like: "❤️ Poveži se", pass: "❌ Preskoči" },
+  da: { question: "Chat privat nu?", like: "❤️ Forbind", pass: "❌ Spring over" },
 };
 
 export function NativeAdCard({

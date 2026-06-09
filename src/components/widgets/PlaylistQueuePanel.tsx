@@ -69,6 +69,11 @@ export function PlaylistQueuePanel({
       playing: "Zdaj se predvaja",
       progress: "video {current} od {total}",
     },
+    da: {
+      title: "Din hotte playliste",
+      playing: "Afspiller",
+      progress: "video {current} af {total}",
+    },
   };
   const t = localTranslations[lang] || localTranslations.es;
 

@@ -23,7 +23,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     ja: "Zintia Vids - プレミアム高画質動画オンライン＆ライブチャット",
     it: "Zintia Vids - Video Premium Online HD e Webcam dal Vivo",
     pt: "Zintia Vids - Vídeo Premium Online HD e Webcams ao Vivo",
-    sl: "Zintia Vids - Premium HD videoposnetki na spletu in spletne kamere v živo"
+    sl: "Zintia Vids - Premium HD videoposnetki na spletu in spletne kamere v živo",
+    da: "Zintia Vids - Premium HD-video online og live webkameraer",
   };
 
   const descriptions: Record<Language, string> = {
@@ -33,7 +34,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     ja: "バッファリングなしで最適化されたパフォーマンス、高解像度の最高のプレミアム動画ストリーミング体験をお楽しみください。",
     it: "Goditi la migliore esperienza di streaming video premium in alta definizione, con caricamenti istantanei e prestazioni optimizadas.",
     pt: "Desfrute da melhor experiência de streaming de vídeo premium em alta definição, com buffering zero e desempenho otimizado.",
-    sl: "Uživajte v najboljši izkušnji pretakanja vrhunskih videoposnetkov v visoki ločljivosti, brez zatikanja in z optimiziranim delovanjem."
+    sl: "Uživajte v najboljši izkušnji pretakanja vrhunskih videoposnetkov v visoki ločljivosti, brez zatikanja in z optimiziranim delovanjem.",
+    da: "Nyd den bedste premium videostreamingoplevelse i høj opløsning, helt uden afbrydelser og med optimeret ydeevne.",
   };
 
   const title = titles[activeLang] || titles.es;
@@ -54,6 +56,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
         it: "/?lang=it",
         pt: "/?lang=pt",
         sl: "/?lang=sl",
+        da: "/?lang=da",
       },
     },
     openGraph: {
