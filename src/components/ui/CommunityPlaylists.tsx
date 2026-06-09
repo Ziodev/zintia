@@ -13,7 +13,19 @@ interface CommunityPlaylistsProps {
   lang: Language;
 }
 
-const PLAYLISTS_TRANSLATIONS = {
+const PLAYLISTS_TRANSLATIONS: Record<Language, {
+  sectionTitle: string;
+  sectionDesc: string;
+  playAll: string;
+  likes: string;
+  videosCount: string;
+  pl1_title: string;
+  pl1_desc: string;
+  pl2_title: string;
+  pl2_desc: string;
+  pl3_title: string;
+  pl3_desc: string;
+}> = {
   es: {
     sectionTitle: "🏆 Playlists Populares de la Comunidad",
     sectionDesc: "Colecciones calientes recomendadas por la comunidad de Zintia Vids.",
@@ -91,6 +103,19 @@ const PLAYLISTS_TRANSLATIONS = {
     pl2_desc: "Uma seleção ardente com a melhor paixão e curvas latinas.",
     pl3_title: "Amador de Elite",
     pl3_desc: "Novos rostos e talentos independentes recomendados.",
+  },
+  sl: {
+    sectionTitle: "🏆 Priljubljeni seznami predvajanja skupnosti",
+    sectionDesc: "Vroče zbirke, ki jih priporoča skupnost Zintia Vids.",
+    playAll: "Predvajaj vse",
+    likes: "všečkov",
+    videosCount: "{count} videoposnetkov",
+    pl1_title: "Najboljše domače leta 2026",
+    pl1_desc: "Najboljši amaterski posnetki in 100-odstotno resnična intimna srečanja.",
+    pl2_title: "Vroče Latinskoameričanke",
+    pl2_desc: "Vroč izbor, ki prikazuje najboljši latinski temperament, strast in obline.",
+    pl3_title: "Elitni amaterski talenti",
+    pl3_desc: "Sveži obrazi in neodvisni ustvarjalci, ki jih priporoča skupnost.",
   },
 };
 

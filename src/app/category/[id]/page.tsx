@@ -15,13 +15,13 @@ interface PageProps {
 }
 
 const CATEGORY_NAMES: Record<string, Record<Language, string>> = {
-  amateur: { es: "Amateur", en: "Amateur", fr: "Amateur", ja: "アマチュア", it: "Amatoriale", pt: "Amador" },
-  anal: { es: "Anal", en: "Anal", fr: "Anal", ja: "アナル", it: "Anale", pt: "Anal" },
-  milf: { es: "Maduras / MILF", en: "MILF / Mature", fr: "Matures", ja: "熟女", it: "Mature", pt: "Maduras" },
-  caseros: { es: "Caseros / Caseras", en: "Homemade", fr: "Fait Maison", ja: "自家製", it: "Amatoriali", pt: "Caseiros" },
-  latinas: { es: "Latinas", en: "Latinas", fr: "Latines", ja: "ラテン", it: "Latine", pt: "Latinas" },
-  ebony: { es: "Negras / Ebony", en: "Ebony", fr: "Ébène", ja: "黒人", it: "Ebano", pt: "Negras" },
-  webcams: { es: "Webcams en Vivo", en: "Live Webcams", fr: "Webcams en Direct", ja: "ライブチャット", it: "Webcam dal Vivo", pt: "Webcams ao Vivo" }
+  amateur: { es: "Amateur", en: "Amateur", fr: "Amateur", ja: "アマチュア", it: "Amatoriale", pt: "Amador", sl: "Amaterski" },
+  anal: { es: "Anal", en: "Anal", fr: "Anal", ja: "アナル", it: "Anale", pt: "Anal", sl: "Analni" },
+  milf: { es: "Maduras / MILF", en: "MILF / Mature", fr: "Matures", ja: "熟女", it: "Mature", pt: "Maduras", sl: "Zrele / MILF" },
+  caseros: { es: "Caseros / Caseras", en: "Homemade", fr: "Fait Maison", ja: "自家製", it: "Amatoriali", pt: "Caseiros", sl: "Domači posnetki" },
+  latinas: { es: "Latinas", en: "Latinas", fr: "Latines", ja: "ラテン", it: "Latine", pt: "Latinas", sl: "Latino" },
+  ebony: { es: "Negras / Ebony", en: "Ebony", fr: "Ébène", ja: "黒人", it: "Ebano", pt: "Negras", sl: "Temnopolte" },
+  webcams: { es: "Webcams en Vivo", en: "Live Webcams", fr: "Webcams en Direct", ja: "ライブチャット", it: "Webcam dal Vivo", pt: "Webcams ao Vivo", sl: "Spletne kamere v živo" }
 };
 
 const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
@@ -31,7 +31,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "Explorez les meilleures vidéos amateurs en haute définition. Contenu fait maison et réel.",
     ja: "高画質のベストアマチュア動画をご覧ください。自家製、リアル、素人カップルのコンテンツ。",
     it: "Esplora i migliori video amatoriali in alta definizione. Contenuto casalingo e reale.",
-    pt: "Explore os melhores vídeos amadores em alta definição. Conteúdo caseiro e real."
+    pt: "Explore os melhores vídeos amadores em alta definição. Conteúdo caseiro e real.",
+    sl: "Raziščite najboljše amaterske videoposnetke v visoki ločljivosti. Domače, resnične vsebine in vsebine amaterskih parov."
   },
   anal: {
     es: "Los videos de sexo anal más populares en calidad HD sin interrupciones. Disfruta de la mejor colección online.",
@@ -39,7 +40,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "Les vidéos de sodomie les plus populaires en qualité HD sans interruption. Profitez de la meilleure collection.",
     ja: "バッファリングなしの高画質アナル動画。最高のコレクションをお楽しみください。",
     it: "I video di sesso anale più popolari in qualità HD senza buffering. Goditi la migliore collezione.",
-    pt: "Os vídeos de sexo anal mais populares em qualidade HD sem interrupções. Desfrute da melhor coleção."
+    pt: "Os vídeos de sexo anal mais populares em qualidade HD sem interrupções. Desfrute da melhor coleção.",
+    sl: "Najbolj priljubljeni videoposnetki analnega seksa v HD kakovosti brez prekinitev. Uživajte v najboljši zbirki na spletu."
   },
   milf: {
     es: "Videos de maduras, señoras y MILFs ardientes en alta definición. El mejor contenido de maduras online.",
@@ -47,7 +49,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "Vidéos de MILF et de femmes matures en haute définition. Le meilleur contenu mature en ligne.",
     ja: "高画質のホットな熟女や人妻の動画。オンラインで最高の熟女コンテンツ。",
     it: "Video di MILF calde e donne mature in alta definizione. Il miglior contenuto maturo online.",
-    pt: "Vídeos de MILFs quentes e mulheres maduras em alta definição. O melhor conteúdo de coroas online."
+    pt: "Vídeos de MILFs quentes e mulheres maduras em alta definição. O melhor conteúdo de coroas online.",
+    sl: "Videoposnetki vročih zrelih žensk in MILF v visoki ločljivosti. Najboljša vsebina z zrelimi ženskami na spletu."
   },
   caseros: {
     es: "Videos caseros reales grabados por parejas aficionadas en su intimidad. Acción real sin cortes en calidad HD.",
@@ -55,7 +58,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "De vraies vidéos maison enregistrées par des couples amateurs dans l'intimité. De la vraie action non coupée en HD.",
     ja: "親密な関係の素人カップルによって録画された本物の自家製動画。HD画質のリアルなノーカットアクション。",
     it: "Veri video fatti in casa registrati da coppie amatoriali nell'intimità. Vera azione non tagliata in qualità HD.",
-    pt: "Vídeos caseiros reais gravados por casais amadores na intimidade. Ação real sem cortes em qualidade HD."
+    pt: "Vídeos caseiros reais gravados por casais amadores na intimidade. Ação real sem cortes em qualidade HD.",
+    sl: "Resnični domači videoposnetki, ki so jih amaterski pari posneli v svoji zasebnosti. Resnična neprekinjena akcija v HD kakovosti."
   },
   latinas: {
     es: "Disfruta de ardientes videos de latinas en alta definición. Contenido de modelos de Colombia, Brasil, México y más en HD.",
@@ -63,7 +67,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "Profitez de vidéos de latinas chaudes en haute définition. Contenu HD de modèles de Colombie, Brésil, Mexique et plus.",
     ja: "ホットなラテン系の動画をお楽しみください。コロンビア、ブラジル、メキシコなどのモデルのHDコンテンツ。",
     it: "Goditi video di latine calde in alta definizione. Contenuto HD di modelle provenienti da Colombia, Brasile, Messico e altro.",
-    pt: "Desfrute de vídeos de latinas quentes em alta definição. Conteúdo HD de modelos da Colômbia, Brasil, México e muito mais."
+    pt: "Desfrute de vídeos de latinas quentes em alta definição. Conteúdo HD de modelos da Colômbia, Brasil, México e muito mais.",
+    sl: "Uživajte v vročih videoposnetkih latino deklet v visoki ločljivosti. HD vsebina modelov iz Kolumbije, Brazilije, Mehike in več."
   },
   ebony: {
     es: "La mejor colección de videos de negras y ebony en alta definición. Disfruta de la mejor calidad premium.",
@@ -71,7 +76,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "La meilleure collection de vidéos de femmes noires et ébène en haute définition. Qualité premium.",
     ja: "高画質の黒人とエボニーの動画の最高のコレクション。最高のプレミアム品質をお楽しみください。",
     it: "La migliore collezione di video di nere ed ebano in alta definizione. Goditi la migliore qualità premium.",
-    pt: "A melhor coleção de vídeos de negras e ebony em alta definição. Desfrute da melhor qualidade premium."
+    pt: "A melhor coleção de vídeos de negras e ebony em alta definição. Desfrute da melhor qualidade premium.",
+    sl: "Najboljša zbirka videoposnetkov temnopoltih deklet v visoki ločljivosti. Uživajte v najboljši premium kakovosti."
   },
   webcams: {
     es: "Accede a las mejores salas de webcams premium en vivo. Chat en directo con miles de modelos online.",
@@ -79,7 +85,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
     fr: "Accédez aux meilleurs salons de webcams en direct premium. Chat en direct avec des modèles.",
     ja: "最高のプレミアムライブチャットルームにアクセス。何千人ものモデルとのライブチャット。",
     it: "Accedi alle migliori stanze di webcam dal vivo premium. Chat dal vivo con modelle online.",
-    pt: "Aceda às melhores salas de webcams premium ao vivo. Chat ao vivo com modelos online."
+    pt: "Aceda às melhores salas de webcams premium ao vivo. Chat ao vivo com modelos online.",
+    sl: "Dostopajte do najboljših premium sob s spletnimi kamerami v živo. Klepet v živo s tisoči modelov na spletu."
   }
 };
 
@@ -111,6 +118,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         ja: `/category/${id}?lang=ja`,
         it: `/category/${id}?lang=it`,
         pt: `/category/${id}?lang=pt`,
+        sl: `/category/${id}?lang=sl`,
       },
     },
     openGraph: {

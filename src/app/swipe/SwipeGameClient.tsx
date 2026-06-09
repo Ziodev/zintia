@@ -106,6 +106,21 @@ const GAME_TRANSLATIONS = {
     backHome: "VOLTAR AO INÍCIO",
     copied: "Link da playlist copiado para a área de transferência!",
   },
+  sl: {
+    title: "Hot or Not",
+    subtitle: "Podrsaj desno (VROČE) za dodajanje na seznam ali levo (NOT) za preskok.",
+    hot: "VROČE!",
+    nope: "NOT",
+    congrats: "Tvoj vroči seznam je pripravljen!",
+    noLikesTitle: "Danes zelo izbirčen?",
+    noLikesDesc: "Nisi označil nobenega videa kot vročega. Poskusi znova, da najdeš nekaj vročega!",
+    likedCount: "Za svoj seznam predvajanja si izbral {count} vročih videoposnetkov.",
+    playPlaylist: "PREDVAJAJ SEZNAM",
+    sharePlaylist: "DELI SEZNAM",
+    playAgain: "IGRAJ ZNOVA",
+    backHome: "NAZAJ NA ZAČETEK",
+    copied: "Povezava do seznama je kopirana v odložišče!",
+  },
 };
 
 export function SwipeGameClient({ initialVideos, lang }: SwipeGameClientProps) {

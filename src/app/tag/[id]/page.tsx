@@ -32,12 +32,21 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     ja: `#${tagName} 動画高画質オンライン | Zintia Vids`,
     it: `Video di #${tagName} Online HD | Zintia Vids`,
     pt: `Vídeos de #${tagName} Online HD | Zintia Vids`,
+    sl: `Videoposnetki #${tagName} na spletu HD | Zintia Vids`,
+  };
+
+  const descriptions: Record<Language, string> = {
+    es: `Explora los mejores videos con la etiqueta #${tagName} en alta definición. Transmisión fluida y rápida en Zintia Vids.`,
+    en: `Explore the best videos tagged with #${tagName} in high definition. Fast and smooth streaming on Zintia Vids.`,
+    fr: `Découvrez les meilleures vidéos avec le tag #${tagName} en haute définition. Lecture fluide et rapide sur Zintia Vids.`,
+    ja: `Zintia Vidsで#${tagName}タグの付いた最高画質動画をチェック。スムーズで高速な再生。`,
+    it: `Esplora i migliori video con il tag #${tagName} in alta definizione. Streaming fluido e veloce su Zintia Vids.`,
+    pt: `Explore os melhores vídeos com a tag #${tagName} em alta definição. Transmissão fluida e rápida no Zintia Vids.`,
+    sl: `Raziščite najboljše videoposnetke z oznako #${tagName} v visoki ločljivosti. Hitro in nemoteno predvajanje na Zintia Vids.`,
   };
 
   const title = titles[activeLang] || titles.es;
-  const description = activeLang === "es"
-    ? `Explora los mejores videos con la etiqueta #${tagName} en alta definición. Transmisión fluida y rápida en Zintia Vids.`
-    : `Explore the best videos tagged with #${tagName} in high definition. Fast and smooth streaming on Zintia Vids.`;
+  const description = descriptions[activeLang] || descriptions.es;
 
   return {
     title,
@@ -52,6 +61,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         ja: `/tag/${id}?lang=ja`,
         it: `/tag/${id}?lang=it`,
         pt: `/tag/${id}?lang=pt`,
+        sl: `/tag/${id}?lang=sl`,
       },
     },
     openGraph: {
@@ -88,6 +98,16 @@ export default async function TagPage({ params, searchParams }: PageProps) {
   };
   const tagName = getLabel(id);
 
+  const subheadings: Record<Language, string> = {
+    es: `Explora los mejores videos amateur etiquetados con #${tagName} en alta definición.`,
+    en: `Explore the best amateur videos tagged with #${tagName} in high definition.`,
+    fr: `Découvrez les meilleures vidéos d'amateurs avec le tag #${tagName} en haute définition.`,
+    ja: `#${tagName}タグの付いた最高のアマチュア動画をチェック。`,
+    it: `Esplora i migliori video amatoriali con il tag #${tagName} in alta definizione.`,
+    pt: `Explore os melhores vídeos amadores com a tag #${tagName} em alta definição.`,
+    sl: `Raziščite najboljše amaterske videoposnetke z oznako #${tagName} v visoki ločljivosti.`,
+  };
+
   return (
     <div className="flex flex-col gap-6 py-6 animate-fade-in font-sans">
       <div className="flex flex-col gap-2">
@@ -98,9 +118,7 @@ export default async function TagPage({ params, searchParams }: PageProps) {
           </span>
         </h1>
         <p className="text-xs md:text-sm text-muted-foreground">
-          {activeLang === "es"
-            ? `Explora los mejores videos amateur etiquetados con #${tagName} en alta definición.`
-            : `Explore the best amateur videos tagged with #${tagName} in high definition.`}
+          {subheadings[activeLang] || subheadings.es}
         </p>
       </div>
 

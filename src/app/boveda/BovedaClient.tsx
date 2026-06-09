@@ -48,7 +48,8 @@ const tzToCountryMap: Record<string, string> = {
   "managua": "NI",
   "san_salvador": "SV",
   "panama": "PA",
-  "san_juan": "PR"
+  "san_juan": "PR",
+  "ljubljana": "SI"
 };
 
 /*
@@ -194,7 +195,7 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
   useEffect(() => {
     if (typeof window !== "undefined") {
       const mainLang = (window.navigator.language || "").split("-")[0].toLowerCase();
-      const supported = ["es", "en", "fr", "ja", "it", "pt"];
+      const supported = ["es", "en", "fr", "ja", "it", "pt", "sl"];
       if (supported.includes(mainLang)) {
         setDetectedLang(mainLang);
       } else {
@@ -453,6 +454,26 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
       successNote: "Verificação de idade necessária (18+)",
       btnFinal: "VER PERFIS AGORA",
       detailsText: "Rede de Encontros Local 100% Verificada"
+    },
+    sl: {
+      step1Title: `Odkrijte zrele ženske v bližini kraja ${displayCity}`,
+      btnAmateur: "Poročene zrele ženske",
+      btnProfessional: "Samske zrele ženske",
+      step2Title: "Opozorilo o diskreciji",
+      step2Desc: "Ta VIP dostop do lokalnih profilov je zaupen in privaten.",
+      step2Question: "Ali obljubite, da boste identiteto teh žensk ohranili v skrivnosti?",
+      btnPromise: "DA, OBLJUBLJAM",
+      loadingTitle: "Iskanje združljivih profilov...",
+      status1: `Analiziranje aktivnih profilov v kraju ${displayCity}...`,
+      status2: "Preverjanje razpoložljivosti za srečanja danes...",
+      status3: "Filtriranje zasebnih fotografij in videoposnetkov brez cenzure...",
+      status4: "Priprava neposrednega dostopa do lokalnega klepeta...",
+      successTitle: "Zrele ženske najdene!",
+      successExpiry: "Vaš VIP dostop poteče čez:",
+      successDesc: `Preverjanje zaključeno! Povezali smo se z resničnimi in aktivnimi profili v vaši bližini v kraju ${displayCity}. Če želite zaščititi zasebnost uporabnic, si ogledati njihove zasebne videoposnetke in stopiti v stik z njimi, varno aktivirajte svojo VIP prepustnico za dostop.`,
+      successNote: "Zahtevano preverjanje starosti (18+)",
+      btnFinal: "POGLEJ PROFILE ZDAJ",
+      detailsText: "100 % preverjeno lokalno omrežje za zmenke"
     }
   };
 
@@ -522,6 +543,17 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
       q2Btn1: "Magra",
       q2Btn2: "Com curvas",
       q2Btn3: "Tanto faz",
+    },
+    sl: {
+      q1Desc: "Prosimo, potrdite svojo starost za nadaljevanje:",
+      q1Btn1: "18 - 25",
+      q1Btn2: "26 - 35",
+      q1Btn3: "36+",
+      q2Title: "Zadnji korak preverjanja",
+      q2Desc: "Kakšen tip telesa vam je danes ljubši?",
+      q2Btn1: "Vitke",
+      q2Btn2: "Z oblinami",
+      q2Btn3: "Vseeno mi je",
     }
   };
 

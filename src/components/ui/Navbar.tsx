@@ -21,6 +21,7 @@ const LANG_DETAILS = [
   { id: "ja", label: "日本語" },
   { id: "it", label: "Italiano" },
   { id: "pt", label: "Português" },
+  { id: "sl", label: "Slovenščina" },
 ] as const;
 
 const SUGGESTED_TAGS = [
@@ -100,6 +101,20 @@ export function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Client-side browser language auto-detection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (!urlParams.has("lang")) {
+        const browserLang = (window.navigator.language || "").split("-")[0].toLowerCase();
+        const supported: Language[] = ["es", "en", "fr", "ja", "it", "pt", "sl"];
+        if (supported.includes(browserLang as Language)) {
+          setLang(browserLang as Language);
+        }
+      }
+    }
+  }, [setLang]);
 
   return (
     <header className="sticky top-0 z-50 w-full glassmorphism px-4 md:px-8 py-3 flex flex-col justify-center transition-all duration-300">

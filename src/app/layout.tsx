@@ -163,6 +163,7 @@ export default async function RootLayout({
                           <li><Link href="/?lang=pt" className="hover:text-white transition-colors">Português</Link></li>
                           <li><Link href="/?lang=it" className="hover:text-white transition-colors">Italiano</Link></li>
                           <li><Link href="/?lang=ja" className="hover:text-white transition-colors">日本語</Link></li>
+                          <li><Link href="/?lang=sl" className="hover:text-white transition-colors">Slovenščina</Link></li>
                         </ul>
                       </nav>
                       <div>

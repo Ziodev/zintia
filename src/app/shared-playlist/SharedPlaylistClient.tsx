@@ -112,6 +112,22 @@ const MATCH_TRANSLATIONS = {
     chemistry: "Tem Química 😏",
     soulmates: "Almas Gêmeas Quentes 💖",
   },
+  sl: {
+    title: "Vroča združljivost 🔥",
+    subtitle: "Tvoj prijatelj je delil svojo vročo predvajalno listo. Kateri od teh videoposnetkov ti je najbolj všeč? Podrsaj, da vidiš vajino združljivost!",
+    hot: "VROČE!",
+    nope: "PRESKOČI",
+    calculating: "Računanje združljivosti...",
+    yourMatch: "Vajina združljivost je",
+    importSuccess: "Seznam predvajanja uspešno uvožen!",
+    importBtn: "Uvozi v moje priljubljene 📥",
+    importedBtn: "Seznam uvožen!",
+    playGameBtn: "Ustvari svoj seznam predvajanja 🎮",
+    backHomeBtn: "Nazaj na začetno stran 🏠",
+    opposite: "Nasprotni poli ❄️",
+    chemistry: "Imata kemijo 😏",
+    soulmates: "Vroče sorodne duše 💖",
+  },
 };
 
 export function SharedPlaylistClient({ videos, lang }: SharedPlaylistClientProps) {

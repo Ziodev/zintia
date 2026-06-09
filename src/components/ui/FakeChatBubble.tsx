@@ -36,6 +36,11 @@ const messages: Record<Language, { name: string; text: string; cta: string }> = 
     name: "Beatriz (22)",
     text: "Oi! Estou ao vivo na minha webcam agora e minha sala está vazia. Quer entrar e me ver? ❤️",
     cta: "Conversar agora"
+  },
+  sl: {
+    name: "Taja (21)",
+    text: "Živijo! Trenutno sem v živo na spletni kameri in moja soba je prazna. Bi se mi pridružil in me gledal? ❤️",
+    cta: "Klepetaj zdaj"
   }
 };
 
@@ -45,7 +50,8 @@ const avatars: Record<Language, string> = {
   fr: "https://pics.drtuber.com/media/videos/tmb/10080826/preview/4.jpg",
   ja: "https://pics.drtuber.com/media/videos/tmb/10091425/preview/10.jpg",
   it: "https://pics.drtuber.com/media/videos/tmb/10074211/preview/2.jpg",
-  pt: "https://pics.drtuber.com/media/videos/tmb/10072044/preview/5.jpg"
+  pt: "https://pics.drtuber.com/media/videos/tmb/10072044/preview/5.jpg",
+  sl: "https://pics.drtuber.com/media/videos/tmb/10074211/preview/2.jpg"
 };
 
 export function FakeChatBubble() {
@@ -118,7 +124,7 @@ export function FakeChatBubble() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-[10px] uppercase font-extrabold tracking-wider text-emerald-400">
-              {lang === "es" ? "En vivo" : lang === "ja" ? "配信中" : "Live"}
+              {lang === "es" ? "En vivo" : lang === "ja" ? "配信中" : lang === "sl" ? "V živo" : "Live"}
             </span>
           </div>
           <button 
@@ -165,7 +171,7 @@ export function FakeChatBubble() {
         {/* CTA Button */}
         <div className="mt-3.5 pt-2 border-t border-white/5 relative z-10 flex items-center justify-between">
           <span className="flex items-center gap-1 text-[9px] text-muted-foreground">
-            <ShieldAlert className="w-3 h-3 text-rose-500/60" /> {lang === "es" ? "Conexión segura" : "Secure connection"}
+            <ShieldAlert className="w-3 h-3 text-rose-500/60" /> {lang === "es" ? "Conexión segura" : lang === "sl" ? "Varna povezava" : "Secure connection"}
           </span>
           <span className="text-xs font-extrabold text-rose-400 group-hover:text-rose-300 transition-colors flex items-center gap-0.5">
             {currentMsg.cta}

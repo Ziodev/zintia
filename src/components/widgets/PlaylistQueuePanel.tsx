@@ -33,7 +33,7 @@ export function PlaylistQueuePanel({
     }
   }, [currentIndex]);
 
-  const t = {
+  const localTranslations: Record<Language, { title: string; playing: string; progress: string }> = {
     es: {
       title: "Tu Playlist Caliente",
       playing: "Reproduciendo",
@@ -64,11 +64,13 @@ export function PlaylistQueuePanel({
       playing: "Reproduzindo",
       progress: "vídeo {current} de {total}",
     },
-  }[lang] || {
-    title: "Tu Playlist Caliente",
-    playing: "Reproduciendo",
-    progress: "video {current} de {total}",
+    sl: {
+      title: "Tvoj vroči seznam",
+      playing: "Zdaj se predvaja",
+      progress: "video {current} od {total}",
+    },
   };
+  const t = localTranslations[lang] || localTranslations.es;
 
   return (
     <div className="w-full bg-zinc-900/40 backdrop-blur-md border border-rose-500/20 rounded-2xl overflow-hidden shadow-2xl flex flex-col font-sans">

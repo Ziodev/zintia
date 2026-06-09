@@ -11,7 +11,7 @@ interface HomeHeaderProps {
   exploreText: string;
 }
 
-const LOCALIZED_COPIES = {
+const LOCALIZED_COPIES: Record<Language, { trendsIn: string; activeNow: string }> = {
   es: {
     trendsIn: "Tendencias más calientes en",
     activeNow: "usuarios activos ahora",
@@ -35,6 +35,10 @@ const LOCALIZED_COPIES = {
   pt: {
     trendsIn: "Tendências mais quentes em",
     activeNow: "usuários ativos agora",
+  },
+  sl: {
+    trendsIn: "Najbolj vroči trendi v",
+    activeNow: "aktivnih uporabnikov zdaj",
   },
 };
 

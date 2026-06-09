@@ -62,7 +62,7 @@ export function CategoryFilter({ videos, forcedTag }: CategoryFilterProps) {
   const sorts = [
     { id: "latest", label: t.recent },
     { id: "views", label: t.mostViewed },
-    { id: "recommend", label: activeLang === "es" ? "Para Ti 🔥" : activeLang === "ja" ? "おすすめ 🔥" : activeLang === "fr" ? "Pour Vous 🔥" : activeLang === "it" ? "Per Te 🔥" : activeLang === "pt" ? "Para Você 🔥" : "For You 🔥" },
+    { id: "recommend", label: activeLang === "es" ? "Para Ti 🔥" : activeLang === "ja" ? "おすすめ 🔥" : activeLang === "fr" ? "Pour Vous 🔥" : activeLang === "it" ? "Per Te 🔥" : activeLang === "pt" ? "Para Você 🔥" : activeLang === "sl" ? "Za Vas 🔥" : "For You 🔥" },
   ];
 
   // Filter videos dynamically for the TagCloud based on active category and search

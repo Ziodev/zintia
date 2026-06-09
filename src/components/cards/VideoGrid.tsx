@@ -34,7 +34,7 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
   },
   ja: {
     title: "人間確認のお知らせ",
-    desc: "無料コンテンツ의 視聴を続けるには、人間であることを確認するか、お住まいの地域のライブモデルをご覧ください。",
+    desc: "無料コンテンツの視聴を続けるには、人間であることを確認するか、お住まいの地域のライブモデルをご覧ください。",
     button: "ライブモデルを見て続ける",
     bypass: "無料でブラウジングを続ける",
   },
@@ -49,6 +49,12 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
     desc: "Para continuar a ver conteúdo gratuito, verifique se é humano ou descubra os modelos ao vivo na sua área.",
     button: "Ver Modelos ao Vivo",
     bypass: "Continuar Navegação Gratuita",
+  },
+  sl: {
+    title: "Preverjanje brskanja",
+    desc: "Če želite nadaljevati z ogledom brezplačne vsebine, potrdite, da ste človek, ali odkrijte modele v živo na svojem območju.",
+    button: "Ogled modelov v živo in nadaljevanje",
+    bypass: "Nadaljuj z brezplačnim brskanjem",
   },
 };
 
@@ -280,7 +286,7 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
 
   const showNoPrefsBanner = activeSort === "recommend" && isClient && preferredCategories.length === 0 && preferredTags.length === 0;
 
-  const bannerTranslations = {
+  const bannerTranslations: Record<Language, { title: string; desc: string; btn: string }> = {
     es: {
       title: "🔥 Activa tu Feed Personalizado",
       desc: "Juega a 'Hot or Not' deslizando videos para que nuestro algoritmo aprenda tus gustos y ordene la página a tu medida.",
@@ -310,6 +316,11 @@ export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
       title: "🔥 Ative seu Feed Personalizado",
       desc: "Jogue 'Hot or Not' deslizando vídeos para que nosso algoritmo aprenda seus gostos.",
       btn: "JOGAR AGORA",
+    },
+    sl: {
+      title: "🔥 Aktiviraj svoj prilagojeni vir",
+      desc: "Igraj 'Hot or Not' s podrsavanjem videoposnetkov, da se naš algoritem nauči tvojega okusa in uredi stran po tvoji meri.",
+      btn: "IGRAJ ZDAJ",
     },
   };
 

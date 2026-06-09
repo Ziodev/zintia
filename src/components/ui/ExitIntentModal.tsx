@@ -44,6 +44,12 @@ const EXIT_COPIES: Record<Language, { title: string; desc: string; button: strin
     button: "Reclamar Passe VIP Premium",
     close: "Não, obrigado. Voltar ao site.",
   },
+  sl: {
+    title: "Tako hitro odhajate?",
+    desc: "🎁 Imate [1] Premium VIP prepustnico za 5-minutni ogled zasebnih modelov.",
+    button: "Prevzemi Premium VIP prepustnico",
+    close: "Ne, hvala. Nadaljuj na spletno mesto.",
+  },
 };
 
 export function ExitIntentModal() {

@@ -19,6 +19,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     ja: "好みの相性診断 💋 | Zintia Vids",
     it: "Test Compatibilità Calda 💋 | Zintia Vids",
     pt: "Match de Compatibilidade Quente 💋 | Zintia Vids",
+    sl: "Ujemanje vroče združljivosti 💋 | Zintia Vids",
   };
 
   const title = titles[activeLang] || titles.es;

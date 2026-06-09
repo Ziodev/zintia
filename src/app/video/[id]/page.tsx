@@ -43,6 +43,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     ja: `「${video.category}」カテゴリの「${translatedTitle}」をご覧いただけます。スマート自動再生とスムーズな再生に対応。`,
     it: `Guarda "${translatedTitle}" nella categoria "${video.category}". Goditi l'autoplay inteligente e la riproduzione fluida.`,
     pt: `Assista a "${translatedTitle}" na categoria "${video.category}". Desfrute de reprodução automática inteligente y streaming fluído.`,
+    sl: `Poglejte "${translatedTitle}" v kategoriji "${video.category}". Uživajte v pametnem samodejnem predvajanju in tekočem predvajanju.`,
   };
 
   const t = translations[activeLang] || translations.es;
@@ -62,6 +63,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         ja: `/video/${slugify(translateTitle(video.title, "ja"))}-${id}?lang=ja`,
         it: `/video/${slugify(translateTitle(video.title, "it"))}-${id}?lang=it`,
         pt: `/video/${slugify(translateTitle(video.title, "pt"))}-${id}?lang=pt`,
+        sl: `/video/${slugify(translateTitle(video.title, "sl"))}-${id}?lang=sl`,
       },
     },
     openGraph: {
@@ -175,6 +177,7 @@ export default async function VideoPage({ params, searchParams }: PageProps) {
     ja: `「${video.category}」カテゴリー of 「${translatedTitle}」をご覧ください。この動画的の長さは ${video.duration} で、${video.views}回以上視聴されています。スムーズで高速なHD再生をお楽しみください。`,
     it: `Guarda "${translatedTitle}" nella categoria "${video.category}". Questo video dura ${video.duration} con oltre ${video.views} visualizzazioni. Goditi una riproduzione fluida, veloce e in alta definizione.`,
     pt: `Assista a "${translatedTitle}" na categoria "${video.category}". Este vídeo tem a duração de ${video.duration} com mais de ${video.views} visualizações. Desfrute de uma reprodução fluida, rápida e em alta definição.`,
+    sl: `Oglejte si video "${translatedTitle}" v kategoriji "${video.category}". Ta video traja ${video.duration} in ima več kot ${video.views} ogledov. Uživajte v tekočem, hitrem in visoko ločljivem predvajanju.`,
   };
   const videoDescription = localizedDescriptions[activeLang] || localizedDescriptions.es;
 

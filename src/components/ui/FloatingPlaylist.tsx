@@ -11,8 +11,20 @@ import { Language, translations } from "@/lib/translations";
 import { translateTitle } from "@/lib/auto-tagger";
 import { slugify, getMobideaLink } from "@/lib/utils";
 
-const PLAYLIST_TRANSLATIONS = {
-
+const PLAYLIST_TRANSLATIONS: Record<Language, {
+  title: string;
+  empty: string;
+  emptyDesc: string;
+  playAll: string;
+  share: string;
+  clear: string;
+  toastCopied: string;
+  playGame: string;
+  unlockTitle: string;
+  unlockDesc: string;
+  unlockBtn: string;
+  unlockCancel: string;
+}> = {
   es: {
     title: "Tu Playlist Caliente",
     empty: "¡Aún no tienes videos en tu playlist!",
@@ -96,6 +108,20 @@ const PLAYLIST_TRANSLATIONS = {
     unlockDesc: "Você atingiu o limite de 5 vídeos do seu passe básico. Para salvar vídeos ilimitados e reprodução contínua permanente, apoie nossos patrocinadores.",
     unlockBtn: "💋 Ver Modelos e Desbloquear Acesso VIP",
     unlockCancel: "Voltar para Playlist",
+  },
+  sl: {
+    title: "Tvoj vroči seznam",
+    empty: "V tvojem seznamu predvajanja še ni videoposnetkov!",
+    emptyDesc: "Igraj 'Hot or Not', da podrsaš in dodaš vroče videoposnetke na svoj seznam.",
+    playAll: "PREDVAJAJ VSE",
+    share: "DELI SEZNAM",
+    clear: "Počisti vse",
+    toastCopied: "Povezava do seznama je kopirana v odložišče!",
+    playGame: "IGRAJ 'HOT OR NOT'",
+    unlockTitle: "Odkleni Premium sezname 💋",
+    unlockDesc: "Dosegel si mejo 5 videoposnetkov na osnovni prepustnici. Če želiš shranjevati neomejeno število videoposnetkov, uporabljati neprekinjeno predvajanje in uživati v trajnem samodejnem predvajanju, podpri naše sponzorje s hitro in varno registracijo.",
+    unlockBtn: "💋 Ogled modelov in odklepanje VIP dostopa",
+    unlockCancel: "Nazaj na seznam",
   },
 };
 
