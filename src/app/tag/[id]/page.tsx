@@ -53,6 +53,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   return {
     title,
     description,
+    keywords: [tagName, `${tagName} porn`, `${tagName} videos`, `porno ${tagName}`, "hd", "zintia vids"],
     robots: "index, follow",
     alternates: {
       canonical: activeLang === "es" ? `/tag/${id}` : `/tag/${id}?lang=${activeLang}`,

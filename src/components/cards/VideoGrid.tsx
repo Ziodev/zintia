@@ -67,11 +67,12 @@ const ROADBLOCK_COPIES: Record<Language, { title: string; desc: string; button: 
 interface VideoGridProps {
   initialVideos: Video[];
   forcedTag?: string;
+  forcedCategory?: string;
 }
 
-export function VideoGrid({ initialVideos, forcedTag }: VideoGridProps) {
+export function VideoGrid({ initialVideos, forcedTag, forcedCategory }: VideoGridProps) {
   const params = useParams();
-  const activeCategory = (params?.id as string) || "all";
+  const activeCategory = forcedCategory || (params?.id as string) || "all";
   const [activeSort] = useQueryState("sort", { defaultValue: "latest", shallow: true });
   const [activeTag] = useQueryState("tag", { defaultValue: "", shallow: true });
   const [search] = useQueryState("search", { defaultValue: "", shallow: true });

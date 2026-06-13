@@ -34,7 +34,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://zintiavids.com"),
   title: "Zintia Vids - Plataforma de Video de Alta Calidad",
   description: "Disfruta de la mejor experiencia de streaming de video premium en alta definición sin interrupciones y con rendimiento optimizado.",
-  keywords: ["streaming", "video premium", "alta definición", "entretenimiento de adultos"],
+  keywords: [
+    "videos gratis", "videos porno", "porno en español", "porn tube",
+    "free porn", "streaming HD", "video premium", "entretenimiento para adultos",
+    "adult videos", "amateur", "webcams en vivo"
+  ],
   other: {
     rating: "adult",
     "rta-5042-1996-1400-1577-rta": "RTA-5042-1996-1400-1577-RTA",

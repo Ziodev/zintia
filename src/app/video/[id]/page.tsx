@@ -54,6 +54,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   return {
     title,
     description,
+    keywords: video.tags && video.tags.length > 0 ? video.tags : ["video", video.category, "hd", "zintia vids"],
     robots: "index, follow",
     alternates: {
       canonical: activeLang === "es" ? `/video/${slugify(translatedTitle)}-${id}` : `/video/${slugify(translatedTitle)}-${id}?lang=${activeLang}`,

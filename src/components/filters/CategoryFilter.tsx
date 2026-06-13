@@ -33,12 +33,13 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
 interface CategoryFilterProps {
   videos: VideoType[];
   forcedTag?: string;
+  forcedCategory?: string;
 }
 
-export function CategoryFilter({ videos, forcedTag }: CategoryFilterProps) {
+export function CategoryFilter({ videos, forcedTag, forcedCategory }: CategoryFilterProps) {
   const params = useParams();
   const router = useRouter();
-  const activeCategory = (params?.id as string) || "all";
+  const activeCategory = forcedCategory || (params?.id as string) || "all";
 
   const [activeSort, setActiveSort] = useQueryState("sort", {
     defaultValue: "latest",

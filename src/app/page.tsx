@@ -44,7 +44,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title,
     description,
-    keywords: ["streaming", "video premium", "alta definición", "entretenimiento de adultos"],
+    keywords: [
+      "videos gratis", "videos porno", "porno en español", "porn tube",
+      "free porn", "streaming HD", "video premium", "entretenimiento para adultos",
+      "adult videos", "amateur", "webcams en vivo"
+    ],
     robots: "index, follow",
     alternates: {
       canonical: activeLang === "es" ? "/" : `/?lang=${activeLang}`,
