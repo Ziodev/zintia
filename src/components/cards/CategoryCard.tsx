@@ -14,6 +14,7 @@ interface CategoryCardProps {
   thumbnailUrl: string;
   videoPreviewUrl: string | null;
   lang: Language;
+  type?: "category" | "tag";
 }
 
 export function CategoryCard({
@@ -23,6 +24,7 @@ export function CategoryCard({
   thumbnailUrl,
   videoPreviewUrl,
   lang,
+  type = "category",
 }: CategoryCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,7 +61,8 @@ export function CategoryCard({
     setMuted(!isMuted);
   };
 
-  const targetUrl = `/category/${id}?lang=${lang}`;
+  const baseRoute = type === "tag" ? "/tag" : "/category";
+  const targetUrl = `${baseRoute}/${id}?lang=${lang}`;
 
   return (
     <div

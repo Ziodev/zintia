@@ -4,6 +4,7 @@ import { CategoryCard } from "@/components/cards/CategoryCard";
 import { prisma } from "@/lib/prisma";
 import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
 import { translations, Language } from "@/lib/translations";
+import { TAG_LABELS } from "@/components/filters/TagCloud";
 
 const VALID_CATEGORIES = ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"];
 
@@ -90,6 +91,20 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<Language, string>> = {
   }
 };
 
+const getGenericDescription = (name: string, lang: Language) => {
+  switch (lang) {
+    case "es": return `Explora los mejores videos de ${name} en alta definición.`;
+    case "en": return `Explore the best ${name} videos in high definition.`;
+    case "fr": return `Explorez les meilleures vidéos de ${name} en haute définition.`;
+    case "ja": return `高画質の${name}動画を探索する。`;
+    case "it": return `Esplora i migliori video di ${name} in alta definizione.`;
+    case "pt": return `Explore os melhores vídeos de ${name} em alta definição.`;
+    case "sl": return `Raziščite najboljše videoposnetke ${name} v visoki ločljivosti.`;
+    case "da": return `Udforsk de bedste ${name} videoer i høj opløsning.`;
+    default: return `Explore the best ${name} videos in high definition.`;
+  }
+};
+
 interface PageProps {
   searchParams: Promise<{ lang?: string }>;
 }
@@ -159,11 +174,13 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
   const t = translations[activeLang] || translations.es;
 
   // Retrieve one video preview for each category in parallel
+  const allCategories = Object.keys(TAG_LABELS);
   const categoriesData = await Promise.all(
-    VALID_CATEGORIES.map(async (catId) => {
+    allCategories.map(async (catId) => {
+      const isCore = VALID_CATEGORIES.includes(catId);
       // Query the latest published video in this category
       let video = await prisma.video.findFirst({
-        where: { category: catId, status: "PUBLISHED" },
+        where: isCore ? { category: catId, status: "PUBLISHED" } : { tags: { has: catId }, status: "PUBLISHED" },
         orderBy: { published_at: "desc" },
       });
 
@@ -189,12 +206,16 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
         }
       }
 
+      const name = TAG_LABELS[catId]?.[activeLang] || TAG_LABELS[catId]?.en || catId;
+      const description = CATEGORY_DESCRIPTIONS[catId]?.[activeLang] || getGenericDescription(name, activeLang);
+
       return {
         id: catId,
-        name: CATEGORY_NAMES[catId]?.[activeLang] || catId,
-        description: CATEGORY_DESCRIPTIONS[catId]?.[activeLang] || "",
+        name,
+        description,
         thumbnailUrl: video?.thumbnailUrl || "https://pics.drtuber.com/media/videos/tmb/10091385/preview/12.jpg",
         videoPreviewUrl: video?.videoPreviewUrl || null,
+        isCore,
       };
     })
   );
@@ -230,6 +251,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
               thumbnailUrl={cat.thumbnailUrl}
               videoPreviewUrl={cat.videoPreviewUrl}
               lang={activeLang}
+              type={cat.isCore ? "category" : "tag"}
             />
           ))}
         </div>
