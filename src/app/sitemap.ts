@@ -74,6 +74,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
+  // Programmatic SEO: Cross Category + Tag Combinations
+  const categoryTagCombinations = new Set<string>();
+  videos.forEach((video) => {
+    if (VALID_CATEGORIES.includes(video.category as any) && video.tags && Array.isArray(video.tags)) {
+      video.tags.forEach((tag) => {
+        if (TAGS.includes(tag)) {
+          categoryTagCombinations.add(`${video.category}/${tag}`);
+        }
+      });
+    }
+  });
+
+  const categoryTagEntries: MetadataRoute.Sitemap = Array.from(categoryTagCombinations).flatMap((combo) =>
+    LANGUAGES.map((lang) => ({
+      url:
+        lang === "es"
+          ? `${SITE_URL}/category/${combo}`
+          : `${SITE_URL}/category/${combo}?lang=${lang}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+      alternates: {
+        languages: Object.fromEntries(
+          LANGUAGES.map((l) => [
+            l,
+            l === "es"
+              ? `${SITE_URL}/category/${combo}`
+              : `${SITE_URL}/category/${combo}?lang=${l}`,
+          ])
+        ),
+      },
+    }))
+  );
+
   // Video page entries for each video × each language
   const videoEntries: MetadataRoute.Sitemap = videos.flatMap((video) =>
     LANGUAGES.map((lang) => {
@@ -97,5 +131,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  return [...homeEntries, ...categoryEntries, ...tagEntries, ...videoEntries];
+  return [...homeEntries, ...categoryEntries, ...tagEntries, ...categoryTagEntries, ...videoEntries];
 }

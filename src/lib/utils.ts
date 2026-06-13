@@ -34,7 +34,7 @@ export function getMobideaLink(_pubSubId: string): string {
     }
   }
 
-  const baseUrl = "https://sqena.bemobtrcks.com/click";
+  const baseUrl = "https://tlgpmrg.heartledbeau.org/nzchv5g";
   if (token) {
     return isBeMobTok ? `${baseUrl}?beMobTok=${token}` : `${baseUrl}?cid=${token}`;
   }

@@ -138,7 +138,7 @@ export function BovedaClient({ country, city, isBot: _isBot, clickId, zoneId: _z
       isBeMobTok = true;
     }
 
-    const baseUrl = "https://sqena.bemobtrcks.com/click";
+    const baseUrl = "https://tlgpmrg.heartledbeau.org/nzchv5g";
     if (token) {
       return isBeMobTok ? `${baseUrl}?beMobTok=${token}` : `${baseUrl}?cid=${token}`;
     }
