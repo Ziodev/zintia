@@ -4,7 +4,7 @@ import { CategoryCard } from "@/components/cards/CategoryCard";
 import { prisma } from "@/lib/prisma";
 import { DRTUBER_FALLBACK_VIDEOS } from "@/lib/drtuber_fallback";
 import { translations, Language } from "@/lib/translations";
-import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { TAG_LABELS } from "@/lib/constants";
 
 const VALID_CATEGORIES = ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"];
 

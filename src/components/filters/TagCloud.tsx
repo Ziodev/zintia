@@ -8,50 +8,7 @@ import { translations, Language } from "@/lib/translations";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-// Bilingual display names for normalized tags
-export const TAG_LABELS: Record<string, Record<string, string>> = {
-  "amateur": { es: "Amateur", en: "Amateur", fr: "Amateur", ja: "アマチュア", it: "Amatoriale", pt: "Amador" },
-  "anal": { es: "Anal", en: "Anal", fr: "Anal", ja: "アナル", it: "Anale", pt: "Anal" },
-  "asian": { es: "Asiáticas", en: "Asian", fr: "Asiatique", ja: "アジアン", it: "Asiatica", pt: "Asiática" },
-  "babe": { es: "Bellezas", en: "Babes", fr: "Belles", ja: "美女", it: "Belle", pt: "Gatas" },
-  "bbw": { es: "BBW", en: "BBW", fr: "BBW", ja: "BBW", it: "BBW", pt: "BBW" },
-  "big-ass": { es: "Culos", en: "Big Ass", fr: "Gros Cul", ja: "デカ尻", it: "Grosso Culo", pt: "Bundão" },
-  "big-tits": { es: "Tetonas", en: "Big Tits", fr: "Gros Seins", ja: "巨乳", it: "Tettone", pt: "Peituda" },
-  "black": { es: "Negras", en: "Ebony", fr: "Ébène", ja: "黒人", it: "Ebano", pt: "Negras" },
-  "blonde": { es: "Rubias", en: "Blonde", fr: "Blonde", ja: "ブロンド", it: "Bionda", pt: "Loiras" },
-  "blowjob": { es: "Mamadas", en: "Blowjob", fr: "Fellation", ja: "フェラ", it: "Pompino", pt: "Boquete" },
-  "brunette": { es: "Morenas", en: "Brunette", fr: "Brune", ja: "ブルネット", it: "Bruna", pt: "Morena" },
-  "compilation": { es: "Compilaciones", en: "Compilation", fr: "Compilation", ja: "コンピ", it: "Compilazione", pt: "Compilação" },
-  "couple": { es: "Parejas", en: "Couples", fr: "Couples", ja: "カップル", it: "Coppie", pt: "Casais" },
-  "creampie": { es: "Creampie", en: "Creampie", fr: "Éjac Interne", ja: "中出し", it: "Creampie", pt: "Gozada Interna" },
-  "cumshot": { es: "Corridas", en: "Cumshot", fr: "Éjaculation", ja: "顔射", it: "Sborrata", pt: "Ejaculação" },
-  "dildo": { es: "Juguetes", en: "Toys", fr: "Jouets", ja: "おもちゃ", it: "Giocattoli", pt: "Brinquedos" },
-  "dp": { es: "Doble P.", en: "Double P.", fr: "Double P.", ja: "2穴", it: "Doppia P.", pt: "Dupla P." },
-  "feet": { es: "Pies", en: "Feet", fr: "Pieds", ja: "足フェチ", it: "Piedi", pt: "Pés" },
-  "fingering": { es: "Masturbación", en: "Masturbation", fr: "Masturbation", ja: "オナニー", it: "Masturbazione", pt: "Masturbação" },
-  "gangbang": { es: "Gangbang", en: "Gangbang", fr: "Gangbang", ja: "乱交", it: "Gangbang", pt: "Gangbang" },
-  "handjob": { es: "Pajas", en: "Handjob", fr: "Branlette", ja: "手コキ", it: "Sega", pt: "Punheta" },
-  "hardcore": { es: "Hardcore", en: "Hardcore", fr: "Hardcore", ja: "ハードコア", it: "Hardcore", pt: "Hardcore" },
-  "homemade": { es: "Caseros", en: "Homemade", fr: "Fait Maison", ja: "自撮り", it: "Fatto in Casa", pt: "Caseiro" },
-  "interracial": { es: "Interracial", en: "Interracial", fr: "Interracial", ja: "異人種間", it: "Interrazziale", pt: "Interracial" },
-  "latina": { es: "Latinas", en: "Latina", fr: "Latine", ja: "ラテン系", it: "Latina", pt: "Latinas" },
-  "lesbian": { es: "Lesbianas", en: "Lesbian", fr: "Lesbienne", ja: "レズ", it: "Lesbica", pt: "Lésbica" },
-  "massage": { es: "Masajes", en: "Massage", fr: "Massage", ja: "マッサージ", it: "Massaggio", pt: "Massagem" },
-  "mature": { es: "Maduras", en: "Mature", fr: "Mature", ja: "熟女", it: "Matura", pt: "Madura" },
-  "outdoor": { es: "Al Aire Libre", en: "Outdoor", fr: "En Extérieur", ja: "野外", it: "All'Aperto", pt: "Ao Ar Livre" },
-  "pov": { es: "POV", en: "POV", fr: "POV", ja: "POV", it: "POV", pt: "POV" },
-  "redhead": { es: "Pelirrojas", en: "Redhead", fr: "Rousse", ja: "赤毛", it: "Rossa", pt: "Ruiva" },
-  "skinny": { es: "Delgadas", en: "Petite", fr: "Petite", ja: "スレンダー", it: "Magra", pt: "Magra" },
-  "solo": { es: "Solo", en: "Solo", fr: "Solo", ja: "ソロ", it: "Solo", pt: "Solo" },
-  "squirt": { es: "Squirt", en: "Squirt", fr: "Fontaine", ja: "潮吹き", it: "Squirt", pt: "Squirt" },
-  "stockings": { es: "Lencería", en: "Lingerie", fr: "Lingerie", ja: "ランジェリー", it: "Lingerie", pt: "Lingerie" },
-  "striptease": { es: "Striptease", en: "Striptease", fr: "Striptease", ja: "ストリップ", it: "Striptease", pt: "Striptease" },
-  "tattoo": { es: "Tatuadas", en: "Tattooed", fr: "Tatouée", ja: "タトゥー", it: "Tatuata", pt: "Tatuada" },
-  "teen": { es: "Jovencitas", en: "Teen", fr: "Ado", ja: "ティーン", it: "Teen", pt: "Novinhas" },
-  "threesome": { es: "Tríos", en: "Threesome", fr: "Trio", ja: "3P", it: "Trio", pt: "Trio" },
-  "voyeur": { es: "Voyeur", en: "Voyeur", fr: "Voyeur", ja: "盗撮", it: "Voyeur", pt: "Voyeur" },
-  "webcam": { es: "Webcam", en: "Webcam", fr: "Webcam", ja: "ウェブカメラ", it: "Webcam", pt: "Webcam" },
-};
+import { TAG_LABELS } from "@/lib/constants";
 
 interface TagCloudProps {
   videos: Video[];

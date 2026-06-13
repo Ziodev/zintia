@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getVideos } from "@/lib/feed";
 import { translateTitle } from "@/lib/auto-tagger";
 import { slugify } from "@/lib/utils";
-import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { TAG_LABELS } from "@/lib/constants";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://zintiavids.com";
 const LANGUAGES = ["es", "en", "fr", "ja", "it", "pt", "sl", "da"] as const;
