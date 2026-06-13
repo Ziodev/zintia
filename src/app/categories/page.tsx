@@ -179,10 +179,15 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
     allCategories.map(async (catId) => {
       const isCore = VALID_CATEGORIES.includes(catId);
       // Query the latest published video in this category
-      let video = await prisma.video.findFirst({
-        where: isCore ? { category: catId, status: "PUBLISHED" } : { tags: { has: catId }, status: "PUBLISHED" },
-        orderBy: { published_at: "desc" },
-      });
+      let video = null;
+      try {
+        video = await prisma.video.findFirst({
+          where: isCore ? { category: catId, status: "PUBLISHED" } : { tags: { has: catId }, status: "PUBLISHED" },
+          orderBy: { published_at: "desc" },
+        });
+      } catch (err) {
+        console.error(`Database query for category ${catId} failed, using static fallback:`, err);
+      }
 
       // Fallback if no video in DB
       if (!video) {
