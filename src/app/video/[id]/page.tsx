@@ -7,7 +7,7 @@ import { VideoCard } from "@/components/cards/VideoCard";
 import { NativeAdCard } from "@/components/cards/NativeAdCard";
 import { translations, Language } from "@/lib/translations";
 import { getVideos, getVideoById } from "@/lib/feed";
-import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { TAG_LABELS } from "@/lib/constants";
 import { LiveCamsWidget } from "@/components/widgets/LiveCamsWidget";
 import { VideoPlayerWrapper } from "@/components/widgets/VideoPlayerWrapper";
 import { VideoDetailsPanel } from "@/components/widgets/VideoDetailsPanel";

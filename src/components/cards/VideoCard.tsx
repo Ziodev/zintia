@@ -8,7 +8,7 @@ import { Play, Volume2, VolumeX } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useUIStore } from "@/lib/store";
 import { translations, Language } from "@/lib/translations";
-import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { TAG_LABELS } from "@/lib/constants";
 import { translateTitle } from "@/lib/auto-tagger";
 import { slugify } from "@/lib/utils";
 

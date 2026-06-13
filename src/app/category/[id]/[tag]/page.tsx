@@ -5,7 +5,7 @@ import { VideoGrid } from "@/components/cards/VideoGrid";
 import { translations, Language } from "@/lib/translations";
 import { getVideos } from "@/lib/feed";
 import { notFound } from "next/navigation";
-import { TAG_LABELS } from "@/components/filters/TagCloud";
+import { TAG_LABELS } from "@/lib/constants";
 
 // Supported categories validation
 const VALID_CATEGORIES = ["amateur", "anal", "milf", "caseros", "latinas", "ebony", "webcams"];
