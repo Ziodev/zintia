@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { BovedaClient } from "./BovedaClient";
+import { InteractiveVaultClient } from "./InteractiveVaultClient";
 import { SfwPage } from "./SfwPage";
 import { getVideos } from "@/lib/feed";
 
@@ -43,6 +44,27 @@ export default async function BovedaPage({ searchParams }: PageProps) {
   // Fetch real videos from the DB (with static fallbacks)
   const allVideos = await getVideos();
   const initialVideos = allVideos.slice(0, 6);
+
+  // A/B Test Variant (50/50 split)
+  // Optionally support forced variant via URL param for testing
+  const forcedVariant = typeof resolvedSearchParams.v === "string" ? resolvedSearchParams.v : undefined;
+  const variant = forcedVariant === "A" || forcedVariant === "B" 
+    ? forcedVariant 
+    : (Math.random() > 0.5 ? "A" : "B");
+
+  if (variant === "B") {
+    return (
+      <InteractiveVaultClient
+        country={country} 
+        city={city} 
+        isBot={isBot} 
+        clickId={click} 
+        zoneId={zona} 
+        initialVideos={initialVideos}
+        variant={variant as "A" | "B"}
+      />
+    );
+  }
 
   return (
     <BovedaClient 
